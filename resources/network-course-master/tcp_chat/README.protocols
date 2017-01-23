@@ -1,0 +1,17 @@
+PROTOCOLS
+=========
+
+CHAT PROTOCOL
+-------------
+
+TCP based protocol.
+Each party sends its name at beginning of connection.
+Each party sends messages at random time.
+Any string is encoded as 2 bytes ASCII hex length and content.
+
+Name := String
+Message := String
+String := Length Content
+Length := [0-F][0-F] # ASCII Hex
+Content := Char * length
+Char := . # Any character

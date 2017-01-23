@@ -1,0 +1,59 @@
+MULTICAST CHAT WITH IMPERSONATION PREVENTION
+============================================
+
+Multicast chat with impersonation prevention.
+
+Demonstrate the "layer" concept within communication.
+
+Provide development patterns for multi-protocol processing.
+
+Demonstrate logging pattern.
+
+   Terminal
+       |
+       |
+       V
+      Chat     Registration
+        \        /
+         |      |
+         V      V
+         Ethernet
+            |
+            |
+            V
+         Physical
+
+
+EXECUTION
+---------
+
+> - Windows
+$ - *NIX
+
+By being in specific directory:
+
+> cd [location of multicast_chat parent]
+> python -m multicast_chat [args]
+
+$ cd [location of multicast_chat parent]
+$ python -m multicast_chat [args]
+
+By modifying python path:
+
+> set PYTHONPATH=[location of multicast_chat parent]
+> python -m multicast_chat [args]
+
+$ PYTHONPATH=[location of multicast_chat parent] \
+    python -m multicast_chat [args]
+
+Your own project in different location:
+
+> set PYTHONPATH=[location of my_multicast_chat parent];[location of network-course]
+> python -m multicast_chat [args]
+
+$ PYTHONPATH=[location of my_multicast_chat parent];[location of network-course] \
+    python -m my_multicast_chat [ars]
+
+Use --help to see usage example of minimal usage:
+
+> python -m multicast_chat --mac-local=04:c8:80:89:4e:51 --name=user1

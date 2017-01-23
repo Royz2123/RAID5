@@ -1,0 +1,39 @@
+TCP CHAT
+========
+
+A simple TCP Chat.
+
+
+EXECUTION
+---------
+
+> - Windows
+$ - *NIX
+
+By being in specific directory:
+
+> cd [location of tcp_chat parent]
+> python -m tcp_chat [args]
+
+$ cd [location of tcp_chat parent]
+$ python -m tcp_chat [args]
+
+By modifying python path:
+
+> set PYTHONPATH=[location of tcp_chat parent]
+> python -m tcp_chat [args]
+
+$ PYTHONPATH=[location of tcp_chat parent] \
+    python -m tcp_chat [args]
+
+Your own project in different location:
+
+> set PYTHONPATH=[location of my_tcp_chat parent];[location of network-course]
+> python -m tcp_chat [args]
+
+$ PYTHONPATH=[location of my_tcp_chat parent];[location of network-course] \
+    python -m my_tcp_chat [ars]
+
+Use --help to see usage example of minimal usage:
+
+> python -m tcp_chat --name=user1 --mode=passive

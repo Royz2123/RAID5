@@ -1,0 +1,28 @@
+SIMPLE HTTP CLIENT/SERVER
+=========================
+
+EXECUTION
+---------
+
+> - Windows
+$ - *NIX
+
+By being in specific directory:
+
+> cd [location of http parent]
+> python -m http.client [args]
+> python -m http.server [args]
+
+$ cd [location of http parent]
+$ python -m http.client [args]
+$ python -m http.server [args]
+
+By modifying python path:
+
+> set PYTHONPATH=[location of http parent]
+> python -m http.client [args]
+> python -m http.server [args]
+
+$ PYTHONPATH=[location of http parent] \
+    python -m http.client [args]
+    python -m http.server [args]

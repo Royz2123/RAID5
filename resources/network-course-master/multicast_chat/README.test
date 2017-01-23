@@ -1,0 +1,46 @@
+TEST
+====
+
+> - Windows
+$ - *NIX
+
+PYTHON COMPATIBILITY
+--------------------
+
+This project is compatible with both python-2.7 and python-3.
+
+UNIT TESTS EXECUTION
+--------------------
+
+By being in specific directory:
+
+> cd [location of multicast_chat]
+> python -m unittest discover
+
+$ cd [location of multicast_chat]
+$ python -m unittest discover
+
+By modifying python path:
+
+> set PYTHONPATH=[location of multicast_chat parent]
+> python -m unittest discover -s [location of multicast_chat parent]
+
+$ PYTHONPATH=[location of multicast_chat parent] \
+    python -m unittest discover -s [location of multicast_chat parent]
+
+Your own project in different location:
+
+> set PYTHONPATH=[location of my_multicast_chat parent];[location of network-course]
+> python -m unittest discover -s [location of multicast_chat parent]
+
+$ PYTHONPATH=[location of my_multicast_chat parent];[location of network-course] \
+    python -m unittest discover -s [location of my_multicast_chat parent]
+
+FORMAT CHECK EXECUTION
+----------------------
+
+> python -m pyflakes *.py
+> python -m pep8 *.py
+
+$ pyflakes *.py
+$ pep8 *.py

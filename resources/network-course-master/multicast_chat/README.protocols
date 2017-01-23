@@ -1,0 +1,38 @@
+PROTOCOLS
+=========
+
+ETHERNET PROTOCOL
+-----------------
+Ethernet II
+https://en.wikipedia.org/wiki/Ethernet_frame
+
+MAC destination - 6 octets
+MAC source - 6 octets
+Ethertype - 2 octets
+    Integer big endian
+Payload - max 1500 octets
+
+CHAT PROTOCOL
+-------------
+
+Ethertype: 0x1001
+
+Name - 10 octets
+    Space padded.
+Message - max octets
+
+Multicast based protocol.
+
+REGISTRATION PROTOCOL
+---------------------
+
+Ethertype: 0x1002
+
+Command - 1 octets
+    0 - allocate
+    1 - release
+Name - 10 octets
+    Space padded.
+
+Broadcast based protocol, 2 second intervals.
+Registration time to live: 60 seconds.
