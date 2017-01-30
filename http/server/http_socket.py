@@ -116,18 +116,12 @@ class HttpSocket(AsyncSocket):
     def __init__(self, socket, state):
         super(HttpSocket, self).__init__(socket)
         self._state = state
-        self._request = ""
-        self._args = {}
-        self._headers = {}
+        self._request_context = {
+            "headers" : {},
+            "method": "uknown",
+            "uri": "uknown"
+        }        #important stuff from request
         self._service = ""
-
-    @property
-    def args(self):
-        return self._args
-
-    @args.setter
-    def args(self, a):
-        self._args = a
 
     @property
     def state(self):
@@ -138,21 +132,12 @@ class HttpSocket(AsyncSocket):
         self._state = s
 
     @property
-    def request(self):
-        return self._request
+    def request_context(self):
+        return self._request_context
 
-    @request.setter
-    def request(self, r):
-        self._request = r
-
-    @property
-    def headers(self):
-        return self._headers
-
-    @headers.setter
-    def headers(self, h):
-        self._headers = h
-
+    @request_context.setter
+    def request_context(self, r):
+        self._request_context = r
 
     #state functions
     def connection_state(self, socket_data):
@@ -191,10 +176,14 @@ class HttpSocket(AsyncSocket):
             return False
 
         #got all the headers, process them
+        self._request_context["headers"] = {}
         for index in range(len(lines)):
             line = lines[index]
 
-            if len(self._headers.items()) > constants.MAX_NUMBER_OF_HEADERS:
+            if (
+                len(self._request_context["headers"].items()) >
+                constants.MAX_NUMBER_OF_HEADERS
+            ):
                 raise RuntimeError('Too many headers')
 
             if line == "":
@@ -203,18 +192,24 @@ class HttpSocket(AsyncSocket):
 
             k, v = util.parse_header(line)
             if k in self._service.wanted_headers:
-                self._headers[k] = v
-
+                self._request_context["headers"][k] = v
+        self._service.before_content(self)
 
     def content_state(self, socket_data, base):
-        if "Content-Length" not in self._headers:
+        if "Content-Length" not in self._request_context["headers"].keys():
             return True
 
-        content_length = int(self._headers["Content-Length"])
+        #update content_length
+        self._request_context["headers"]["Content-Length"] = (
+            int(self._request_context["headers"]["Content-Length"]) -
+            len(self._recvd_data)
+        )
+        self.service.handle_content(self._recvd_data)
+        self._recvd_data = ""
 
-        if len(self._recvd_data) > content_length:
+        if self._request_context["headers"]["Content-Length"] < 0:
             raise RuntimeError("Too much content")
-        elif len(self._recvd_data) < content_length:
+        elif self._request_context["headers"]["Content-Length"] > 0:
             return False
         return True
 
@@ -316,12 +311,10 @@ class HttpSocket(AsyncSocket):
                 self._state = HttpSocket.states[self._state]["next"]
 
         except IOError as e:
+            if e.errno != errno.ENOENT:
+                raise
             traceback.print_exc()
-            if e.errno == errno.ENOENT:
-                self.add_status(404, e)
-            else:
-                self.add_status(500, e)
-            self.closing_state(socket_data)
+            self.add_status(404, e)
         except Exception as e:
             traceback.print_exc()
             self.add_status(500, e)
@@ -347,16 +340,18 @@ class HttpSocket(AsyncSocket):
             "\nHttpSocket Object\n"
             "socket: %s\n"
             "state: %s\n"
-            "request: %s\n"
+            "method: %s\n"
+            "uri %s\n"
             "headers: %s\n"
             "service: %s\n"
-            "recvd_data: %s\n"
+            "recvd_data: \n\nSTART OF DATA\n\n%s\n\nEND OF DATA\n\n"
             "data_to_send: %s\n"
         ) % (
             self._socket,
             self._state,
-            self._request,
-            self._headers,
+            self._request_context["method"],
+            self._request_context["uri"],
+            self._request_context["headers"],
             self._service,
             self._recvd_data,
             self._data_to_send,
@@ -379,39 +374,18 @@ class HttpSocket(AsyncSocket):
         ).encode('utf-8')
         self._data_to_send += ('%s' % extra).encode('utf-8')
 
-    def handle_request(self, req, base):
-        self.update_request(req)
 
-        parse = urlparse.urlparse(self._request[1])
-        self._args = urlparse.parse_qs(parse.query)
+    def handle_request(self, request, base):
+        req_comps = request.split(' ', 2)
 
-        if parse.path in services.SERVICES.keys():
-            if len(self._args.keys()):
-                self._service = services.SERVICES[parse.path](self._args)
-            else:
-                self._service = services.SERVICES[parse.path]()
-
-        else:
-            file_name = os.path.normpath(
-                '%s%s' % (
-                    base,
-                    os.path.normpath(self._request[1]),
-                )
-            )
-            #if file_name[:len(base)+1] != base + '\\':
-            #    raise RuntimeError("Malicious URI %s" % self._request[1])
-
-            self._service = services.GetFileService(file_name)
-
-    def update_request(self, buf):
-        req_comps = buf.split(' ', 2)
+        #check validity
         if req_comps[2] != constants.HTTP_SIGNATURE:
             raise RuntimeError('Not HTTP protocol')
         if len(req_comps) != 3:
             raise RuntimeError('Incomplete HTTP protocol')
 
         method, uri, signature = req_comps
-        if method != 'GET' and  method != 'POST':
+        if method not in ("GET", "POST"):
             raise RuntimeError(
                 "HTTP unsupported method '%s'" % method
             )
@@ -419,6 +393,34 @@ class HttpSocket(AsyncSocket):
         if not uri or uri[0] != '/' or '\\' in uri:
             raise RuntimeError("Invalid URI")
 
-        self._request = req_comps
+        #update request
+        self._request_context["method"] = method
+        self._request_context["uri"] = uri
+
+        #choose service
+        parse = urlparse.urlparse(self._request_context["uri"])
+        self._request_context["args"] = urlparse.parse_qs(parse.query)
+
+        if parse.path in services.SERVICES.keys():
+            if len(self._request_context["args"].keys()):
+                self._service = services.SERVICES[parse.path](self._request_context["args"])
+            else:
+                self._service = services.SERVICES[parse.path]()
+
+        elif self._request_context["method"] == "POST":
+            self._service = services.FileFormService()
+
+        else:
+            file_name = os.path.normpath(
+                '%s%s' % (
+                    base,
+                    os.path.normpath(self._request_context["uri"]),
+                )
+            )
+            #if file_name[:len(base)+1] != base + '\\':
+            #    raise RuntimeError("Malicious URI %s" % self._request[1])
+
+            self._service = services.GetFileService(file_name)
+
 
 # vim: expandtab tabstop=4 shiftwidth=4

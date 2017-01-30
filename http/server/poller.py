@@ -73,6 +73,8 @@ class AsyncServer():
                 #handle events from poller
                 for curr_fd, event in poll_obj.poll(self._poll_timeout):
                     entry = self._socket_data[curr_fd]
+                    print self._socket_data
+
                     try:
                         #socket has close
                         if event & (select.POLLHUP | select.POLLERR):

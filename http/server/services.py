@@ -27,6 +27,13 @@ except ImportError:
     urlparse = urllib.parse
 
 
+(
+    START_STATE,
+    HEADERS_STATE,
+    CONTENT_STATE,
+    END_STATE,
+) = range(4)
+
 MIME_MAPPING = {
     'html': 'text/html',
     'png': 'image/png',
@@ -37,7 +44,6 @@ MIME_MAPPING = {
 class Service(object):
     def __init__(
         self,
-        file_name,
         wanted_headers,
         wanted_args = [],
         args = []
@@ -109,6 +115,9 @@ class Service(object):
     def before_terminate(self, entry):
         return True
 
+    def handle_content(self, entry, content):
+        pass
+
     def check_args(self):
         for arg in self._wanted_args:
             if arg not in self._args.keys():
@@ -118,7 +127,7 @@ class Service(object):
 
 class GetFileService(Service):
     def __init__(self, file_name):
-        Service.__init__(self, file_name, ["Content-Length"])
+        Service.__init__(self, ["Content-Length"])
         self._file_name = file_name
         self._fd = None
 
@@ -127,7 +136,7 @@ class GetFileService(Service):
             self._fd = os.open(self._file_name, os.O_RDONLY, 0o666)
         except Exception as e:
             self._response_status = 404
-            entry.closing_state()
+            raise RuntimeError("Problem opening file")
         return True
 
     def before_response_headers(self, entry):
@@ -167,7 +176,9 @@ class GetFileService(Service):
 
 class TimeService(Service):
     def __init__(self):
-        Service.__init__(self, "", [])
+        Service.__init__(self, [])
+        #super(TimeService, self).__init__(self, [])
+
 
     def before_response_headers(self, entry):
         self._response_headers = {
@@ -179,7 +190,8 @@ class TimeService(Service):
 
 class MulService(Service):
     def __init__(self, args):
-        Service.__init__(self, "", [], ["a", "b"], args)
+        Service.__init__(self, [], ["a", "b"], args)
+        #super(MulService, self).__init__(self, [], ["a", "b"], args)
 
     def before_response_status(self, entry):
         if not self.check_args():
@@ -195,6 +207,133 @@ class MulService(Service):
                 "Content-Length" : len(resp)
             }
             self._response_content = resp
+        return True
+
+class FileFormService(Service):
+    def __init__(self):
+        Service.__init__(self, ["Content-Type"])
+        #super(FileFormService, self).__init__(self, ["Content-Type"])
+        self._content = ""
+        self._boundary = None
+        self._status = START_STATE
+        self._fd = None
+
+    def before_content(self, entry):
+        content_type = entry.request_context["headers"]["Content-Type"]
+        if (
+            content_type.find("multipart/form-data") == -1 or
+            content_type.find("boundary") == -1
+        ):
+            raise RuntimeError("Bad Form Request")
+        self._boundary = content_type.split("boundary=")[1]
+
+    def start_state(self):
+        if self._content.find("--%s--" % self._boundary) == -1:
+            return False
+        return True
+
+    def headers_state(self):
+        lines = block.split(constants.CRLF_BIN)
+        if "" not in lines:
+            raise RuntimeError("Invalid headers")
+
+        #got all the headers, process them
+        headers = {}
+        for index in range(len(lines)):
+            line = lines[index]
+            if line == "":
+                self._content = constants.CRLF_BIN.join(lines[index + 1:])
+                break
+
+            k, v = util.parse_header(line)
+            headers[k] = v
+
+        if "content-disposition" not in headers.keys():
+            raise RuntimeError("Missing content-disposition header")
+
+        self._filename = None
+        disposition_fields = headers["content-disposition"].split("; ")
+        for field in disposition_fields:
+            name, info = field.split('=')
+
+            if name == "filename":
+                self._filename = info
+
+        try:
+            self._fd = os.open(constants.TMP_FILE_NAME, os.O_WRONLY | os.O_CREAT, 0o666)
+        except Exception as e:
+            self._response_status = 404
+            raise RuntimeError("Problem opening file")
+        return True
+
+    def content_state(self):
+        next_state = 0
+        if self._content.find("--%s--" % self._boundary) != -1:
+            next_state = 2
+        if self._content.find("--%s%s" % (
+            self._boundary,
+            constants.CRLF_BIN
+        )) != -1:
+            next_state = 1
+
+        if self._filename is not None:
+            try:
+                util.write(self._fd, self._content)
+            except Exception as e:
+                if e.errno in (errno.EWOULDBLOCK, errno.EAGAIN):
+                    raise
+
+        self._content = self.content[:self._content.find(
+            "--%s%s" % (
+                self._boundary,
+                constants.CRLF_BIN
+            )
+        )]
+
+        #if finished - need to check ambiguity
+        if next_state:
+            os.rename(constants.TMP_FILE_NAME, self._filename)
+
+        return next_state
+
+
+    BOUNDARY_STATES = {
+        START_STATE: {
+            "function": start_state,
+            "next": HEADERS_STATE,
+        },
+        HEADERS_STATE: {
+            "function": headers_state,
+            "next": CONTENT_STATE
+        },
+        CONTENT_STATE: {
+            "function": content_state,
+            "next": headers_state,
+        }
+    }
+
+    def handle_content(self, content):
+        while True:
+            next_state = FileFormService.BOUNDARY_STATES[self._state]["function"]()
+            if (
+                next_state == 2 or
+                self._state == CONTENT_STATE and next_state == 2
+            ):
+                break
+            self._state = FileFormService.BOUNDARY_STATES[self._state]["next"]
+
+    def before_response_headers(self, entry):
+        self._response_content = "File was uploaded successfully"
+        self._response_headers = {
+            "Content-Length" : len(self._response_content),
+        }
+        return True
+
+    def before_response_content(
+        self,
+        entry,
+        max_buffer = constants.BLOCK_SIZE
+    ):
         return True
 
 
