@@ -188,12 +188,14 @@ class HttpSocket(AsyncSocket):
 
             if line == "":
                 self._recvd_data = constants.CRLF_BIN.join(lines[index + 1:])
-                return True
+                break
 
             k, v = util.parse_header(line)
             if k in self._service.wanted_headers:
                 self._request_context["headers"][k] = v
+
         self._service.before_content(self)
+        return True
 
     def content_state(self, socket_data, base):
         if "Content-Length" not in self._request_context["headers"].keys():
@@ -204,7 +206,7 @@ class HttpSocket(AsyncSocket):
             int(self._request_context["headers"]["Content-Length"]) -
             len(self._recvd_data)
         )
-        self.service.handle_content(self._recvd_data)
+        self._service.handle_content(self._recvd_data)
         self._recvd_data = ""
 
         if self._request_context["headers"]["Content-Length"] < 0:
@@ -294,7 +296,7 @@ class HttpSocket(AsyncSocket):
         }
     }
 
-    def recv_handler(self, socket_data, base):
+    def on_read(self, socket_data, base):
         try:
             if self._state == LISTEN_STATE:
                 self.connection_state(socket_data)
@@ -320,10 +322,10 @@ class HttpSocket(AsyncSocket):
             self.add_status(500, e)
             self.closing_state(socket_data)
 
-    def close_handler(self):
+    def on_error(self):
         self.close_socket()
 
-    def send_handler(self, max_buffer, socket_data = None):
+    def on_send(self, max_buffer, socket_data = None):
         while (self._state < CLOSING_STATE and (
             HttpSocket.states[self._state]["function"](
                 self,
@@ -333,6 +335,24 @@ class HttpSocket(AsyncSocket):
             self._state = HttpSocket.states[self._state]["next"]
         self.send_buf()
 
+    def get_events(self, socket_data, max_connections, max_buffer):
+        event = select.POLLERR
+        if (
+            self._state == LISTEN_STATE and
+            len(socket_data) < max_connections
+        ) or (
+            self._state >= REQUEST_STATE and
+            self._state <= CONTENT_STATE and
+            len(self._recvd_data) < max_buffer
+        ):
+            event |= select.POLLIN
+
+        if (
+            self._state >= RESPONSE_STATUS_STATE and
+            self._state <= RESPONSE_CONTENT_STATE
+        ):
+            event |= select.POLLOUT
+        return event
 
     #"util"
     def __repr__(self):

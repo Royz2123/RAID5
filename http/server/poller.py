@@ -73,20 +73,19 @@ class AsyncServer():
                 #handle events from poller
                 for curr_fd, event in poll_obj.poll(self._poll_timeout):
                     entry = self._socket_data[curr_fd]
-                    print self._socket_data
 
                     try:
                         #socket has close
                         if event & (select.POLLHUP | select.POLLERR):
-                            raise RuntimeError()
+                            entry.on_error()
 
                         #socket recvd data
                         if event & select.POLLIN:
-                            entry.recv_handler(self._socket_data, self._base)
+                            entry.on_read(self._socket_data, self._base)
 
                         #socket has send
                         if event & select.POLLOUT:
-                            entry.send_handler(self._max_buffer, self._socket_data)
+                            entry.on_send(self._max_buffer, self._socket_data)
 
                     except util.Disconnect as e:
                         entry.closing_state(self._socket_data)
@@ -100,25 +99,14 @@ class AsyncServer():
         poller = self._poll_type()
 
         for fd, entry in self._socket_data.items():
-            event = select.POLLERR
-
-            if (
-                entry._state == http_socket.LISTEN_STATE and
-                len(self._socket_data) < self._max_connections
-            ) or (
-                entry._state >= http_socket.REQUEST_STATE and
-                entry._state <= http_socket.CONTENT_STATE and
-                len(entry._recvd_data) < self._max_buffer
-            ):
-                event |= select.POLLIN
-
-            if (
-                entry._state >= http_socket.RESPONSE_STATUS_STATE and
-                entry._state <= http_socket.RESPONSE_CONTENT_STATE
-            ):
-                event |= select.POLLOUT
-
-            poller.register(entry._socket.fileno(), event)
+            poller.register(
+                entry._socket.fileno(),
+                entry.get_events(
+                    self._socket_data,
+                    self._max_connections,
+                    self._max_buffer
+                )
+            )
         return poller
 
     @property
@@ -135,12 +123,12 @@ class AsyncServer():
                 entry._state == http_socket.CLOSING_STATE and
                 entry._data_to_send == ""
             ):
-                entry.close_handler()
+                entry.on_error()
                 del self._socket_data[fd]
 
     def close_all(self):
         for fd, entry in self._socket_data.items()[:]:
-            entry.close_handler()
+            entry.on_error()
             del self._socket_data[fd]
 
 

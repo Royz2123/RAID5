@@ -48,7 +48,7 @@ class Service(object):
         wanted_args = [],
         args = []
     ):
-        self._wanted_headers = wanted_headers
+        self._wanted_headers = wanted_headers + ["Content-Length"]
         self._wanted_args = wanted_args
         self._response_headers = {}
         self._response_status = 200
@@ -103,6 +103,9 @@ class Service(object):
     def response_content(self, r_c):
         self._response_content = r_c
 
+    def before_content(self, entry):
+        return True
+
     def before_response_status(self, entry):
         return True
 
@@ -127,7 +130,7 @@ class Service(object):
 
 class GetFileService(Service):
     def __init__(self, file_name):
-        Service.__init__(self, ["Content-Length"])
+        Service.__init__(self, [])
         self._file_name = file_name
         self._fd = None
 
@@ -215,7 +218,7 @@ class FileFormService(Service):
         #super(FileFormService, self).__init__(self, ["Content-Type"])
         self._content = ""
         self._boundary = None
-        self._status = START_STATE
+        self._state = START_STATE
         self._fd = None
 
     def before_content(self, entry):
@@ -228,14 +231,20 @@ class FileFormService(Service):
         self._boundary = content_type.split("boundary=")[1]
 
     def start_state(self):
-        if self._content.find("--%s--" % self._boundary) == -1:
+        if self._content.find("--%s" % self._boundary) == -1:
             return False
+        self._content = self._content.split(
+            "--%s%s" % (
+                self._boundary,
+                constants.CRLF_BIN
+            ), 1
+        )[1]
         return True
 
     def headers_state(self):
-        lines = block.split(constants.CRLF_BIN)
+        lines = self._content.split(constants.CRLF_BIN)
         if "" not in lines:
-            raise RuntimeError("Invalid headers")
+            return False
 
         #got all the headers, process them
         headers = {}
@@ -248,49 +257,59 @@ class FileFormService(Service):
             k, v = util.parse_header(line)
             headers[k] = v
 
-        if "content-disposition" not in headers.keys():
+        if "Content-Disposition" not in headers.keys():
             raise RuntimeError("Missing content-disposition header")
 
         self._filename = None
-        disposition_fields = headers["content-disposition"].split("; ")
+        disposition_fields = headers["Content-Disposition"].split("; ")[1:]
         for field in disposition_fields:
-            name, info = field.split('=')
+            name, info = field.split('=', 1)
 
             if name == "filename":
                 self._filename = info
 
         try:
-            self._fd = os.open(constants.TMP_FILE_NAME, os.O_WRONLY | os.O_CREAT, 0o666)
+            self._fd = os.open(constants.TMP_FILE_NAME, os.O_RDWR | os.O_CREAT, 0o666)
         except Exception as e:
-            self._response_status = 404
             raise RuntimeError("Problem opening file")
         return True
 
-    def content_state(self):
-        next_state = 0
-        if self._content.find("--%s--" % self._boundary) != -1:
-            next_state = 2
-        if self._content.find("--%s%s" % (
+    def end_boundary(self):
+        return "--%s--%s" % (
             self._boundary,
             constants.CRLF_BIN
-        )) != -1:
-            next_state = 1
+        )
 
+    def mid_boundary(self):
+        return "--%s%s" % (
+            self._boundary,
+            constants.CRLF_BIN
+        )
+
+    def content_state(self):
+        if self._content.find(self.end_boundary()) != -1:
+            buf = self._content.split(self.end_boundary(), 1)[0]
+            next_state = 2
+        elif self._content.find(self.mid_boundary()) != -1:
+            buf = self._content.split(self.mid_boundary(), 1)[0]
+            next_state = 1
+        else:
+            buf = self._content
+            next_state = 0
+
+        self._content = self._content[len(buf):]
         if self._filename is not None:
             try:
-                util.write(self._fd, self._content)
+                while buf:
+                    buf = buf[os.write(self._fd, buf):]
             except Exception as e:
                 if e.errno in (errno.EWOULDBLOCK, errno.EAGAIN):
                     raise
+        self._content = buf + self._content
 
-        self._content = self.content[:self._content.find(
-            "--%s%s" % (
-                self._boundary,
-                constants.CRLF_BIN
-            )
-        )]
+        if next_state == 1 and buf == "":
+            self._content = self._content.split(self.end_boundary(), 1)[1]
 
-        #if finished - need to check ambiguity
         if next_state:
             os.rename(constants.TMP_FILE_NAME, self._filename)
 
@@ -308,16 +327,17 @@ class FileFormService(Service):
         },
         CONTENT_STATE: {
             "function": content_state,
-            "next": headers_state,
+            "next": HEADERS_STATE,
         }
     }
 
     def handle_content(self, content):
+        self._content += content
         while True:
-            next_state = FileFormService.BOUNDARY_STATES[self._state]["function"]()
+            next_state = FileFormService.BOUNDARY_STATES[self._state]["function"](self)
             if (
-                next_state == 2 or
-                self._state == CONTENT_STATE and next_state == 2
+                next_state == 0 or
+                (self._state == CONTENT_STATE and next_state == 2)
             ):
                 break
             self._state = FileFormService.BOUNDARY_STATES[self._state]["next"]

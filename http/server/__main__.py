@@ -91,9 +91,6 @@ def main():
     #if args.daemon:
     #    daemonize()
 
-    if args.poll_type not in POLL_TYPE.keys():
-        raise util.InvalidArguments("Invalid poll type")
-
     server = poller.AsyncServer(
         args.bind_address,
         args.bind_port,
@@ -102,6 +99,7 @@ def main():
         args.max_connections,
         args.max_buffer
     )
+    logging.debug("Server started running")
     server.run()
 
 
