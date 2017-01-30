@@ -94,7 +94,7 @@ def main():
     if args.poll_type not in POLL_TYPE.keys():
         raise util.InvalidArguments("Invalid poll type")
 
-    server = poller.Async_Server(
+    server = poller.AsyncServer(
         args.bind_address,
         args.bind_port,
         args.base,

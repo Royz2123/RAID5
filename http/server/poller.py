@@ -4,6 +4,7 @@ import contextlib
 import datetime
 import errno
 import fcntl
+import logging
 import os
 import socket
 import select
@@ -24,18 +25,6 @@ except ImportError:
     # try python-3 module name
     import urllib.parse
     urlparse = urllib.parse
-
-
-
-class Poller(object):
-    def __init__():
-        self._poller = select.poll()
-
-    def register(fd, event):
-        self._poller.register(fd, event)
-
-    def poll():
-        return self._poller.poll()
 
 
 class AsyncServer():
@@ -75,8 +64,8 @@ class AsyncServer():
             )
         }
 
-    def run():
-        while len(server.socket_data.items()):
+    def run(self):
+        while len(self._socket_data.items()):
             try:
                 self.close_needed()
                 poll_obj = self._create_poller()
@@ -102,18 +91,18 @@ class AsyncServer():
 
             except Exception as e:
                 logging.critical(traceback.print_exc())
-                entry.closing_state(self._socket_data)
+                self.close_all()
 
 
     def _create_poller(self):
-        poller = self._poll_type.__init__()
+        poller = self._poll_type()
 
         for fd, entry in self._socket_data.items():
             event = select.POLLERR
 
             if (
                 entry._state == http_socket.LISTEN_STATE and
-                len(socket_data) < self._max_connections
+                len(self._socket_data) < self._max_connections
             ) or (
                 entry._state >= http_socket.REQUEST_STATE and
                 entry._state <= http_socket.CONTENT_STATE and
@@ -146,6 +135,19 @@ class AsyncServer():
             ):
                 entry.close_handler()
                 del self._socket_data[fd]
+
+    def close_all(self):
+        for fd, entry in self._socket_data.items()[:]:
+            entry.close_handler()
+            del self._socket_data[fd]
+
+
+class Poller():
+    def __init__(self):
+        self._poller = select.poll()
+
+    def register(self, fd, event):
+        self._poller.register(fd, event)
 
     def poll(self, timeout):
         return self._poller.poll(timeout)
