@@ -1,5 +1,8 @@
-SIMPLE HTTP CLIENT/SERVER
+SIMPLE HTTP ASYNCHRONUS CLIENT/SERVER
 =========================
+
+- support for both GET and POST http methods (in the future)
+- support for both SELECT and POLL poll objects (in the future)
 
 EXECUTION
 ---------
