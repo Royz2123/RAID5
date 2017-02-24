@@ -99,7 +99,6 @@ def main():
         args.max_connections,
         args.max_buffer
     )
-    logging.debug("Server started running")
     server.run()
 
 

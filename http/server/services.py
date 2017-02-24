@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-import argparse
-import contextlib
 import datetime
 import errno
-import fcntl
+import logging
 import os
 import socket
 import select
-import sys
-import time
 import traceback
 
 import http_socket
@@ -119,7 +115,7 @@ class Service(object):
         return True
 
     def handle_content(self, entry, content):
-        pass
+        return True
 
     def check_args(self):
         for arg in self._wanted_args:
@@ -129,29 +125,32 @@ class Service(object):
 
 
 class GetFileService(Service):
-    def __init__(self, file_name):
+    def __init__(self, filename):
         Service.__init__(self, [])
-        self._file_name = file_name
+        self._filename = filename
         self._fd = None
 
     def before_response_status(self, entry):
         try:
-            self._fd = os.open(self._file_name, os.O_RDONLY, 0o666)
-        except Exception as e:
+            self._fd = os.open(self._filename, os.O_RDONLY, 0o666)
+            self._response_headers = {
+                "Content-Length" : os.fstat(self._fd).st_size,
+                "Content-Type" : MIME_MAPPING.get(
+                    os.path.splitext(
+                        self._filename
+                    )[1].lstrip('.'),
+                    'application/octet-stream',
+                )
+            }
+        except IOError as e:
+            if e.errno != errno.ENOENT:
+                raise
+            logging.error("%s :\t File not found " % entry)
             self._response_status = 404
-            raise RuntimeError("Problem opening file")
-        return True
+        except Exception as e:
+            logging.error("%s :\t %s " % (entry, e))
+            self._response_status = 500
 
-    def before_response_headers(self, entry):
-        self._response_headers = {
-            "Content-Length" : os.fstat(self._fd).st_size,
-            "Content-Type" : MIME_MAPPING.get(
-                os.path.splitext(
-                    self._file_name
-                )[1].lstrip('.'),
-                'application/octet-stream',
-            )
-        }
         return True
 
     def before_response_content(
@@ -159,7 +158,10 @@ class GetFileService(Service):
         entry,
         max_buffer = constants.BLOCK_SIZE
     ):
-        buf = True
+        if self._response_status != 200:
+            return True
+
+        buf = ""
         try:
             while len(entry.data_to_send) < max_buffer:
                 buf = os.read(self._fd, max_buffer)
@@ -170,11 +172,143 @@ class GetFileService(Service):
             if buf:
                 return False
             os.close(self._fd)
-            return True
 
-        except socket.error, e:
-            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+        except Exception as e:
+            if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
                 raise
+            logging.debug(
+                "%s :\t Still reading, current response size: %s "
+                % (
+                    entry,
+                    len(self._response_content)
+                )
+            )
+        return True
+
+
+class GetBlockService(Service):
+    BLOCK_SIZE = 4096
+
+    def __init__(self, args):
+        Service.__init__(self, [], ["blocknum"], args)
+        self._fd = None
+
+    def before_response_status(self, entry):
+        try:
+            self._fd = os.open(constants.DISK_FILE, os.O_RDONLY, 0o666)
+
+            if not self.check_args():
+                raise RuntimeError("Invalid args")
+
+            os.lseek(
+                self._fd,
+                (
+                    GetBlockService.BLOCK_SIZE
+                    * int(self._args["blocknum"][0])
+                ),
+                os.SEEK_SET,
+            )
+
+            self._response_headers = {
+                "Content-Length" : min(
+                    str(GetBlockService.BLOCK_SIZE),
+                    abs(
+                        os.fstat(self._fd).st_size
+                        - os.lseek(self._fd, 0, os.SEEK_CUR)
+                    )
+                )
+            }
+        except IOError as e:
+            if e.errno != errno.ENOENT:
+                raise
+            logging.error("%s :\t File not found " % entry)
+            self._response_status = 404
+        except Exception as e:
+            logging.error("%s :\t %s " % (entry, e))
+            self._response_status = 500
+
+        return True
+
+    def before_response_content(self, entry, max_buffer):
+        try:
+            while len(self._response_content) < GetBlockService.BLOCK_SIZE:
+                buf = os.read(
+                    self._fd,
+                    (
+                        GetBlockService.BLOCK_SIZE
+                        - len(self._response_content)
+                    )
+                )
+                if not buf:
+                    break
+                self._response_content += buf
+            os.close(self._fd)
+
+        except Exception as e:
+            if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
+                raise
+            logging.debug(
+                "%s :\t Still reading, current response size: %s "
+                % (
+                    entry,
+                    len(self._response_content)
+                )
+            )
+        return True
+
+
+class SetBlockService(Service):
+    BLOCK_SIZE = 4096
+
+    def __init__(self, args):
+        Service.__init__(self, [], ["blocknum"], args)
+        self._content = ""
+        self._fd = None
+
+    def before_response_status(self, entry):
+        try:
+            self._fd = os.open(constants.DISK_FILE, os.O_RDONLY, 0o666)
+
+            if not self.check_args():
+                raise RuntimeError("Invalid args")
+
+            os.lseek(
+                self._fd,
+                (
+                    GetBlockService.BLOCK_SIZE
+                    * int(self._args["blocknum"][0])
+                ),
+                os.SEEK_SET,
+            )
+
+            self._response_headers = {
+                "Content-Length" : "0",
+            }
+
+        except IOError as e:
+            if e.errno != errno.ENOENT:
+                raise
+            logging.error("%s :\t File not found " % entry)
+            self._response_status = 404
+        except Exception as e:
+            logging.error("%s :\t %s " % (entry, e))
+            self._response_status = 500
+        return True
+
+
+    def handle_content(self, entry, content):
+        self._content += content
+        try:
+            while self._content:
+                self._content = self._content[
+                    os.write(self._fd, self._content):
+                ]
+        except Exception as e:
+            if e.errno not in (errno.EWOULDBLOCK, errno.EAGAIN):
+                raise
+            logging.debug("%s :\t Still writing to disk" % entry)
+            return False
+        return True
 
 
 class TimeService(Service):
@@ -182,12 +316,18 @@ class TimeService(Service):
         Service.__init__(self, [])
         #super(TimeService, self).__init__(self, [])
 
-
     def before_response_headers(self, entry):
         self._response_headers = {
             "Content-Length" : len(str(datetime.datetime.now())),
         }
         self._response_content = str(datetime.datetime.now())
+        logging.debug(
+            "%s :\t sending content: %s"
+             % (
+                entry,
+                self._response_content
+            )
+        )
         return True
 
 
@@ -200,17 +340,20 @@ class MulService(Service):
         if not self.check_args():
             self._response_status = 500
 
-    def before_response_headers(self, entry):
-        if self._response_status == 200:
-            resp = str(
-                int(self._args['a'][0]) *
-                int(self._args['b'][0])
+        self._response_content = str(
+            int(self._args['a'][0]) *
+            int(self._args['b'][0])
+        )
+        self._response_headers = {
+            "Content-Length" : len(self._response_content)
+        }
+        logging.debug(
+            "%s :\t sending content: %s"
+             % (
+                entry,
+                self._response_content
             )
-            self._response_headers = {
-                "Content-Length" : len(resp)
-            }
-            self._response_content = resp
-        return True
+        )
 
 class FileFormService(Service):
     def __init__(self):
@@ -267,11 +410,6 @@ class FileFormService(Service):
 
             if name == "filename":
                 self._filename = info
-
-        try:
-            self._fd = os.open(constants.TMP_FILE_NAME, os.O_RDWR | os.O_CREAT, 0o666)
-        except Exception as e:
-            raise RuntimeError("Problem opening file")
         return True
 
     def end_boundary(self):
@@ -305,16 +443,19 @@ class FileFormService(Service):
             except Exception as e:
                 if e.errno in (errno.EWOULDBLOCK, errno.EAGAIN):
                     raise
-        self._content = buf + self._content
+            finally:
+                self._content = buf + self._content
 
         if next_state == 1 and buf == "":
             self._content = self._content.split(self.end_boundary(), 1)[1]
 
         if next_state:
-            os.rename(constants.TMP_FILE_NAME, self._filename)
+            os.rename(
+                constants.TMP_FILE_NAME,
+                os.path.normpath(self._filename)
+            )
 
         return next_state
-
 
     BOUNDARY_STATES = {
         START_STATE: {
@@ -331,41 +472,50 @@ class FileFormService(Service):
         }
     }
 
-    def handle_content(self, content):
-        self._content += content
-        while True:
-            next_state = FileFormService.BOUNDARY_STATES[self._state]["function"](self)
-            if (
-                next_state == 0 or
-                (self._state == CONTENT_STATE and next_state == 2)
-            ):
-                break
-            self._state = FileFormService.BOUNDARY_STATES[self._state]["next"]
+    def handle_content(self, entry, content):
+        try:
+            self._fd = os.open(constants.TMP_FILE_NAME, os.O_RDWR | os.O_CREAT, 0o666)
+
+            self._content += content
+            while True:
+                next_state = FileFormService.BOUNDARY_STATES[self._state]["function"](self)
+                if next_state == 0:
+                    return False
+                elif (self._state == CONTENT_STATE and next_state == 2):
+                    break
+                self._state = FileFormService.BOUNDARY_STATES[self._state]["next"]
+
+                logging.debug(
+                    "%s :\t handling content, current state: %s"
+                    % (
+                        entry,
+                        self._state
+                    )
+                )
+
+        except Exception as e:
+            logging.error("%s :\t %s" % (entry, e))
+            self._response_status = 500
+        return True
 
     def before_response_headers(self, entry):
-        self._response_content = "File was uploaded successfully"
-        self._response_headers = {
-            "Content-Length" : len(self._response_content),
-        }
-        return True
-
-    def before_response_content(
-        self,
-        entry,
-        max_buffer = constants.BLOCK_SIZE
-    ):
-        return True
-
+        if self._response_status == 200:
+            self._response_content = "File was uploaded successfully"
+            self._response_headers = {
+                "Content-Length" : len(self._response_content),
+            }
+            return True
 
 SERVICES = {
     "/clock": TimeService,
     "/mul" :  MulService,
+    "/getblock" : GetBlockService,
+    "/setblock" : SetBlockService
 }
 
 
 '''
     references
-    "/mul": {"name": mul, "headers": None},
     "/secret": {"name": secret, "headers": ["Authorization"]},
     "/cookie": {"name": cookie, "headers": ["Cookie"]},
     "/login": {"name": login, "headers": None},

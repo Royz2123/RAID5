@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 import argparse
 import contextlib
-import datetime
 import errno
 import fcntl
+import logging
 import os
-import socket
 import select
-import sys
-import time
+import socket
 import traceback
 
+import pollable
 import poller
 import services
 
@@ -50,12 +49,37 @@ CACHE_HEADERS = {
     "Expires" : "0"
 }
 
-class AsyncSocket(object):
-    def __init__(self, socket):
+
+class HttpSocket(pollable.Pollable):
+    def __init__(self, socket, state):
         self._socket = socket
         self._fd = socket.fileno()
         self._recvd_data = ""
         self._data_to_send = ""
+
+        self._state = state
+        self._request_context = {
+            "headers" : {},
+            "method": "uknown",
+            "uri": "uknown"
+        }        #important stuff from request
+        self._service = None
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, s):
+        self._state = s
+
+    @property
+    def request_context(self):
+        return self._request_context
+
+    @request_context.setter
+    def request_context(self, r):
+        self._request_context = r
 
     @property
     def recvd_data(self):
@@ -81,80 +105,6 @@ class AsyncSocket(object):
     def fd(self):
         return self._fd
 
-    def send_buf(self):
-        try:
-            while self._data_to_send != "":
-                self._data_to_send = self._data_to_send[
-                    self._socket.send(self._data_to_send):
-                ]
-        except socket.error, e:
-            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
-                raise
-
-    def get_buf(
-        self,
-        max_length=constants.MAX_HEADER_LENGTH,
-        block_size=constants.BLOCK_SIZE,
-    ):
-        try:
-            t = self._socket.recv(block_size)
-            if not t:
-                raise util.Disconnect(
-                    'Disconnected while waiting for content'
-                )
-            self._recvd_data += t
-
-        except socket.error, e:
-            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
-                raise
-
-    def close_socket(self):
-        self._socket.close()
-
-
-class HttpSocket(AsyncSocket):
-    def __init__(self, socket, state):
-        super(HttpSocket, self).__init__(socket)
-        self._state = state
-        self._request_context = {
-            "headers" : {},
-            "method": "uknown",
-            "uri": "uknown"
-        }        #important stuff from request
-        self._service = ""
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, s):
-        self._state = s
-
-    @property
-    def request_context(self):
-        return self._request_context
-
-    @request_context.setter
-    def request_context(self, r):
-        self._request_context = r
-
-    #state functions
-    def connection_state(self, socket_data):
-        new_socket, address = self._socket.accept()
-
-        #set to non blocking
-        fcntl.fcntl(
-            new_socket.fileno(),
-            fcntl.F_SETFL,
-            fcntl.fcntl(new_socket.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK
-        )
-
-        #add to database
-        socket_data[new_socket.fileno()] = HttpSocket(
-            new_socket,
-            REQUEST_STATE,
-        )
 
     def request_state(self, socket_data, base):
         index = self._recvd_data.find(constants.CRLF_BIN)
@@ -206,7 +156,7 @@ class HttpSocket(AsyncSocket):
             int(self._request_context["headers"]["Content-Length"]) -
             len(self._recvd_data)
         )
-        self._service.handle_content(self._recvd_data)
+        self._service.handle_content(self, self._recvd_data)
         self._recvd_data = ""
 
         if self._request_context["headers"]["Content-Length"] < 0:
@@ -225,7 +175,7 @@ class HttpSocket(AsyncSocket):
                 self._service._response_status,
                 STATUS_CODES[self._service._response_status]
             )
-        ).encode('utf-8')
+        )
         return True
 
     def response_headers_state(self, max_buffer):
@@ -241,8 +191,8 @@ class HttpSocket(AsyncSocket):
                     header,
                     content,
                 )
-            ).encode('utf-8')
-        self._data_to_send += "\r\n".encode('utf-8')
+            )
+        self._data_to_send += "\r\n"
         return True
 
     def response_content_state(self, max_buffer):
@@ -254,15 +204,6 @@ class HttpSocket(AsyncSocket):
         self._service.response_content = ""
         return finished_content
 
-    def closing_state(self, socket_data = None):
-        if self._state != LISTEN_STATE:
-            self._state = CLOSING_STATE
-        else:
-            if socket_data is None:
-                raise RuntimeError("Didn't get socket_data")
-
-            for fd, entry in socket_data.items():
-                entry._state = CLOSING_STATE
 
     #handlers:
     states = {
@@ -291,17 +232,12 @@ class HttpSocket(AsyncSocket):
             "next" : CLOSING_STATE,
         },
         CLOSING_STATE : {
-            "function" : closing_state,
             "next" : CLOSING_STATE,
         }
     }
 
     def on_read(self, socket_data, base):
         try:
-            if self._state == LISTEN_STATE:
-                self.connection_state(socket_data)
-                return
-
             self.get_buf()
             while (self._state < RESPONSE_STATUS_STATE and (
                 HttpSocket.states[self._state]["function"](
@@ -311,21 +247,23 @@ class HttpSocket(AsyncSocket):
                 ))
             ):
                 self._state = HttpSocket.states[self._state]["next"]
+                logging.debug(
+                    "%s :\t Reading, current state: %s"
+                    % (
+                        self,
+                        self._state
+                    )
+                )
 
-        except IOError as e:
-            if e.errno != errno.ENOENT:
-                raise
-            traceback.print_exc()
-            self.add_status(404, e)
         except Exception as e:
-            traceback.print_exc()
+            logging.error("%s :\t Closing socket, got : %s " % (self, e))
+            self.state = CLOSING_STATE
             self.add_status(500, e)
-            self.closing_state(socket_data)
 
     def on_error(self):
-        self.close_socket()
+        self._socket.close()
 
-    def on_send(self, max_buffer, socket_data = None):
+    def on_write(self, max_buffer, socket_data = None):
         while (self._state < CLOSING_STATE and (
             HttpSocket.states[self._state]["function"](
                 self,
@@ -333,14 +271,18 @@ class HttpSocket(AsyncSocket):
             ))
         ):
             self._state = HttpSocket.states[self._state]["next"]
+            logging.debug(
+                "%s :\t Writing, current state: %s"
+                % (
+                    self,
+                    self._state
+                )
+            )
         self.send_buf()
 
     def get_events(self, socket_data, max_connections, max_buffer):
         event = select.POLLERR
         if (
-            self._state == LISTEN_STATE and
-            len(socket_data) < max_connections
-        ) or (
             self._state >= REQUEST_STATE and
             self._state <= CONTENT_STATE and
             len(self._recvd_data) < max_buffer
@@ -354,27 +296,46 @@ class HttpSocket(AsyncSocket):
             event |= select.POLLOUT
         return event
 
+
     #"util"
+    def send_buf(self):
+        try:
+            while self._data_to_send != "":
+                self._data_to_send = self._data_to_send[
+                    self._socket.send(self._data_to_send.encode('utf-8')):
+                ]
+        except socket.error, e:
+            if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
+                raise
+            logging.debug("%s :\t Haven't finished reading yet" % self)
+
+    def get_buf(
+        self,
+        max_length=constants.MAX_HEADER_LENGTH,
+        block_size=constants.BLOCK_SIZE,
+    ):
+        try:
+            t = self._socket.recv(block_size)
+            if not t:
+                raise util.Disconnect(
+                    'Disconnected while sending content'
+                )
+            self._recvd_data += t
+
+        except socket.error, e:
+            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                raise
+            logging.debug("%s :\t Haven't finished writing yet" % self)
+
+
     def __repr__(self):
+        if self._service is None:
+            return "HttpSocket Object: %s" % self._fd
         return (
-            "\nHttpSocket Object\n"
-            "socket: %s\n"
-            "state: %s\n"
-            "method: %s\n"
-            "uri %s\n"
-            "headers: %s\n"
-            "service: %s\n"
-            "recvd_data: \n\nSTART OF DATA\n\n%s\n\nEND OF DATA\n\n"
-            "data_to_send: %s\n"
+            "HttpSocket Object: %s, %s"
         ) % (
-            self._socket,
-            self._state,
-            self._request_context["method"],
-            self._request_context["uri"],
-            self._request_context["headers"],
+            self._fd,
             self._service,
-            self._recvd_data,
-            self._data_to_send,
         )
 
     def add_status(self, code, extra):
@@ -391,8 +352,8 @@ class HttpSocket(AsyncSocket):
                 code,
                 STATUS_CODES[code],
             )
-        ).encode('utf-8')
-        self._data_to_send += ('%s' % extra).encode('utf-8')
+        )
+        self._data_to_send += ('%s' % extra)
 
 
     def handle_request(self, request, base):
@@ -441,6 +402,5 @@ class HttpSocket(AsyncSocket):
             #    raise RuntimeError("Malicious URI %s" % self._request[1])
 
             self._service = services.GetFileService(file_name)
-
 
 # vim: expandtab tabstop=4 shiftwidth=4

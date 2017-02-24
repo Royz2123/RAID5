@@ -12,6 +12,7 @@ import sys
 import time
 import traceback
 
+import http_socket_listen
 import http_socket
 
 from ..common import constants
@@ -58,13 +59,15 @@ class AsyncServer():
         sl.listen(10)
 
         self._socket_data = {
-            sl.fileno() : http_socket.HttpSocket(
+            sl.fileno() : http_socket_listen.HttpSocketListen(
                 sl,
-                http_socket.LISTEN_STATE,
+                http_socket_listen.LISTEN_STATE,
             )
         }
 
     def run(self):
+        logging.debug("STARTED RUNNING\n")
+
         while len(self._socket_data.items()):
             try:
                 self.close_needed()
@@ -75,20 +78,24 @@ class AsyncServer():
                     entry = self._socket_data[curr_fd]
 
                     try:
-                        #socket has close
+                        #pollable has error
                         if event & (select.POLLHUP | select.POLLERR):
+                            logging.debug("%s :\t Entry has error" % entry)
                             entry.on_error()
 
-                        #socket recvd data
+                        #pollable has read
                         if event & select.POLLIN:
+                            logging.debug("%s :\t Entry has read" % entry)
                             entry.on_read(self._socket_data, self._base)
 
-                        #socket has send
+                        #pollable has write
                         if event & select.POLLOUT:
-                            entry.on_send(self._max_buffer, self._socket_data)
+                            logging.debug("%s :\t Entry has write" % entry)
+                            entry.on_write(self._max_buffer, self._socket_data)
 
                     except util.Disconnect as e:
-                        entry.closing_state(self._socket_data)
+                        logging.error("%s :\t Socket disconnected, closing...")
+                        entry.on_error()
 
             except Exception as e:
                 logging.critical(traceback.print_exc())
