@@ -86,6 +86,12 @@ def parse_args():
 def main():
     args = parse_args()
 
+    #delete the previous log
+    try:
+        os.remove(LOG_FILE)
+    except:
+        pass
+
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
 
     #if args.daemon:

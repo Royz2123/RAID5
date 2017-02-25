@@ -190,7 +190,7 @@ class GetBlockService(Service):
     BLOCK_SIZE = 4096
 
     def __init__(self, args):
-        Service.__init__(self, [], ["blocknum"], args)
+        Service.__init__(self, [], ["blocknum", "readsize"], args)
         self._fd = None
 
     def before_response_status(self, entry):
@@ -211,13 +211,14 @@ class GetBlockService(Service):
 
             self._response_headers = {
                 "Content-Length" : min(
-                    str(GetBlockService.BLOCK_SIZE),
+                    GetBlockService.BLOCK_SIZE,
                     abs(
                         os.fstat(self._fd).st_size
                         - os.lseek(self._fd, 0, os.SEEK_CUR)
                     )
                 )
             }
+
         except IOError as e:
             if e.errno != errno.ENOENT:
                 raise
@@ -226,34 +227,35 @@ class GetBlockService(Service):
         except Exception as e:
             logging.error("%s :\t %s " % (entry, e))
             self._response_status = 500
-
         return True
 
     def before_response_content(self, entry, max_buffer):
+        if self._response_status != 200:
+            return True
+
         try:
             while len(self._response_content) < GetBlockService.BLOCK_SIZE:
                 buf = os.read(
                     self._fd,
                     (
-                        GetBlockService.BLOCK_SIZE
+                        min(
+                            GetBlockService.BLOCK_SIZE,
+                            int(self._args['readsize'][0])
+                        )
                         - len(self._response_content)
                     )
                 )
                 if not buf:
                     break
                 self._response_content += buf
-            os.close(self._fd)
 
         except Exception as e:
-            if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
-                raise
-            logging.debug(
-                "%s :\t Still reading, current response size: %s "
-                % (
-                    entry,
-                    len(self._response_content)
-                )
-            )
+            logging.error("%s :\t %s " % (entry, e))
+
+        try:
+            os.close(self._fd)
+        except:
+            logging.error("%s :\t Problem closing fd" % entry)
         return True
 
 
@@ -304,10 +306,8 @@ class SetBlockService(Service):
                     os.write(self._fd, self._content):
                 ]
         except Exception as e:
-            if e.errno not in (errno.EWOULDBLOCK, errno.EAGAIN):
-                raise
-            logging.debug("%s :\t Still writing to disk" % entry)
-            return False
+            logging.error("%s :\t %s " % (entry, e))
+            self._response_status = 500
         return True
 
 
