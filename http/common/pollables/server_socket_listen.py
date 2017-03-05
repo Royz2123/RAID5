@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import argparse
-import contextlib
 import errno
 import fcntl
 import logging
@@ -9,13 +7,14 @@ import select
 import socket
 import traceback
 
-import http_socket
-import pollable
+import server_socket
 
-from ..import poller
+from http.bds_server.services import bds_services
+from http.common.pollables import pollable
+from http.common.utilities import constants
+from http.common.utilities import util
+from http.frontend_server.services import frontend_services
 
-from ..common import constants
-from ..common import util
 
 # python-3 woodo
 try:
@@ -27,17 +26,13 @@ except ImportError:
     urlparse = urllib.parse
 
 
-(
-    LISTEN_STATE,
-    CLOSING_STATE,
-) = range(2)
-
-
-class HttpSocketListen(pollable.Pollable):
-    def __init__(self, socket, state):
+class ServerSocketListen(pollable.Pollable):
+    def __init__(self, socket, state, application_context):
+        self._application_context = application_context
         self._socket = socket
         self._fd = socket.fileno()
-        self._state = LISTEN_STATE
+        self._state = constants.LISTEN_STATE
+        self._data_to_send = ""
 
     @property
     def fd(self):
@@ -67,9 +62,10 @@ class HttpSocketListen(pollable.Pollable):
         )
 
         #add to database
-        new_http_socket = server_socket.HttpSocket(
+        new_http_socket = server_socket.ServerSocket(
             new_socket,
-            server_socket.GET_REQUEST_STATE,
+            constants.GET_REQUEST_STATE,
+            self._application_context
         )
         socket_data[new_socket.fileno()] = new_http_socket
         logging.debug(
@@ -80,22 +76,24 @@ class HttpSocketListen(pollable.Pollable):
             )
         )
 
+    def on_close(self):
+        self._socket.close()
 
     #handlers:
     states = {
-        LISTEN_STATE : {
+        constants.LISTEN_STATE : {
             "function" : listen_state,
-            "next" : CLOSING_STATE
+            "next" : constants.CLOSING_STATE
         },
-        CLOSING_STATE : {
-            "function" : closing_state,
-            "next" : CLOSING_STATE,
+        constants.CLOSING_STATE : {
+            "function" : on_close,
+            "next" : constants.CLOSING_STATE,
         }
     }
 
-    def on_read(self, socket_data, base):
+    def on_read(self, socket_data):
         try:
-            if self._state == LISTEN_STATE:
+            if self._state == constants.LISTEN_STATE:
                 self.listen_state(socket_data)
 
         except Exception as e:
@@ -108,16 +106,13 @@ class HttpSocketListen(pollable.Pollable):
             self.on_error()
 
     def on_error(self):
-        self._state = CLOSING_STATE
+        self._state = constants.CLOSING_STATE
 
-    def on_close(self):
-        self._socket.close()
-
-    def get_events(self, socket_data, max_connections, max_buffer):
+    def get_events(self, socket_data):
         event = select.POLLERR
         if (
-            self._state == LISTEN_STATE and
-            len(socket_data) < max_connections
+            self._state == constants.LISTEN_STATE and
+            len(socket_data) < self._application_context["max_connections"]
         ):
             event |= select.POLLIN
         return event

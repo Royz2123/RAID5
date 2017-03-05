@@ -9,49 +9,24 @@ import select
 import socket
 import traceback
 
-from .. import poller
+from http.frontend_server.services import client_services
+from http.common.pollables import pollable
+from http.common.utilities import constants
+from http.common.utilities import http_util
+from http.common.utilities import util
 
-from ..pollables import pollable
-from ..services import services
-
-from .. ..common import constants
-from .. ..common import util
-
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
-
-(
-    CLOSING_STATE,
-    GET_REQUEST_STATE,
-    GET_HEADERS_STATE,
-    GET_CONTENT_STATE,
-    SEND_STATUS_STATE,
-    SEND_HEADERS_STATE,
-    SEND_CONTENT_STATE,
-) = range(7)
-
-STATUS_CODES = {
-    200 : "OK",
-    401 : "Unauthorized",
-    404 : "File Not Found",
-    500 : "Internal Error",
-}
-
-CACHE_HEADERS = {
-    "Cache-Control" : "no-cache, no-store, must-revalidate",
-    "Pragm" : "no-cache",
-    "Expires" : "0"
-}
 
 
 class BDSClientSocket(pollable.Pollable):
-    def __init__(self, socket, state, parent):
+    def __init__(
+        self,
+        socket,
+        state,
+        args,
+        bds_service,
+        parent
+    ):
+        self._application_context = parent.application_context
         self._socket = socket
         self._fd = socket.fileno()
         self._recvd_data = ""
@@ -60,12 +35,13 @@ class BDSClientSocket(pollable.Pollable):
         self._state = state
         self._request_context = {
             "headers" : {},
-            "method": "uknown",
-            "uri": "uknown"
-        }        #important stuff from request
-        self._service = None
-
-        self._parent_socket = parent
+            "status": "uknown",
+            "method" : "GET",
+            "service" : bds_service,
+            "args" : args
+        }        #important to request
+        self._service = client_services.SERVICES[bds_service]
+        self._parent = parent
 
     @property
     def state(self):
@@ -74,6 +50,14 @@ class BDSClientSocket(pollable.Pollable):
     @state.setter
     def state(self, s):
         self._state = s
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, p):
+        self._parent = p
 
     @property
     def request_context(self):
@@ -107,46 +91,46 @@ class BDSClientSocket(pollable.Pollable):
     def fd(self):
         return self._fd
 
+    def on_close(self):
+        self._socket.close()
 
     states = {
-        SEND_REQUEST_STATE : {
+        constants.SEND_REQUEST_STATE : {
             "function" : http_util.send_request_state,
-            "next" : SEND_HEADERS_STATE,
+            "next" : constants.SEND_HEADERS_STATE,
         },
-        SEND_HEADERS_STATE : {
+        constants.SEND_HEADERS_STATE : {
             "function" : http_util.send_headers_state,
-            "next" : SEND_CONTENT_STATE,
+            "next" : constants.SEND_CONTENT_STATE,
         },
-        SEND_CONTENT_STATE : {
+        constants.SEND_CONTENT_STATE : {
             "function" : http_util.send_content_state,
-            "next" : GET_STATUS_STATE,
+            "next" : constants.GET_STATUS_STATE,
         },
-        GET_STATUS_STATE : {
+        constants.GET_STATUS_STATE : {
             "function" : http_util.get_status_state,
-            "next" : GET_HEADERS_STATE
+            "next" : constants.GET_HEADERS_STATE
         },
-        GET_HEADERS_STATE : {
+        constants.GET_HEADERS_STATE : {
             "function" : http_util.get_headers_state,
-            "next" : GET_CONTENT_STATE
+            "next" : constants.GET_CONTENT_STATE
         },
-        GET_CONTENT_STATE : {
+        constants.GET_CONTENT_STATE : {
             "function" : http_util.get_content_state,
-            "next" : CLOSING_STATE
+            "next" : constants.CLOSING_STATE
         },
-        CLOSING_STATE : {
-            "next" : CLOSING_STATE,
+        constants.CLOSING_STATE : {
+            "function" : on_close,
+            "next" : constants.CLOSING_STATE,
         }
     }
 
-    def on_read(self, socket_data, base):
+    def on_read(self, socket_data):
         try:
             self.get_buf()
             while (self._state < RESPONSE_STATUS_STATE and (
-                HttpSocket.states[self._state]["function"](
-                    self,
-                    base,
-                ))
-            ):
+                HttpSocket.states[self._state]["function"](self)
+            )):
                 self._state = HttpSocket.states[self._state]["next"]
                 logging.debug(
                     "%s :\t Reading, current state: %s"
@@ -164,16 +148,10 @@ class BDSClientSocket(pollable.Pollable):
     def on_error(self):
         self._state = CLOSING_STATE
 
-    def on_close(self):
-        self._socket.close()
-
-    def on_write(self, max_buffer, socket_data = None):
+    def on_write(self, socket_data):
         while (self._state < CLOSING_STATE and (
-            HttpSocket.states[self._state]["function"](
-                self,
-                max_buffer,
-            ))
-        ):
+            HttpSocket.states[self._state]["function"](self)
+        )):
             self._state = HttpSocket.states[self._state]["next"]
             logging.debug(
                 "%s :\t Writing, current state: %s"
@@ -210,53 +188,3 @@ class BDSClientSocket(pollable.Pollable):
             self._fd,
             self._service,
         )
-
-
-    def handle_request(self, request, base):
-        req_comps = request.split(' ', 2)
-
-        #check validity
-        if req_comps[2] != constants.HTTP_SIGNATURE:
-            raise RuntimeError('Not HTTP protocol')
-        if len(req_comps) != 3:
-            raise RuntimeError('Incomplete HTTP protocol')
-
-        method, uri, signature = req_comps
-        if method not in ("GET", "POST"):
-            raise RuntimeError(
-                "HTTP unsupported method '%s'" % method
-            )
-
-        if not uri or uri[0] != '/' or '\\' in uri:
-            raise RuntimeError("Invalid URI")
-
-        #update request
-        self._request_context["method"] = method
-        self._request_context["uri"] = uri
-
-        #choose service
-        parse = urlparse.urlparse(self._request_context["uri"])
-        self._request_context["args"] = urlparse.parse_qs(parse.query)
-
-        if parse.path in services.SERVICES.keys():
-            if len(self._request_context["args"].keys()):
-                self._service = services.SERVICES[parse.path](self._request_context["args"])
-            else:
-                self._service = services.SERVICES[parse.path]()
-
-        elif self._request_context["method"] == "POST":
-            self._service = services.FileFormService()
-
-        else:
-            file_name = os.path.normpath(
-                '%s%s' % (
-                    base,
-                    os.path.normpath(self._request_context["uri"]),
-                )
-            )
-            #if file_name[:len(base)+1] != base + '\\':
-            #    raise RuntimeError("Malicious URI %s" % self._request[1])
-
-            self._service = services.GetFileService(file_name)
-
-# vim: expandtab tabstop=4 shiftwidth=4

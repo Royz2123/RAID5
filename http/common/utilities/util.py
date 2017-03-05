@@ -3,8 +3,7 @@ import errno
 import os
 import socket
 
-from . import constants
-
+from http.common.utilities import constants
 
 # python-3 woodo
 try:
@@ -18,7 +17,6 @@ except ImportError:
 
 def spliturl(url):
     return urlparse.urlsplit(url)
-
 
 def write(fd, buf):
     while buf:

@@ -1,37 +1,19 @@
 # -*- coding: utf-8 -*-
+import contextlib
 import datetime
 import errno
+import fcntl
 import logging
 import os
 import socket
-import select
 import traceback
 
-import http_socket
-import poller
+from http.common.services import base_service
+from http.common.utilities import constants
+from http.common.utilities import util
+from http.frontend_server.pollables import bds_client_socket
 
-from ..common import constants
-from ..common import util
-
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
-
-
-
-MIME_MAPPING = {
-    'html': 'text/html',
-    'png': 'image/png',
-    'txt': 'text/plain',
-}
-
-
-class GetFileService(Service):
+class GetFileService(base_service.BaseService):
     def __init__(self, filename):
         base_service.BaseService.__init__(self, [])
         self._filename = filename
@@ -42,7 +24,7 @@ class GetFileService(Service):
             self._fd = os.open(self._filename, os.O_RDONLY, 0o666)
             self._response_headers = {
                 "Content-Length" : os.fstat(self._fd).st_size,
-                "Content-Type" : MIME_MAPPING.get(
+                "Content-Type" : constants.MIME_MAPPING.get(
                     os.path.splitext(
                         self._filename
                     )[1].lstrip('.'),
@@ -93,9 +75,9 @@ class GetFileService(Service):
         return True
 
 
-class TimeService(Service):
+class TimeService(base_service.BaseService):
     def __init__(self):
-        Service.__init__(self, [])
+        base_service.BaseService.__init__(self, [])
         #super(TimeService, self).__init__(self, [])
 
     def before_response_headers(self, entry):
@@ -113,7 +95,7 @@ class TimeService(Service):
         return True
 
 
-class MulService(Service):
+class MulService(base_service.BaseService):
     def __init__(self, args):
         base_service.BaseService.__init__(self, [], ["a", "b"], args)
         #super(MulService, self).__init__(self, [], ["a", "b"], args)
@@ -137,7 +119,7 @@ class MulService(Service):
             )
         )
 
-class FileFormService(Service):
+class FileFormService(base_service.BaseService):
     (
         START_STATE,
         HEADERS_STATE,
@@ -247,17 +229,17 @@ class FileFormService(Service):
         return next_state
 
     BOUNDARY_STATES = {
-        FileFormService.START_STATE: {
+        START_STATE: {
             "function": start_state,
-            "next": FileFormService.HEADERS_STATE,
+            "next": HEADERS_STATE,
         },
-        FileFormService.HEADERS_STATE: {
+        HEADERS_STATE: {
             "function": headers_state,
-            "next": FileFormService.CONTENT_STATE
+            "next": CONTENT_STATE
         },
-        FileFormService.CONTENT_STATE: {
+        CONTENT_STATE: {
             "function": content_state,
-            "next": FileFormService.HEADERS_STATE,
+            "next": HEADERS_STATE,
         }
     }
 
@@ -295,34 +277,91 @@ class FileFormService(Service):
             }
             return True
 
-class getFromDisk()
-    def __init__(self, entry, socket_data, disks, args):
+
+class ReadFromDiskService(base_service.BaseService):
+    def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(
             self,
             ["Content-Type"],
             ["disk", "firstblock", "blocks"],
             args
         )
-        self._entry = entry
-        self._disks = disks
+        self._client_update = {
+            "status" : "",
+            "content" : ""
+        }
+        self._disks = entry.application_context["disks"]
         self._socket_data = socket_data
 
+    @property
+    def client_update(self):
+        return self._client_update
+
+    @client_update.setter
+    def client_update(self, c_u):
+        self._client_update = c_u
+
+    def on_finish(self, entry):
+        entry.state = constants.SEND_CONTENT_STATE
+        self._current_block += 1
+
+    def before_response_headers(self, entry):
+        self._response_headers = {
+            "Content-Length" : (
+                int(self._args["blocks"][0])
+                * constants.BLOCK_SIZE
+            )
+        }
+        self._current_block = int(self._args["firstblock"][0])
+        return True
+
+    def before_response_content(self, entry):
+        #we shouldnt get here, but for now
+        if entry.state == constants.SLEEPING_STATE:
+            return False
+
+        #check if there are no more blocks to send
+        if (
+            self._current_block
+            == (
+                int(self._args["firstblock"][0])
+                + int(self._args["blocks"][0])
+            )
+        ):
+            return True
+
+        #if we have a pending block, send it back to client
+        #TODO: Too much in response_content
+        if self._client_update["status"] == "200 OK":
+            self._response_content = self._client_update["content"]
+
+        self._client_update = {
+            "status" : "",
+            "content" : ""
+        }
+
+        #get another block from BDS
+        physical_disknum = DiskUtil.get_physical_disk_num(
+            self._disks,
+            int(self._args["disk"][0]),
+            self._current_block
+        )
+        args = {
+            "blocknum" : self._current_block
+        }
+
+        self.add_bds_client(entry, physical_disknum, self._current_block)
+        entry.state = constants.SLEEPING_STATE
 
 
-    def add_bds_client(self, blocknum):
+    def add_bds_client(self, entry, disknum, args):
         with contextlib.closing(
             socket.socket(
                 family=socket.AF_INET,
                 type=socket.SOCK_STREAM,
             )
         ) as new_socket:
-            new_socket.connect((
-                self._disks[get_physical_disk_num(
-                    self._disks,
-                    int(self.args["disk"][0]]),
-                    blocknum
-                )]
-            ))
+            new_socket.connect((self._disks[disknum]))
 
             #set to non blocking
             fcntl.fcntl(
@@ -334,8 +373,10 @@ class getFromDisk()
             #add to database, need to specify blocknum
             new_bds_client = bds_client_socket.BDSClientSocket(
                 new_socket,
-                bds_client_socket.SEND_REQUEST_STATE,
-                self._entry
+                constants.SEND_REQUEST_STATE,
+                args,
+                "/getblock",
+                entry,
             )
             self._socket_data[new_socket.fileno()] = new_bds_client
             logging.debug(
@@ -346,7 +387,7 @@ class getFromDisk()
                 )
             )
 
-class sendToDisk()
+class WriteToDiskService(base_service.BaseService):
     def __init__(self, entry, socket_data, disks, args):
         base_service.BaseService.__init__(self,
             ["Content-Type"],
@@ -357,14 +398,13 @@ class sendToDisk()
         self.disks = disks
         self._socket_data = socket_data
 
-    def
 
 
 
-class DiskUtil()
+class DiskUtil():
     @staticmethod
     def get_physical_disk_num(disks, logic_disk_num, blocknum):
-        if get_parity_disk_num(disks, blocknum) > logic_disk_num:
+        if DiskUtil.get_parity_disk_num(disks, blocknum) > logic_disk_num:
             return logic_disk_num
         return logic_disk_num + 1
 
@@ -377,13 +417,12 @@ class DiskUtil()
         #   |   a3  |   p3  |   b3  |   c3  |
         #   |   p4  |   a4  |   b4  |   c4  |
         #               ....
-        return (
-            len(disks) - blocknum % len(disks)
-        )
+        return (len(disks) - blocknum % len(disks))
 
 SERVICES = {
     "/clock": TimeService,
-    "/mul" :  MulService
+    "/mul" :  MulService,
+    "/disk_read" : ReadFromDiskService,
 }
 
 

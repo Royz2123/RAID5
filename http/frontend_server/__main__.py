@@ -9,15 +9,11 @@ import os
 import socket
 import select
 import sys
-import time
 import traceback
 
-import http_socket
-import poller
-import services
-
-from ..common import constants
-from ..common import util
+from http.common.utilities import async_server
+from http.common.utilities import poller
+from http.common.utilities import constants
 
 # python-3 woodo
 try:
@@ -79,12 +75,28 @@ def parse_args():
         type=int,
         default=1000,
     )
+    parser.add_argument(
+        '--disks',
+        help="disks: address1,port1 address2,port2 ...",
+        type=disk,
+        nargs='+'
+    )
     args = parser.parse_args()
     args.base = os.path.normpath(os.path.realpath(args.base))
     return args
 
+
+def disk(d):
+    try:
+        address, port = d.split(',')
+        return address, int(port)
+    except:
+        raise argparse.ArgumentTypeError("Disks must be (address, port)")
+
+
 def main():
     args = parse_args()
+    print args.disks
 
     #delete the previous log
     try:
@@ -103,7 +115,9 @@ def main():
         "poll_type" : POLL_TYPE[args.poll_type],
         "poll_timeout" : args.poll_timeout,
         "max_connections" : args.max_connections,
-        "max_buffer" : args.max_buffer
+        "max_buffer" : args.max_buffer,
+        "server_type" : constants.FRONTEND_SERVER,
+        "disks" : args.disks
     }
     server = async_server.AsyncServer(application_context)
     server.run()

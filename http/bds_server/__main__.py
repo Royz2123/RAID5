@@ -1,23 +1,13 @@
 # -*- coding: utf-8 -*-
 import argparse
-import contextlib
-import datetime
-import errno
-import fcntl
 import logging
 import os
-import socket
-import select
-import sys
-import time
 import traceback
 
-import http_socket
-import poller
-import services
-
-from ..common import constants
-from ..common import util
+from ..common.utilities import async_server
+from ..common.utilities import constants
+from ..common.utilities import poller
+from ..common.utilities import util
 
 # python-3 woodo
 try:
@@ -102,7 +92,7 @@ def main():
     disk_fd = None
     try:
         disk_fd = os.open(
-            "%s%s" % (constants.disk_name, args.disk-num),
+            "%s%s" % (constants.DISK_NAME, args.disk_num),
             os.O_RDWR | os.O_CREAT,
             0o666
         )
@@ -111,20 +101,23 @@ def main():
 
     #if args.daemon:
     #    daemonize()
-    if disk_fd in not None:
-        application_context = {
-            "bind_address" : args.bind_address,
-            "bind_port" : args.bind_port,
-            "base" : args.base,
-            "poll_type" : POLL_TYPE[args.poll_type],
-            "poll_timeout" : args.poll_timeout,
-            "max_connections" : args.max_connections,
-            "max_buffer" : args.max_buffer,
-            "disk_fd" : disk_fd
-        }
-        server = async_server.AsyncServer(application_context)
-        server.run()
-
+    if disk_fd is not None:
+        try:
+            application_context = {
+                "bind_address" : args.bind_address,
+                "bind_port" : args.bind_port,
+                "base" : args.base,
+                "poll_type" : POLL_TYPE[args.poll_type],
+                "poll_timeout" : args.poll_timeout,
+                "max_connections" : args.max_connections,
+                "max_buffer" : args.max_buffer,
+                "server_type" : constants.BLOCK_DEVICE_SERVER,
+                "disk_fd" : disk_fd
+            }
+            server = async_server.AsyncServer(application_context)
+            server.run()
+        finally:
+            os.close(disk_fd)
 
 def daemonize():
     child = os.fork()

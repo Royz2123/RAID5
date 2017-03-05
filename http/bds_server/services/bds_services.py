@@ -1,18 +1,13 @@
--*- coding: utf-8 -*-
-import datetime
 import errno
 import logging
 import os
 import socket
-import select
 import traceback
 
-import http_socket
-import poller
-import base_service
+from http.common.services import base_service
+from http.common.utilities import constants
+from http.common.utilities import util
 
-from ..common import constants
-from ..common import util
 
 # python-3 woodo
 try:
@@ -25,7 +20,7 @@ except ImportError:
 
 
 
-class GetBlockService(Service):
+class GetBlockService(base_service.BaseService):
     BLOCK_SIZE = 4096
 
     def __init__(self, args):
@@ -34,7 +29,7 @@ class GetBlockService(Service):
 
     def before_response_status(self, entry):
         try:
-            self._fd = os.open(constants.DISK_FILE, os.O_RDONLY, 0o666)
+            self._fd = entry.application_context["disk_fd"]
 
             if not self.check_args():
                 raise RuntimeError("Invalid args")
@@ -58,11 +53,6 @@ class GetBlockService(Service):
                 )
             }
 
-        except IOError as e:
-            if e.errno != errno.ENOENT:
-                raise
-            logging.error("%s :\t File not found " % entry)
-            self._response_status = 404
         except Exception as e:
             logging.error("%s :\t %s " % (entry, e))
             self._response_status = 500
@@ -96,7 +86,7 @@ class GetBlockService(Service):
         return True
 
 
-class SetBlockService(Service):
+class SetBlockService(base_service.BaseService):
     BLOCK_SIZE = 4096
 
     def __init__(self, args):
@@ -106,7 +96,7 @@ class SetBlockService(Service):
 
     def before_content(self, entry):
         try:
-            self._fd = os.open(constants.DISK_FILE, os.O_RDWR, 0o666)
+            self._fd = entry.application_context["disk_fd"]
 
             if not self.check_args():
                 raise RuntimeError("Invalid args")
@@ -124,11 +114,6 @@ class SetBlockService(Service):
                 "Content-Length" : "0",
             }
 
-        except IOError as e:
-            if e.errno != errno.ENOENT:
-                raise
-            logging.error("%s :\t File not found " % entry)
-            self._response_status = 404
         except Exception as e:
             logging.error("%s :\t %s " % (entry, e))
             self._response_status = 500
@@ -136,7 +121,6 @@ class SetBlockService(Service):
 
 
     def handle_content(self, entry, content):
-        print self._fd
         self._content += content
         try:
             while self._content:
@@ -144,7 +128,6 @@ class SetBlockService(Service):
                     os.write(self._fd, self._content):
                 ]
         except Exception as e:
-            traceback.print_exc()
             logging.error("%s :\t %s " % (entry, e))
             self._response_status = 500
         return True

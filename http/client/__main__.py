@@ -4,8 +4,8 @@ import contextlib
 import logging
 import socket
 
-from ..common import constants
-from ..common import util
+from ..common.utilities import constants
+from ..common.utilities import util
 
 DATA_TO_SEND = "hello this is a nice data"
 
