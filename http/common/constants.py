@@ -8,6 +8,10 @@ HTTP_SIGNATURE = 'HTTP/1.1'
 MAX_HEADER_LENGTH = 4096
 MAX_NUMBER_OF_HEADERS = 100
 
+STANDARD_INPUT = 0
+STANDARD_OUTPUT = 1
+STANDARD_ERROR = 2
+
 DISK_FILE = "disk"
 TMP_FILE_NAME = "tmp_file"
 CACHE_HEADERS = 'Cache-Control: no-cache, no-store, must-revalidate\r\nPragma: no-cache\r\nExpires: 0\r\n'

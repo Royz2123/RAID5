@@ -1,49 +1,51 @@
-# -*- coding: utf-8 -*-
-
+#!/usr/bin/python
 import argparse
 import contextlib
-import os
+import logging
 import socket
-import tempfile
-
 
 from ..common import constants
 from ..common import util
 
+DATA_TO_SEND = "hello this is a nice data"
 
 def parse_args():
-    """Parse program argument."""
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--bind-address',
-        default='0.0.0.0',
-        help='Bind address, default: %(default)s',
+        "--dst-address",
+        default="0.0.0.0",
+        help="Server bind address. Default: %(default)s",
     )
     parser.add_argument(
-        '--bind-port',
+        "--dst-port",
+        type=int,
+        default=8080,
+        help="Initial server bind port. Default: %(default)s",
+    )
+    parser.add_argument(
+        "--action",
+        choices=["setblock", "getblock"],
+        default="getblock",
+        help="Whether to read or write from block device",
+    )
+    parser.add_argument(
+        "--block",
         type=int,
         default=0,
-        help='Bind port, default: %(default)s',
+        help="Which block to read/write from",
     )
-    parser.add_argument(
-        '--url',
-        required=True,
-        help='URL to use',
-    )
-    parser.add_argument(
-        '--output',
-        required=True,
-        help='Output file',
-    )
-    return parser.parse_args()
+    args = parser.parse_args()
+    return args
 
 
 def main():
     args = parse_args()
-    url = util.spliturl(args.url)
-    if url.scheme != 'http':
-        raise RuntimeError("Invalid URL scheme '%s'" % url.scheme)
+    logging.basicConfig(filename=None, level=logging.DEBUG)
+
+    DATA_TO_SEND = ""
+    if args.action == "setblock":
+        util.write(constants.STANDARD_OUTPUT, "ENTER DATA_TO_SEND:\n")
+        DATA_TO_SEND = util.read(constants.STANDARD_INPUT, 2)
 
     with contextlib.closing(
         socket.socket(
@@ -51,104 +53,26 @@ def main():
             type=socket.SOCK_STREAM,
         )
     ) as s:
-        s.bind((args.bind_address, args.bind_port))
-        s.connect((
-            url.hostname,
-            url.port if url.port else constants.DEFAULT_HTTP_PORT,
-        ))
-        util.send_all(
-            s,
-            (
-                (
-                    'GET %s HTTP/1.1\r\n'
-                    'Host: %s\r\n'
-                    '\r\n'
-                ) % (
-                    url.path,
-                    url.hostname,
-                )
-            ).encode('utf-8'),
-        )
+        s.connect((args.dst_address, args.dst_port))
+        s.settimeout(1)
+        cmd = "GET /%s?blocknum=%d %s\r\n" % (
+                args.action,
+                args.block,
+                constants.HTTP_SIGNATURE
+            )
+        if args.action == "getblock":
+            cmd += "\r\n"
+        if args.action == "setblock":
+            cmd += "Content-Length: %s\r\n\r\n" % (len(DATA_TO_SEND))
 
-        rest = bytearray()
+        util.send_all(s, cmd)
+        util.send_all(s, DATA_TO_SEND)
 
-        #
-        # Parse status line
-        #
-        status, rest = util.recv_line(s, rest)
-        status_comps = status.split(' ', 2)
-        if status_comps[0] != constants.HTTP_SIGNATURE:
-            raise RuntimeError('Not HTTP protocol')
-        if len(status_comps) != 3:
-            raise RuntimeError('Incomplete HTTP protocol')
+        #Wait for answer
+        data = s.recv(constants.BLOCK_SIZE)
+        while data:
+            logging.debug(data)
+            data = s.recv(constants.BLOCK_SIZE)
 
-        signature, code, message = status_comps
-        if code != '200':
-            raise RuntimeError('HTTP failure %s: %s' % (code, message))
-
-        #
-        # Parse headers
-        #
-        content_length = None
-        for i in range(constants.MAX_NUMBER_OF_HEADERS):
-            line, rest = util.recv_line(s, rest)
-            if not line:
-                break
-
-            name, value = util.parse_header(line)
-            if name == 'Content-Length':
-                content_length = int(value)
-        else:
-            raise RuntimeError('Too many headers')
-
-        #
-        # Write content
-        #
-        # Do not write output file directly
-        # Create temporary file at same directory
-        # Only if all OK we overwrite the file
-        #
-        fd, name = tempfile.mkstemp(dir=os.path.dirname(args.output))
-        try:
-            with os.fdopen(fd, 'wb') as f:
-                if content_length is None:
-                    # Fast track, no content length
-                    # Recv until disconnect
-                    f.write(rest)
-                    while True:
-                        buf = s.recv(constants.BLOCK_SIZE)
-                        if not buf:
-                            break
-                        f.write(buf)
-                else:
-                    # Safe track, we have content length
-                    # Recv excacly what requested.
-                    left_to_read = content_length
-                    while left_to_read > 0:
-                        if not rest:
-                            t = s.recv(constants.BLOCK_SIZE)
-                            if not t:
-                                raise RuntimeError(
-                                    'Disconnected while waiting for content'
-                                )
-                            rest += t
-                        buf, rest = rest[:left_to_read], rest[left_to_read:]
-                        f.write(buf)
-                        left_to_read -= len(buf)
-
-            # Commit
-            os.rename(name, args.output)
-            name = None
-        finally:
-            if name is not None:
-                try:
-                    os.remove(name)
-                except Exception:
-                    print("Cannot remove temp file '%s'" % name)
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
-
-# vim: expandtab tabstop=4 shiftwidth=4
