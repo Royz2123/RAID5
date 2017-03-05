@@ -72,12 +72,17 @@ def parse_args():
     parser.add_argument(
         '--max-buffer',
         type=int,
-        default=1000,
+        default=constants.BLOCK_SIZE,
     )
     parser.add_argument(
         '--max-connections',
         type=int,
         default=1000,
+    )
+    parser.add_argument(
+        '--disk-num',
+        type=str,
+        default=0,
     )
     args = parser.parse_args()
     args.base = os.path.normpath(os.path.realpath(args.base))
@@ -92,20 +97,33 @@ def main():
     except:
         pass
 
-    logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
+    logging.basicConfig(filename=None, level=logging.DEBUG)
+
+    disk_fd = None
+    try:
+        disk_fd = os.open(
+            "%s%s" % (constants.disk_name, args.disk-num),
+            os.O_RDWR | os.O_CREAT,
+            0o666
+        )
+    except Exception as e:
+        logging.critical("Problem opening disk:\t %s" %e)
 
     #if args.daemon:
     #    daemonize()
-
-    server = poller.AsyncServer(
-        args.bind_address,
-        args.bind_port,
-        args.base,
-        POLL_TYPE[args.poll_type],
-        args.max_connections,
-        args.max_buffer
-    )
-    server.run()
+    if disk_fd in not None:
+        application_context = {
+            "bind_address" : args.bind_address,
+            "bind_port" : args.bind_port,
+            "base" : args.base,
+            "poll_type" : POLL_TYPE[args.poll_type],
+            "poll_timeout" : args.poll_timeout,
+            "max_connections" : args.max_connections,
+            "max_buffer" : args.max_buffer,
+            "disk_fd" : disk_fd
+        }
+        server = async_server.AsyncServer(application_context)
+        server.run()
 
 
 def daemonize():

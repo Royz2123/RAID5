@@ -9,12 +9,12 @@ import select
 import socket
 import traceback
 
-import pollable
-import poller
-import services
+from .. import poller
 
-from ..common import constants
-from ..common import util
+from ..services import services
+
+from ....common import constants
+from ....common import util
 
 # python-3 woodo
 try:
@@ -26,15 +26,14 @@ except ImportError:
     urlparse = urllib.parse
 
 (
-    LISTEN_STATE,
-    REQUEST_STATE,
-    HEADERS_STATE,
-    CONTENT_STATE,
-    RESPONSE_STATUS_STATE,
-    RESPONSE_HEADERS_STATE,
-    RESPONSE_CONTENT_STATE,
     CLOSING_STATE,
-) = range(8)
+    GET_REQUEST_STATE,
+    GET_HEADERS_STATE,
+    GET_CONTENT_STATE,
+    SEND_STATUS_STATE,
+    SEND_HEADERS_STATE,
+    SEND_CONTENT_STATE,
+) = range(7)
 
 STATUS_CODES = {
     200 : "OK",
@@ -49,9 +48,9 @@ CACHE_HEADERS = {
     "Expires" : "0"
 }
 
-
-class HttpSocket(pollable.Pollable):
-    def __init__(self, socket, state):
+class HttpSocket(pollable.Pollable, callable.Callable):
+    def __init__(self, socket, state, application_context):
+        self._application_context
         self._socket = socket
         self._fd = socket.fileno()
         self._recvd_data = ""
@@ -105,130 +104,29 @@ class HttpSocket(pollable.Pollable):
     def fd(self):
         return self._fd
 
-
-    def request_state(self, socket_data, base):
-        index = self._recvd_data.find(constants.CRLF_BIN)
-        if index == -1:
-            return False
-
-        req, rest = (
-            self._recvd_data[:index].decode('utf-8'),
-            self._recvd_data[index + len(constants.CRLF_BIN):]
-        )
-        self.handle_request(req, base)
-        self._recvd_data = rest            #save the rest for next time
-
-        return True
-
-    def headers_state(self, socket_data, base):
-        lines = self._recvd_data.split(constants.CRLF_BIN)
-        if "" not in lines:
-            return False
-
-        #got all the headers, process them
-        self._request_context["headers"] = {}
-        for index in range(len(lines)):
-            line = lines[index]
-
-            if (
-                len(self._request_context["headers"].items()) >
-                constants.MAX_NUMBER_OF_HEADERS
-            ):
-                raise RuntimeError('Too many headers')
-
-            if line == "":
-                self._recvd_data = constants.CRLF_BIN.join(lines[index + 1:])
-                break
-
-            k, v = util.parse_header(line)
-            if k in self._service.wanted_headers:
-                self._request_context["headers"][k] = v
-
-        self._service.before_content(self)
-        return True
-
-    def content_state(self, socket_data, base):
-        if "Content-Length" not in self._request_context["headers"].keys():
-            return True
-
-        #update content_length
-        self._request_context["headers"]["Content-Length"] = (
-            int(self._request_context["headers"]["Content-Length"]) -
-            len(self._recvd_data)
-        )
-        self._service.handle_content(self, self._recvd_data)
-        self._recvd_data = ""
-
-        if self._request_context["headers"]["Content-Length"] < 0:
-            raise RuntimeError("Too much content")
-        elif self._request_context["headers"]["Content-Length"] > 0:
-            return False
-        return True
-
-    def response_status_state(self, max_buffer):
-        self._service.before_response_status(self)
-        self._data_to_send += (
-            (
-                '%s %s %s\r\n'
-            ) % (
-                constants.HTTP_SIGNATURE,
-                self._service._response_status,
-                STATUS_CODES[self._service._response_status]
-            )
-        )
-        return True
-
-    def response_headers_state(self, max_buffer):
-        self._service.before_response_headers(self)
-        headers = self._service._response_headers
-        headers.update(CACHE_HEADERS)
-
-        for header, content in headers.items():
-            self._data_to_send += (
-                (
-                    "%s : %s\r\n"
-                ) % (
-                    header,
-                    content,
-                )
-            )
-        self._data_to_send += "\r\n"
-        return True
-
-    def response_content_state(self, max_buffer):
-        finished_content = self._service.before_response_content(
-            self,
-            max_buffer
-        )
-        self._data_to_send += self._service.response_content
-        self._service.response_content = ""
-        return finished_content
-
-
-    #handlers:
     states = {
-        REQUEST_STATE : {
-            "function" : request_state,
-            "next" : HEADERS_STATE
+        GET_REQUEST_STATE : {
+            "function" : http_util.get_request_state,
+            "next" : GET_HEADERS_STATE
         },
-        HEADERS_STATE : {
-            "function" : headers_state,
-            "next" : CONTENT_STATE
+        GET_HEADERS_STATE : {
+            "function" : http_util.get_headers_state,
+            "next" : GET_CONTENT_STATE
         },
-        CONTENT_STATE : {
-            "function" : content_state,
-            "next" : RESPONSE_STATUS_STATE
+        GET_CONTENT_STATE : {
+            "function" : http_util.get_content_state,
+            "next" : SEND_STATUS_STATE
         },
-        RESPONSE_STATUS_STATE : {
-            "function" : response_status_state,
-            "next" : RESPONSE_HEADERS_STATE,
+        SEND_STATUS_STATE : {
+            "function" : http_util.send_status_state,
+            "next" : SEND_HEADERS_STATE,
         },
-        RESPONSE_HEADERS_STATE : {
-            "function" : response_headers_state,
-            "next" : RESPONSE_CONTENT_STATE,
+        SEND_HEADERS_STATE : {
+            "function" : http_util.send_headers_state,
+            "next" : SEND_CONTENT_STATE,
         },
-        RESPONSE_CONTENT_STATE : {
-            "function" : response_content_state,
+        SEND_CONTENT_STATE : {
+            "function" : http_util.send_content_state,
             "next" : CLOSING_STATE,
         },
         CLOSING_STATE : {
@@ -242,7 +140,6 @@ class HttpSocket(pollable.Pollable):
             while (self._state < RESPONSE_STATUS_STATE and (
                 HttpSocket.states[self._state]["function"](
                     self,
-                    socket_data,
                     base,
                 ))
             ):
@@ -257,10 +154,13 @@ class HttpSocket(pollable.Pollable):
 
         except Exception as e:
             logging.error("%s :\t Closing socket, got : %s " % (self, e))
-            self.state = CLOSING_STATE
+            self.on_error()
             self.add_status(500, e)
 
     def on_error(self):
+        self._state = CLOSING_STATE
+
+    def on_close(self):
         self._socket.close()
 
     def on_write(self, max_buffer, socket_data = None):
@@ -295,37 +195,6 @@ class HttpSocket(pollable.Pollable):
         ):
             event |= select.POLLOUT
         return event
-
-
-    #"util"
-    def send_buf(self):
-        try:
-            while self._data_to_send != "":
-                self._data_to_send = self._data_to_send[
-                    self._socket.send(self._data_to_send.encode('utf-8')):
-                ]
-        except socket.error, e:
-            if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
-                raise
-            logging.debug("%s :\t Haven't finished reading yet" % self)
-
-    def get_buf(
-        self,
-        max_length=constants.MAX_HEADER_LENGTH,
-        block_size=constants.BLOCK_SIZE,
-    ):
-        try:
-            t = self._socket.recv(block_size)
-            if not t:
-                raise util.Disconnect(
-                    'Disconnected while sending content'
-                )
-            self._recvd_data += t
-
-        except socket.error, e:
-            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
-                raise
-            logging.debug("%s :\t Haven't finished writing yet" % self)
 
 
     def __repr__(self):
