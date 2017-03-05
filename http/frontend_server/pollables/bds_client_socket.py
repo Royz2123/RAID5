@@ -128,7 +128,7 @@ class BDSClientSocket(pollable.Pollable):
     def on_read(self, socket_data):
         try:
             self.get_buf()
-            while (self._state < RESPONSE_STATUS_STATE and (
+            while (self._state <= constants.GET_CONTENT_STATE and (
                 HttpSocket.states[self._state]["function"](self)
             )):
                 self._state = HttpSocket.states[self._state]["next"]
@@ -146,10 +146,11 @@ class BDSClientSocket(pollable.Pollable):
             self.add_status(500, e)
 
     def on_error(self):
-        self._state = CLOSING_STATE
+        self._state = constants.CLOSING_STATE
 
     def on_write(self, socket_data):
-        while (self._state < CLOSING_STATE and (
+        print "SFJKIGND"
+        while (self._state <= constants.SEND_CONTENT_STATE and (
             HttpSocket.states[self._state]["function"](self)
         )):
             self._state = HttpSocket.states[self._state]["next"]
@@ -162,19 +163,20 @@ class BDSClientSocket(pollable.Pollable):
             )
         self.send_buf()
 
-    def get_events(self, socket_data, max_connections, max_buffer):
+    def get_events(self, socket_data):
         event = select.POLLERR
         if (
-            self._state >= REQUEST_STATE and
-            self._state <= CONTENT_STATE and
-            len(self._recvd_data) < max_buffer
+            self._state >= constants.GET_STATUS_STATE and
+            self._state <= constants.GET_CONTENT_STATE and
+            len(self._recvd_data) < application_context["max_buffer"]
         ):
             event |= select.POLLIN
 
         if (
-            self._state >= RESPONSE_STATUS_STATE and
-            self._state <= RESPONSE_CONTENT_STATE
+            self._state >= constants.SEND_REQUEST_STATE and
+            self._state <= constants.SEND_CONTENT_STATE
         ):
+            print "HI"
             event |= select.POLLOUT
         return event
 

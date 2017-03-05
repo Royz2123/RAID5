@@ -98,7 +98,7 @@ class AsyncServer():
 
         for fd, entry in self._socket_data.items():
             poll_obj.register(
-                entry._socket.fileno(),
+                fd,
                 entry.get_events(self._socket_data)
             )
         return poll_obj
