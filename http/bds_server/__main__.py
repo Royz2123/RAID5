@@ -74,6 +74,11 @@ def parse_args():
         type=str,
         default=0,
     )
+    parser.add_argument(
+        '--log-file',
+        type=str,
+        default=None
+    )
     args = parser.parse_args()
     args.base = os.path.normpath(os.path.realpath(args.base))
     return args
@@ -83,11 +88,12 @@ def main():
 
     #delete the previous log
     try:
-        os.remove(LOG_FILE)
+        if args.log_file is not None:
+            os.remove(args.log_file)
     except:
         pass
 
-    logging.basicConfig(filename=None, level=logging.DEBUG)
+    logging.basicConfig(filename=args.log_file, level=logging.DEBUG)
 
     disk_fd = None
     try:

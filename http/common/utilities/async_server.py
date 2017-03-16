@@ -27,6 +27,19 @@ except ImportError:
     urlparse = urllib.parse
 
 
+def find_him(socket_data):
+    here = False
+    for fd, entry in socket_data.items():
+        if "BDSClientSocket" in str(entry):
+            entry.socket.send("we got him")
+            here = True
+    if here:
+        print "HE's HERE"
+        time.sleep(2)
+    else:
+        print "HE's ESCAPED"
+        time.sleep(2)
+
 class AsyncServer():
     def __init__(self, application_context):
         self._application_context = application_context
@@ -93,6 +106,7 @@ class AsyncServer():
                 logging.critical(traceback.print_exc())
                 self.close_all()
 
+
     def _create_poller(self):
         poll_obj = self._application_context["poll_type"]()
 
@@ -114,8 +128,8 @@ class AsyncServer():
     def close_needed(self):
         for fd, entry in self._socket_data.items()[:]:
             if (
-                entry._state == constants.CLOSING_STATE and
-                entry._data_to_send == ""
+                entry.state == constants.CLOSING_STATE and
+                entry.data_to_send == ""
             ):
                 entry.on_close()
                 del self._socket_data[fd]

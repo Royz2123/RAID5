@@ -2,6 +2,7 @@ import errno
 import logging
 import os
 import socket
+import time
 import traceback
 
 from http.common.services import base_service
@@ -44,21 +45,26 @@ class GetBlockService(base_service.BaseService):
             )
 
             self._response_headers = {
-                "Content-Length" : min(
-                    GetBlockService.BLOCK_SIZE,
-                    abs(
-                        os.fstat(self._fd).st_size
-                        - os.lseek(self._fd, 0, os.SEEK_CUR)
-                    )
-                )
+                "Content-Length" : GetBlockService.BLOCK_SIZE #min(
+                    #GetBlockService.BLOCK_SIZE,
+                    ##abs(
+                    #    os.fstat(self._fd).st_size
+                    #    - os.lseek(self._fd, 0, os.SEEK_CUR)
+                    #)
+                #)
             }
 
         except Exception as e:
+            traceback.print_exc()
             logging.error("%s :\t %s " % (entry, e))
             self._response_status = 500
         return True
 
-    def before_response_content(self, entry, max_buffer):
+    def before_response_content(
+        self,
+        entry,
+        max_buffer=constants.BLOCK_SIZE
+    ):
         if self._response_status != 200:
             return True
 
@@ -79,10 +85,10 @@ class GetBlockService(base_service.BaseService):
             traceback.print_exc()
             logging.error("%s :\t %s " % (entry, e))
 
-        try:
-            os.close(self._fd)
-        except:
-            logging.error("%s :\t Problem closing fd" % entry)
+        self._response_content = self._response_content.ljust(
+            constants.BLOCK_SIZE,
+            chr(0)
+        )
         return True
 
 

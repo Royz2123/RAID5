@@ -4,7 +4,7 @@ class BaseService(object):
         self,
         wanted_headers,
         wanted_args = [],
-        args = []
+        args = {}
     ):
         self._wanted_headers = wanted_headers + ["Content-Length"]
         self._wanted_args = wanted_args
@@ -70,7 +70,7 @@ class BaseService(object):
     def before_response_headers(self, entry):
         return True
 
-    def before_response_content(self, entry, max_buffer):
+    def before_response_content(self, entry):
         return True
 
     def before_terminate(self, entry):

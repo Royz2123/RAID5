@@ -12,7 +12,7 @@ STANDARD_INPUT = 0
 STANDARD_OUTPUT = 1
 STANDARD_ERROR = 2
 
-DISK_NAME = "http/bds_server/disk"
+DISK_NAME = "http/bds_server/disks/disk"
 TMP_FILE_NAME = "tmp_file"
 CACHE_HEADERS = {
     "Cache-Control" : "no-cache, no-store, must-revalidate",
@@ -34,9 +34,6 @@ MIME_MAPPING = {
 
 #HTTP STATES:
 (
-    CLOSING_STATE,
-    SLEEPING_STATE,
-    LISTEN_STATE,
     GET_STATUS_STATE,
     GET_REQUEST_STATE,
     GET_HEADERS_STATE,
@@ -45,6 +42,9 @@ MIME_MAPPING = {
     SEND_REQUEST_STATE,
     SEND_HEADERS_STATE,
     SEND_CONTENT_STATE,
+    SLEEPING_STATE,
+    LISTEN_STATE,
+    CLOSING_STATE,
 ) = range(11)
 
 # vim: expandtab tabstop=4 shiftwidth=4

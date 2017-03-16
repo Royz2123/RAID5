@@ -146,6 +146,9 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             while (self._state < constants.SEND_STATUS_STATE and (
                 ServerSocket.states[self._state]["function"](self)
             )):
+                if self._state == constants.SLEEPING_STATE:
+                    return
+
                 self._state = ServerSocket.states[self._state]["next"]
                 logging.debug(
                     "%s :\t Reading, current state: %s"
@@ -166,22 +169,26 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         self._socket.close()
 
     def on_finish(self):
-        self._state = self._service.on_finish(self)
+        self._service.on_finish(self)
 
     def on_write(self, socket_data):
-        while (self._state <= constants.SEND_CONTENT_STATE and (
-            ServerSocket.states[self._state]["function"](self)
-        )):
-            print "??"
-            self._state = ServerSocket.states[self._state]["next"]
-            logging.debug(
-                "%s :\t Writing, current state: %s"
-                % (
-                    self,
-                    self._state
+        try:
+            while (self._state <= constants.SEND_CONTENT_STATE and (
+                ServerSocket.states[self._state]["function"](self)
+            )):
+                self._state = ServerSocket.states[self._state]["next"]
+                logging.debug(
+                    "%s :\t Writing, current state: %s"
+                    % (
+                        self,
+                        self._state
+                    )
                 )
-            )
-        http_util.send_buf(self)
+            if self._state != constants.SLEEPING_STATE:
+                http_util.send_buf(self)
+        except:
+            traceback.print_exc()
+            raise
 
     def get_events(self, socket_data):
         event = select.POLLERR
@@ -202,9 +209,9 @@ class ServerSocket(pollable.Pollable, callable.Callable):
 
     def __repr__(self):
         if self._service is None:
-            return "HttpSocket Object: %s" % self._fd
+            return "ServerSocket Object: %s" % self._fd
         return (
-            "HttpSocket Object: %s, %s"
+            "ServerSocket Object: %s, %s"
         ) % (
             self._fd,
             self._service,

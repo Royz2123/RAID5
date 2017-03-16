@@ -7,6 +7,7 @@ import logging
 import os
 import select
 import socket
+import time
 import traceback
 
 from http.common.utilities import constants
@@ -38,7 +39,7 @@ def get_status_state(entry):
         entry.recvd_data[:index].decode('utf-8'),
         entry.recvd_data[index + len(constants.CRLF_BIN):]
     )
-    entry.parent.service.client_update["status"] = status
+    entry.client_update["status"] = status.split(" ")[1]
     entry.recvd_data = rest
     return True
 
@@ -143,7 +144,6 @@ def send_request_state(entry):
         entry.request_context["method"],
         entry.request_context["service"]
     )
-
     if len(entry.request_context["args"]) != 0:
         entry.data_to_send += "?"
 
@@ -152,13 +152,13 @@ def send_request_state(entry):
                 arg_name,
                 arg_content
             )
-        entry.data_to_send[:-1]
+        entry.data_to_send = entry.data_to_send[:-1]
 
     entry.data_to_send += " %s%s" % (
         constants.HTTP_SIGNATURE,
         constants.CRLF_BIN
     )
-
+    return True
 
 
 #OTHER UTIL
@@ -166,7 +166,7 @@ def send_buf(entry):
     try:
         while entry.data_to_send != "":
             entry.data_to_send = entry.data_to_send[
-                entry.socket.send(entry.data_to_send.encode('utf-8')):
+                entry.socket.send(entry.data_to_send):
             ]
     except socket.error, e:
         if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
@@ -179,11 +179,12 @@ def get_buf(entry):
         t = entry.socket.recv(entry.application_context["max_buffer"])
         if not t:
             raise util.Disconnect(
-                'Disconnected while sending content'
+                'Disconnected while recieving content'
             )
         entry.recvd_data += t
 
     except socket.error, e:
+        traceback.print_exc()
         if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
             raise
         logging.debug("%s :\t Haven't finished writing yet" % entry)

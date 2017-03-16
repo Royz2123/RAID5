@@ -81,6 +81,11 @@ def parse_args():
         type=disk,
         nargs='+'
     )
+    parser.add_argument(
+        '--log-file',
+        type=int,
+        default=None,
+    )
     args = parser.parse_args()
     args.base = os.path.normpath(os.path.realpath(args.base))
     return args
@@ -96,15 +101,14 @@ def disk(d):
 
 def main():
     args = parse_args()
-    print args.disks
 
     #delete the previous log
     try:
-        os.remove(LOG_FILE)
+        os.remove(args.log_file)
     except:
         pass
 
-    logging.basicConfig(filename=None, level=logging.DEBUG)
+    logging.basicConfig(filename=args.log_file, level=logging.DEBUG)
 
     #if args.daemon:
     #    daemonize()

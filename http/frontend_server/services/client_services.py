@@ -12,9 +12,21 @@ class BDSReadClientService(base_service.BaseService):
         base_service.BaseService.__init__(self, [])
 
     def handle_content(self, entry, content):
-        entry.parent.service.client_update["content"] += content
+        entry.client_update["content"] += content
+
+    def before_terminate(self, entry):
+        entry.client_update["finished_block"] = True
+
+
+class BDSWriteClientService(base_service.BaseService):
+    def __init__(self):
+        base_service.BaseService.__init__(self, [])
+
+    def before_terminate(self, entry):
+        entry.client_update["finished_block"] = True
 
 
 SERVICES = {
-    "/getblock" : BDSReadClientService
+    "/getblock" : BDSReadClientService,
+    "/setblock" : BDSWriteClientService
 }
