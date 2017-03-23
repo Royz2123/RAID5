@@ -34,12 +34,12 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--bind-address',
-        default='0.0.0.0',
+        default=constants.DEFAULT_HTTP_ADDRESS,
         help='Bind address, default: %(default)s',
     )
     parser.add_argument(
         '--bind-port',
-        default=constants.DEFAULT_HTTP_PORT,
+        default=constants.DEFAULT_BDS_HTTP_PORT,
         type=int,
         help='Bind port, default: %(default)s',
     )
@@ -85,6 +85,7 @@ def parse_args():
 
 def main():
     args = parse_args()
+    args.bind_port += int(args.disk_num)
 
     #delete the previous log
     try:
@@ -95,6 +96,8 @@ def main():
 
     logging.basicConfig(filename=args.log_file, level=logging.DEBUG)
 
+    #check that the disk file is ok before running the server
+    #create file if necessary
     disk_fd = None
     try:
         disk_fd = os.open(
@@ -102,28 +105,27 @@ def main():
             os.O_RDWR | os.O_CREAT,
             0o666
         )
+        os.close(disk_fd)
     except Exception as e:
         logging.critical("Problem opening disk:\t %s" %e)
 
     #if args.daemon:
     #    daemonize()
     if disk_fd is not None:
-        try:
-            application_context = {
-                "bind_address" : args.bind_address,
-                "bind_port" : args.bind_port,
-                "base" : args.base,
-                "poll_type" : POLL_TYPE[args.poll_type],
-                "poll_timeout" : args.poll_timeout,
-                "max_connections" : args.max_connections,
-                "max_buffer" : args.max_buffer,
-                "server_type" : constants.BLOCK_DEVICE_SERVER,
-                "disk_fd" : disk_fd
-            }
-            server = async_server.AsyncServer(application_context)
-            server.run()
-        finally:
-            os.close(disk_fd)
+        application_context = {
+            "bind_address" : args.bind_address,
+            "bind_port" : args.bind_port,
+            "base" : args.base,
+            "poll_type" : POLL_TYPE[args.poll_type],
+            "poll_timeout" : args.poll_timeout,
+            "max_connections" : args.max_connections,
+            "max_buffer" : args.max_buffer,
+            "server_type" : constants.BLOCK_DEVICE_SERVER,
+            "disk_name" : "%s%s" % (constants.DISK_NAME, args.disk_num),
+        }
+        server = async_server.AsyncServer(application_context)
+        server.run()
+
 
 def daemonize():
     child = os.fork()

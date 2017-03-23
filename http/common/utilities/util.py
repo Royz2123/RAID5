@@ -42,6 +42,9 @@ def parse_header(line):
 def send_all(s, buf):
     write(s.fileno(), buf)
 
+def recv_all(s):
+    return read(s.fileno(), constants.BLOCK_SIZE)
+
 
 def recv_line(
     s,

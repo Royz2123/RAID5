@@ -27,23 +27,33 @@ except ImportError:
     urlparse = urllib.parse
 
 
-def find_him(socket_data):
-    here = False
-    for fd, entry in socket_data.items():
-        if "BDSClientSocket" in str(entry):
-            entry.socket.send("we got him")
-            here = True
-    if here:
-        print "HE's HERE"
-        time.sleep(2)
-    else:
-        print "HE's ESCAPED"
-        time.sleep(2)
-
-class AsyncServer():
+class AsyncServer(object):
     def __init__(self, application_context):
         self._application_context = application_context
+        self._socket_data = {}
 
+    def on_start(self):
+        pass
+
+    def run(self):
+        logging.debug("STARTED RUNNING\n\nMOUNTING THE SYSTEM...")
+        try:
+            pass
+            #self.on_start()
+        except Exception as e:
+            logging.critical(
+                (
+                    "MOUNT UNSUCCESSFUL\n\n"
+                    + "Problem whilst mounting the system, failed to"
+                    + "connect to one of the Block Device Servers: %s"
+                ) % (
+                    e
+                )
+            )
+            return
+        logging.debug("FINISHED MOUNTING SUCCESSFULLY")
+
+        #Add a listener
         sl = socket.socket(
             family=socket.AF_INET,
             type=socket.SOCK_STREAM,
@@ -53,24 +63,19 @@ class AsyncServer():
             fcntl.F_SETFL,
             fcntl.fcntl(sl.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK,
         )
-
         sl.bind((
             self._application_context["bind_address"],
             self._application_context["bind_port"]
         ))
         sl.listen(10)
+        self._socket_data[sl.fileno()] = server_socket_listen.ServerSocketListen(
+            sl,
+            constants.LISTEN_STATE,
+            self._application_context,
+        )
 
-        self._socket_data = {
-            sl.fileno() : server_socket_listen.ServerSocketListen(
-                sl,
-                constants.LISTEN_STATE,
-                self._application_context,
-            )
-        }
-
-    def run(self):
-        logging.debug("STARTED RUNNING\n")
-
+        logging.debug("READY FOR REQUESTS")
+        #start running
         while len(self._socket_data):
             try:
                 self.close_needed()
@@ -85,21 +90,21 @@ class AsyncServer():
                     try:
                         #pollable has error
                         if event & (select.POLLHUP | select.POLLERR):
-                            logging.debug("%s :\t Entry has error" % entry)
+                            logging.debug("%s:\tEntry has error" % entry)
                             entry.on_error()
 
                         #pollable has read
                         if event & select.POLLIN:
-                            logging.debug("%s :\t Entry has read" % entry)
+                            logging.debug("%s:\tEntry has read" % entry)
                             entry.on_read(self._socket_data)
 
                         #pollable has write
                         if event & select.POLLOUT:
-                            logging.debug("%s :\t Entry has write" % entry)
+                            logging.debug("%s:\tEntry has write" % entry)
                             entry.on_write(self._socket_data)
 
                     except util.Disconnect as e:
-                        logging.error("%s :\t Socket disconnected, closing...")
+                        logging.error("%s:\tSocket disconnected, closing...")
                         entry.on_close()
 
             except Exception as e:

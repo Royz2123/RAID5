@@ -40,7 +40,16 @@ class BDSClientSocket(pollable.Pollable):
             "service" : client_context["service"],
             "args" : {"blocknum" : client_context["blocknum"]}
         }        #important to request
-        self._service = client_services.SERVICES[client_context["service"]]()
+
+        if client_context["service"] == "/getblock":
+            self._service = client_services.BDSReadClientService(self)
+        elif client_context["service"] == "/setblock":
+            self._service = client_services.BDSWriteClientService(self)
+        else:
+            raise RuntimeError("Unsupported BDS client service")
+
+        self._service._response_headers = {"Content-Length" : len(client_context["content"])}
+        self._service._response_content = client_context["content"]
         self._parent = parent
 
     @property
@@ -213,5 +222,5 @@ class BDSClientSocket(pollable.Pollable):
             "BDSClientSocket Object: %s, %s"
         ) % (
             self._fd,
-            self._service,
+            self._service.__class__.__name__,
         )

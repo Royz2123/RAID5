@@ -11,18 +11,9 @@ import select
 import sys
 import traceback
 
-from http.common.utilities import async_server
 from http.common.utilities import poller
 from http.common.utilities import constants
-
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
+from http.frontend_server import front_server
 
 #files
 NEW_FILE = os.devnull
@@ -40,12 +31,12 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--bind-address',
-        default='0.0.0.0',
+        default=constants.DEFAULT_HTTP_ADDRESS,
         help='Bind address, default: %(default)s',
     )
     parser.add_argument(
         '--bind-port',
-        default=constants.DEFAULT_HTTP_PORT,
+        default=constants.DEFAULT_FRONTEND_HTTP_PORT,
         type=int,
         help='Bind port, default: %(default)s',
     )
@@ -94,13 +85,23 @@ def parse_args():
 def disk(d):
     try:
         address, port = d.split(',')
-        return address, int(port)
+        return str(address), int(port)
     except:
         raise argparse.ArgumentTypeError("Disks must be (address, port)")
 
 
 def main():
     args = parse_args()
+
+    #create disk list of dicts, start them all as offline
+    disks = []
+    for disk_address in args.disks:
+        disks.append({
+            "address" : disk_address,
+            "UUID" : "",
+            "level" : "",
+            "state" : "offline"
+        })
 
     #delete the previous log
     try:
@@ -121,9 +122,9 @@ def main():
         "max_connections" : args.max_connections,
         "max_buffer" : args.max_buffer,
         "server_type" : constants.FRONTEND_SERVER,
-        "disks" : args.disks
+        "disks" : disks
     }
-    server = async_server.AsyncServer(application_context)
+    server = front_server.FrontServer(application_context)
     server.run()
 
 
@@ -134,7 +135,10 @@ def daemonize():
         os._exit(0)
 
     #first close all of parents fds
-    os.closerange(NUMBER_OF_STANDARD_FILES,resource.getrlimit( resource.RLIMIT_NOFILE)[1])
+    os.closerange(
+        NUMBER_OF_STANDARD_FILES,
+        resource.getrlimit(resource.RLIMIT_NOFILE)[1]
+    )
 
     #redirect standards
     try:

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import errno
+import importlib
 import logging
 import os
 import select
@@ -7,13 +8,12 @@ import socket
 import time
 import traceback
 
-from http.bds_server.services import bds_services
 from http.common.pollables import callable
 from http.common.pollables import pollable
 from http.common.utilities import constants
 from http.common.utilities import http_util
 from http.common.utilities import util
-from http.frontend_server.services import frontend_services
+from http.common.services import base_service
 
 # python-3 woodo
 try:
@@ -104,7 +104,6 @@ class ServerSocket(pollable.Pollable, callable.Callable):
     def fd(self):
         return self._fd
 
-
     def on_error(self):
         self._state = constants.CLOSING_STATE
 
@@ -186,9 +185,11 @@ class ServerSocket(pollable.Pollable, callable.Callable):
                 )
             if self._state != constants.SLEEPING_STATE:
                 http_util.send_buf(self)
-        except:
+        except Exception as e:
             traceback.print_exc()
-            raise
+            logging.error("%s :\t Closing socket, got : %s " % (self, e))
+            self.on_error()
+            #no point in adding status, already started sending
 
     def get_events(self, socket_data):
         event = select.POLLERR
@@ -201,7 +202,8 @@ class ServerSocket(pollable.Pollable, callable.Callable):
 
         if (
             self._state >= constants.SEND_STATUS_STATE and
-            self._state <= constants.SEND_CONTENT_STATE
+            self._state <= constants.SEND_CONTENT_STATE or
+            self._state == constants.CLOSING_STATE
         ):
             event |= select.POLLOUT
         return event
@@ -214,7 +216,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             "ServerSocket Object: %s, %s"
         ) % (
             self._fd,
-            self._service,
+            self._service.__class__.__name__,
         )
 
 
@@ -244,39 +246,29 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         parse = urlparse.urlparse(self._request_context["uri"])
         self._request_context["args"] = urlparse.parse_qs(parse.query)
 
-        if (
+        for service in constants.MODULE_DICT[
             self._application_context["server_type"]
-            == constants.BLOCK_DEVICE_SERVER
-        ):
-            services = bds_services
-        elif (
-            self._application_context["server_type"]
-            == constants.FRONTEND_SERVER
-        ):
-            services = frontend_services
-        else:
-            raise RuntimeError(
-                "Unsupported server_type %s"
-                % (
-                    self._application_context["server_type"]
-                )
-            )
+        ]:
+            importlib.import_module(service)
 
-        if parse.path in services.SERVICES.keys():
+        services = {}
+        for service_class in base_service.BaseService.__subclasses__():
+            services[service_class.get_name()] = service_class
+
+        if parse.path in services.keys():
             if parse.path in ("/disk_read", "/disk_write"):
-                self._service = services.SERVICES[parse.path](
+                self._service = services[parse.path](
                     self,
                     self._socket_data,
                     self._request_context["args"]
                 )
             elif len(self._request_context["args"].keys()):
-                self._service = services.SERVICES[parse.path](self._request_context["args"])
+                self._service = services[parse.path](
+                    self,
+                    self._request_context["args"]
+                )
             else:
-                self._service = services.SERVICES[parse.path]()
-
-
-        elif self._request_context["method"] == "POST":
-            self._service = services.FileFormService()
+                self._service = services[parse.path](self)
 
         else:
             file_name = os.path.normpath(
@@ -287,8 +279,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             )
             #if file_name[:len(base)+1] != base + '\\':
             #    raise RuntimeError("Malicious URI %s" % self._request[1])
-
-            self._service = services.GetFileService(file_name)
+            self._service = services["/get_file"](self, file_name)
 
 
 # vim: expandtab tabstop=4 shiftwidth=4

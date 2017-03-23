@@ -10,6 +10,8 @@ import socket
 import time
 import traceback
 
+import html_util
+
 from http.common.utilities import constants
 from http.common.utilities import util
 
@@ -65,7 +67,6 @@ def get_headers_state(entry):
     entry.request_context["headers"] = {}
     for index in range(len(lines)):
         line = lines[index]
-
         if (
             len(entry.request_context["headers"].items()) >
             constants.MAX_NUMBER_OF_HEADERS
@@ -92,7 +93,6 @@ def get_content_state(entry):
         int(entry.request_context["headers"]["Content-Length"]) -
         len(entry.recvd_data)
     )
-
     entry.service.handle_content(entry, entry.recvd_data)
     entry.recvd_data = ""
 
@@ -194,15 +194,21 @@ def add_status(entry, code, extra):
     entry.data_to_send += (
         (
             '%s %s %s\r\n'
-            'Content-Type: text/plain\r\n'
+            'Content-Type: text/html\r\n'
             '\r\n'
-            'Error %s %s\r\n'
+            '%s\r\n'
         ) % (
             constants.HTTP_SIGNATURE,
             code,
             STATUS_CODES[code],
-            code,
-            STATUS_CODES[code],
+            html_util.make_html_page(
+                (
+                    "Error %s %s\r\n %s"
+                ) % (
+                    code,
+                    STATUS_CODES[code],
+                    extra
+                )
+            )
         )
     )
-    entry.data_to_send += ('%s' % extra)
