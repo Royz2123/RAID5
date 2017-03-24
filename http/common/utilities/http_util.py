@@ -201,7 +201,7 @@ def add_status(entry, code, extra):
             constants.HTTP_SIGNATURE,
             code,
             STATUS_CODES[code],
-            html_util.make_html_page(
+            html_util.create_html_page(
                 (
                     "Error %s %s\r\n %s"
                 ) % (

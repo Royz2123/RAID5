@@ -46,15 +46,27 @@ MODULE_DICT = {
         "http.common.services.get_file_service",
     ],
     FRONTEND_SERVER : [
+        "http.frontend_server.services.toggle_state_service",
         "http.frontend_server.services.read_disk_service",
         "http.frontend_server.services.write_disk_service",
         "http.frontend_server.services.mul_service",
         "http.frontend_server.services.time_service",
+        "http.frontend_server.services.management_service",
         "http.common.services.get_file_service",
         "http.common.services.form_service",
     ],
 }
 
+#DISK STATES
+(
+    OFFLINE,
+    ONLINE,
+) = range(2)
+
+DISK_STATES = {
+    OFFLINE : "offline",
+    ONLINE : "online"
+}
 
 #HTTP STATES:
 (

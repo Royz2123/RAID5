@@ -9,17 +9,20 @@ import traceback
 from http.common.utilities import constants
 
 
-def make_html_page(content):
+def create_html_page(
+    content,
+    header=constants.HTML_ERROR_HEADER
+):
     return (
         "<HTML><HEAD><TITLE>%s</TITLE></HEAD><BODY>%s</BODY></HTML>"
         % (
-            constants.HTML_ERROR_HEADER,
+            header,
             content
         )
     )
 
 
-def create_disks_table(self, disks):
+def create_disks_table(disks):
     table = '<table border="5" width="50%" cellpadding="4" cellspacing="3">'
     table += '<tr><th colspan="5"><br><h3> Manage Disks </h3></th></tr>'
     table += '<tr><th colspan="5"> Disks: %s </th></tr>' % len(disks)
@@ -35,18 +38,22 @@ def create_disks_table(self, disks):
             "State",
         )
     )
-    disk_num = 1
+    disk_num = 0
     for disk in disks:
-        table += '<tr align="center"> %s </tr>' % (
-            '<td rowspan="2"> %s </td>' % disk_num +
-            "<td> %s </td>" % disk["address"] +
-            "<td> %s </td>" % disk["UUID"] +
-            "<td> %s </td>" % disk["level"] +
-            '<td rowspan="2"> %s,\t Toggle: %s </td>' % (
-                disk["state"],
-                toggle_state_form(
-                    disk_num,
-                    disk["state"]
+        table += (
+            (
+                '<tr align="center"> %s </tr>'
+            ) % (
+                '<td> %s </td>' % disk_num +
+                "<td> %s </td>" % str(disk["address"]) +
+                "<td> %s </td>" % disk["UUID"] +
+                "<td> %s </td>" % disk["level"] +
+                '<td> %s,\t Toggle: %s </td>' % (
+                    constants.DISK_STATES[disk["state"]],
+                    toggle_state_form(
+                        disk_num,
+                        disk["state"]
+                    )
                 )
             )
         )
@@ -54,16 +61,14 @@ def create_disks_table(self, disks):
     return table
 
 def toggle_state_form(disk_num, disk_state):
-    new_disk_state = "online"
-    if disk_state == "online":
-        new_disk_state = "offline"
+    new_disk_state = not disk_state
 
     return (
-        '<form action="togglestate" enctype="multipart/form-data" method="GET">'
-        + '<input type="hidden" name="disk_num" value=%s>'
+        '<form action="/togglestate" enctype="multipart/form-data" method="GET">'
+        + '<input type="hidden" name="disknum" value=%s>'
         + '<input type="submit" value=%s>'
         + '</form>'
     ) % (
         disk_num,
-        new_disk_state
+        constants.DISK_STATES[new_disk_state]
     )

@@ -42,7 +42,7 @@ class FrontServer(async_server.AsyncServer):
                     constants.CRLF_BIN,
                 ))[1].split(constants.CRLF_BIN)
 
-                disk["state"] = "online"
+                disk["state"] = constants.ONLINE
                 disk["level"] = disk_info[0]
                 disk["UUID"] = disk_info[disk_num + 1]
                 disk["peers"] = constants.CRLF_BIN.join(disk_info[1:])     #this includes the current disk too!

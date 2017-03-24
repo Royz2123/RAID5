@@ -100,7 +100,7 @@ def main():
             "address" : disk_address,
             "UUID" : "",
             "level" : "",
-            "state" : "offline"
+            "state" : constants.OFFLINE
         })
 
     #delete the previous log

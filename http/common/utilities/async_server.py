@@ -43,8 +43,8 @@ class AsyncServer(object):
         except Exception as e:
             logging.critical(
                 (
-                    "MOUNT UNSUCCESSFUL\n\n"
-                    + "Problem whilst mounting the system, failed to"
+                    "MOUNT UNSUCCESSFUL:\n"
+                    + "Problem whilst mounting the system, failed to "
                     + "connect to one of the Block Device Servers: %s"
                 ) % (
                     e

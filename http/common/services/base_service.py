@@ -2,7 +2,7 @@
 class BaseService(object):
     def __init__(
         self,
-        wanted_headers,
+        wanted_headers = [],
         wanted_args = [],
         args = {}
     ):

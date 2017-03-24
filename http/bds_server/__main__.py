@@ -4,19 +4,10 @@ import logging
 import os
 import traceback
 
-from ..common.utilities import async_server
-from ..common.utilities import constants
-from ..common.utilities import poller
-from ..common.utilities import util
-
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
+from http.bds_server import block_device_server
+from http.common.utilities import constants
+from http.common.utilities import poller
+from http.common.utilities import util
 
 #files
 NEW_FILE = os.devnull
@@ -96,35 +87,41 @@ def main():
 
     logging.basicConfig(filename=args.log_file, level=logging.DEBUG)
 
-    #check that the disk file is ok before running the server
+    #check that the disk file and dis info file is ok before running the server
     #create file if necessary
-    disk_fd = None
     try:
         disk_fd = os.open(
             "%s%s" % (constants.DISK_NAME, args.disk_num),
-            os.O_RDWR | os.O_CREAT,
+            os.O_RDONLY | os.O_CREAT,
             0o666
         )
+        disk_info_fd = os.open(
+            "%s%s" % (constants.DISK_INFO_NAME, args.disk_num),
+            os.O_RDONLY | os.O_CREAT,
+            0o666
+        )
+        os.close(disk_info_fd)
         os.close(disk_fd)
     except Exception as e:
-        logging.critical("Problem opening disk:\t %s" %e)
+        logging.critical("BLOCK DEVICE STARTUP UNSUCCESSFUL:\t %s" % e)
+        return
 
     #if args.daemon:
     #    daemonize()
-    if disk_fd is not None:
-        application_context = {
-            "bind_address" : args.bind_address,
-            "bind_port" : args.bind_port,
-            "base" : args.base,
-            "poll_type" : POLL_TYPE[args.poll_type],
-            "poll_timeout" : args.poll_timeout,
-            "max_connections" : args.max_connections,
-            "max_buffer" : args.max_buffer,
-            "server_type" : constants.BLOCK_DEVICE_SERVER,
-            "disk_name" : "%s%s" % (constants.DISK_NAME, args.disk_num),
-        }
-        server = async_server.AsyncServer(application_context)
-        server.run()
+    application_context = {
+        "bind_address" : args.bind_address,
+        "bind_port" : args.bind_port,
+        "base" : args.base,
+        "poll_type" : POLL_TYPE[args.poll_type],
+        "poll_timeout" : args.poll_timeout,
+        "max_connections" : args.max_connections,
+        "max_buffer" : args.max_buffer,
+        "server_type" : constants.BLOCK_DEVICE_SERVER,
+        "disk_name" : "%s%s" % (constants.DISK_NAME, args.disk_num),
+        "disknum" : args.disk_num
+    }
+    server = block_device_server.BlockDeviceServer(application_context)
+    server.run()
 
 
 def daemonize():
