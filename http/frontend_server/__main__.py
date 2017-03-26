@@ -11,9 +11,9 @@ import select
 import sys
 import traceback
 
+from http.common.utilities import async_server
 from http.common.utilities import poller
 from http.common.utilities import constants
-from http.frontend_server import front_server
 
 #files
 NEW_FILE = os.devnull
@@ -67,12 +67,6 @@ def parse_args():
         default=1000,
     )
     parser.add_argument(
-        '--disks',
-        help="disks: address1,port1 address2,port2 ...",
-        type=disk,
-        nargs='+'
-    )
-    parser.add_argument(
         '--log-file',
         type=int,
         default=None,
@@ -82,26 +76,8 @@ def parse_args():
     return args
 
 
-def disk(d):
-    try:
-        address, port = d.split(',')
-        return str(address), int(port)
-    except:
-        raise argparse.ArgumentTypeError("Disks must be (address, port)")
-
-
 def main():
     args = parse_args()
-
-    #create disk list of dicts, start them all as offline
-    disks = []
-    for disk_address in args.disks:
-        disks.append({
-            "address" : disk_address,
-            "UUID" : "",
-            "level" : "",
-            "state" : constants.OFFLINE
-        })
 
     #delete the previous log
     try:
@@ -122,9 +98,9 @@ def main():
         "max_connections" : args.max_connections,
         "max_buffer" : args.max_buffer,
         "server_type" : constants.FRONTEND_SERVER,
-        "disks" : disks
+        "disks" : []
     }
-    server = front_server.FrontServer(application_context)
+    server = async_server.AsyncServer(application_context)
     server.run()
 
 

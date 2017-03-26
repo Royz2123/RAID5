@@ -44,6 +44,7 @@ MODULE_DICT = {
         "http.bds_server.services.get_block_service",
         "http.bds_server.services.set_block_service",
         "http.common.services.get_file_service",
+        "http.common.services.form_service",        
     ],
     FRONTEND_SERVER : [
         "http.frontend_server.services.toggle_state_service",
@@ -51,6 +52,7 @@ MODULE_DICT = {
         "http.frontend_server.services.write_disk_service",
         "http.frontend_server.services.mul_service",
         "http.frontend_server.services.time_service",
+        "http.frontend_server.services.init_service",
         "http.frontend_server.services.management_service",
         "http.common.services.get_file_service",
         "http.common.services.form_service",

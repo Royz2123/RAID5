@@ -175,6 +175,9 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             while (self._state <= constants.SEND_CONTENT_STATE and (
                 ServerSocket.states[self._state]["function"](self)
             )):
+                if self._state == constants.SLEEPING_STATE:
+                    return
+
                 self._state = ServerSocket.states[self._state]["next"]
                 logging.debug(
                     "%s :\t Writing, current state: %s"
@@ -236,6 +239,8 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             )
 
         if not uri or uri[0] != '/' or '\\' in uri:
+            print uri
+            time.sleep(3)
             raise RuntimeError("Invalid URI")
 
         #update request
@@ -256,7 +261,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             services[service_class.get_name()] = service_class
 
         if parse.path in services.keys():
-            if parse.path in ("/disk_read", "/disk_write"):
+            if parse.path in ("/disk_read", "/disk_write", "/init"):
                 self._service = services[parse.path](
                     self,
                     self._socket_data,

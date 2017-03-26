@@ -2,6 +2,7 @@
 import errno
 import os
 import socket
+import time
 
 from http.common.utilities import constants
 
@@ -14,6 +15,13 @@ except ImportError:
     import urllib.parse
     urlparse = urllib.parse
 
+
+def make_address(add):
+    try:
+        address, port = add.split(',')
+        return (str(address), int(port))
+    except:
+        return False
 
 def spliturl(url):
     return urlparse.urlsplit(url)
@@ -68,12 +76,6 @@ def recv_line(
     return buf[:n].decode('utf-8'), buf[n + len(constants.CRLF_BIN):]
 
 
-def parse_header(line):
-    SEP = ':'
-    n = line.find(SEP)
-    if n == -1:
-        raise RuntimeError('Invalid header received')
-    return line[:n].rstrip(), line[n + len(SEP):].lstrip()
 
 
 class Disconnect(RuntimeError):

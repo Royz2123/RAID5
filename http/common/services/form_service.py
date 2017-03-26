@@ -12,6 +12,7 @@ import traceback
 from http.common.services import base_service
 from http.common.utilities import constants
 from http.common.utilities import util
+from http.common.utilities import post_util
 from http.frontend_server.pollables import bds_client_socket
 
 
@@ -37,7 +38,7 @@ class FileFormService(base_service.BaseService):
 
     @staticmethod
     def get_name():
-        return "fileupload"
+        return "/fileupload"
 
     def before_content(self, entry):
         content_type = entry.request_context["headers"]["Content-Type"]
@@ -87,7 +88,7 @@ class FileFormService(base_service.BaseService):
             name, info = field.split('=', 1)
             #the info part is surrounded by parenthesies
             info = info[1:-1]
-
+            print name
             if name == "filename":
                 self._filename = info
                 self._fd = os.open(
@@ -116,11 +117,17 @@ class FileFormService(base_service.BaseService):
 
     def content_state(self):
         #first we must check if there are any more mid - boundaries
-        if self._content.find(self.mid_boundary()) != -1:
-            buf = self._content.split(self.mid_boundary(), 1)[0]
+        if self._content.find(post_util.mid_boundary(self._boundary)) != -1:
+            buf = self._content.split(
+                post_util.mid_boundary(self._boundary),
+                1,
+            )[0]
             next_state = 1
-        elif self._content.find(self.end_boundary()) != -1:
-            buf = self._content.split(self.end_boundary(), 1)[0]
+        elif self._content.find(post_util.end_boundary(self._boundary)) != -1:
+            buf = self._content.split(
+                post_util.end_boundary(self._boundary),
+                1,
+            )[0]
             next_state = 2
         else:
             buf = self._content
@@ -133,8 +140,10 @@ class FileFormService(base_service.BaseService):
         self._content = self._content[len(buf):]
 
         if next_state == 1:
-            self._content = self._content.split(self.mid_boundary(), 1)[1]
-
+            self._content = self._content.split(
+                post_util.mid_boundary(self._boundary),
+                1
+            )[1]
 
         return next_state
 

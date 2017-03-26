@@ -4,7 +4,7 @@ import logging
 import os
 import traceback
 
-from http.bds_server import block_device_server
+from http.common.utilities import async_server
 from http.common.utilities import constants
 from http.common.utilities import poller
 from http.common.utilities import util
@@ -95,12 +95,6 @@ def main():
             os.O_RDONLY | os.O_CREAT,
             0o666
         )
-        disk_info_fd = os.open(
-            "%s%s" % (constants.DISK_INFO_NAME, args.disk_num),
-            os.O_RDONLY | os.O_CREAT,
-            0o666
-        )
-        os.close(disk_info_fd)
         os.close(disk_fd)
     except Exception as e:
         logging.critical("BLOCK DEVICE STARTUP UNSUCCESSFUL:\t %s" % e)
@@ -120,7 +114,7 @@ def main():
         "disk_name" : "%s%s" % (constants.DISK_NAME, args.disk_num),
         "disknum" : args.disk_num
     }
-    server = block_device_server.BlockDeviceServer(application_context)
+    server = async_server.AsyncServer(application_context)
     server.run()
 
 

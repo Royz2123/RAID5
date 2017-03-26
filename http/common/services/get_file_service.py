@@ -36,7 +36,7 @@ class GetFileService(base_service.BaseService):
                     'application/octet-stream',
                 )
             }
-        except IOError as e:
+        except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
             logging.error("%s :\t File not found " % entry)

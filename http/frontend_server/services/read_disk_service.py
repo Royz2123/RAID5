@@ -50,7 +50,7 @@ class ReadFromDiskService(base_service.BaseService):
         for disk in self._disks:
             self._client_updates.append(
                 {
-                    "finished_block" : False,
+                    "finished" : False,
                     "status" : "",
                     "content" : ""
                 }
@@ -61,7 +61,9 @@ class ReadFromDiskService(base_service.BaseService):
         for disknum in range(len(self._disks)):
             self._client_contexts.append(
                 {
-                    "blocknum" : self._current_block,
+                    "headers" : {},
+                    "method" : "GET",
+                    "args" : {"blocknum" : self._current_block},
                     "disknum" : disknum,
                     "disk_address" : self._disks[disknum]["address"],
                     "service" : "/getblock",
@@ -93,7 +95,7 @@ class ReadFromDiskService(base_service.BaseService):
             ):
                 if (
                     disknum != self._current_phy_disk
-                    and not client_update["finished_block"]
+                    and not client_update["finished"]
                 ):
                     return
 

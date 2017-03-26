@@ -59,7 +59,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         for disk in self._disks:
             self._client_updates.append(
                 {
-                    "finished_block" : False,
+                    "finished" : False,
                     "content" : "",
                     "status" : "",
                 }
@@ -70,7 +70,9 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         for disknum in range(len(self._disks)):
             self._client_contexts.append(
                 {
-                    "blocknum" : self._current_block,
+                    "headers" : {},
+                    "method" : "GET",
+                    "args" : {"blocknum" : self._current_block},
                     "disknum" : disknum,
                     "disk_address" : self._disks[disknum]["address"],
                     "service" : "/setblock",
@@ -133,8 +135,8 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
     def on_finish(self, entry):
         if self._block_mode == WriteToDiskService.REGULAR:
             if (
-                not self._client_updates[self._current_phy_disk]["finished_block"]
-                or not self._client_updates[self._current_phy_parity_disk]["finished_block"]
+                not self._client_updates[self._current_phy_disk]["finished"]
+                or not self._client_updates[self._current_phy_parity_disk]["finished"]
             ):
                 return
 
@@ -172,7 +174,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
             ):
                 if (
                     disknum != self._current_phy_disk
-                    and not client_update["finished_block"]
+                    and not client_update["finished"]
                 ):
                     return
         '''

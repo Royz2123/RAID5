@@ -13,19 +13,29 @@ $ - *NIX
 By being in specific directory:
 
 > cd [location of http parent]
-> python -m http.client [args]
-> python -m http.server [args]
+
+RUNNING FRONTEND SERVER
+> python -m http.frontend_server [args]
+RUNNING BLOCK DEVICE SERVER
+> python -m http.bds_server [args]
 
 $ cd [location of http parent]
-$ python -m http.client [args]
-$ python -m http.server [args]
+
+RUNNING FRONTEND SERVER
+$ python -m http.frontend_server [args]
+RUNNING BLOCK DEVICE SERVER
+$ python -m http.bds_server [args]
 
 By modifying python path:
 
 > set PYTHONPATH=[location of http parent]
-> python -m http.client [args]
-> python -m http.server [args]
+RUNNING FRONTEND SERVER
+> python -m http.frontend_server [args]
+RUNNING BLOCK DEVICE SERVER
+> python -m http.bds_server [args]
 
 $ PYTHONPATH=[location of http parent] \
-    python -m http.client [args]
-    python -m http.server [args]
+    RUNNING FRONTEND SERVER
+    python -m http.frontend_server [args]
+    RUNNING BLOCK DEVICE SERVER
+    python -m http.bds_server [args]

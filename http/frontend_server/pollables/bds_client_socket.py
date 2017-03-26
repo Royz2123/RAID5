@@ -7,6 +7,7 @@ import logging
 import os
 import select
 import socket
+import time
 import traceback
 
 from http.frontend_server.services import client_services
@@ -36,20 +37,25 @@ class BDSClientSocket(pollable.Pollable):
         self._request_context = {
             "headers" : {},
             "status": "uknown",
-            "method" : "GET",
+            "method" : client_context["method"],
             "service" : client_context["service"],
-            "args" : {"blocknum" : client_context["blocknum"]}
+            "args" : client_context["args"]
         }        #important to request
 
         if client_context["service"] == "/getblock":
             self._service = client_services.BDSReadClientService(self)
         elif client_context["service"] == "/setblock":
             self._service = client_services.BDSWriteClientService(self)
+        elif client_context["method"] == "POST":
+            self._service = client_services.BDSPostClientService(self)
         else:
-            raise RuntimeError("Unsupported BDS client service")
+            self._service = client_services.BDSGetFileService(self)
 
-        self._service._response_headers = {"Content-Length" : len(client_context["content"])}
-        self._service._response_content = client_context["content"]
+        self._service.response_headers = {
+            "Content-Length" : len(client_context["content"])
+        }
+        self._service.response_headers.update(client_context["headers"])
+        self._service.response_content = client_context["content"]
         self._parent = parent
 
     @property

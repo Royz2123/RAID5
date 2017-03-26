@@ -117,7 +117,7 @@ def send_status_state(entry):
 
 def send_headers_state(entry):
     entry.service.before_response_headers(entry)
-    headers = entry.service._response_headers
+    headers = entry.service.response_headers
     headers.update(constants.CACHE_HEADERS)
 
     for header, content in headers.items():
