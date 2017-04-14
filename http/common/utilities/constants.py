@@ -23,6 +23,9 @@ DISK_INFO_NAME =  "http/bds_server/disks/disk_info"
 TMP_FILE_NAME = "tmp_file"
 
 HTML_ERROR_HEADER = "Disk Error"
+HTML_MANAGEMENT_HEADER = "Management"
+
+DEFAULT_REFRESH_TIME = 1
 
 CACHE_HEADERS = {
     "Cache-Control" : "no-cache, no-store, must-revalidate",

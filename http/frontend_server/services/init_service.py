@@ -133,7 +133,8 @@ class InitService(base_service.BaseService):
         #Re-send the management part
         self._response_content = html_util.create_html_page(
             html_util.create_disks_table(entry.application_context["disks"]),
-            "Disk Management"
+            constants.HTML_MANAGEMENT_HEADER,
+            constants.DEFAULT_REFRESH_TIME
         )
 
         self._response_headers = {

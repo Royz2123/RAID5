@@ -10,11 +10,23 @@ from http.common.utilities import constants
 
 def create_html_page(
     content,
-    header=constants.HTML_ERROR_HEADER
+    header=constants.HTML_ERROR_HEADER,
+    refresh=None
 ):
+    refresh_header = ""
+    if refresh is not None:
+        refresh_header = (
+            "<meta http-equiv='refresh' content='%s'>"
+            % (
+                refresh
+            )
+        )
     return (
-        "<HTML><HEAD><TITLE>%s</TITLE></HEAD><BODY>%s</BODY></HTML>"
-        % (
+        (
+            "<HTML><HEAD>%s<TITLE>%s</TITLE></HEAD>"
+            + "<BODY>%s</BODY></HTML>"
+        )% (
+            refresh_header,
             header,
             content
         )
