@@ -44,37 +44,56 @@ def create_disks_table(disks):
             "State",
         )
     )
-    disk_num = 0
+    disknum = 0
     for disk in disks:
-        table += (
-            (
-                '<tr align="center"> %s </tr>'
-            ) % (
-                '<td> %s </td>' % disk_num +
-                "<td> %s </td>" % str(disk["address"]) +
-                "<td> %s </td>" % disk["disk_UUID"] +
-                "<td> %s </td>" % disk["level"] +
-                '<td> %s,\t Toggle: %s </td>' % (
-                    constants.DISK_STATES[disk["state"]],
-                    toggle_state_form(
-                        disk_num,
-                        disk["state"]
+        if disk["state"] == constants.ONLINE:
+            table += (
+                (
+                    '<tr align="center"> %s </tr>'
+                ) % (
+                    '<td> %s </td>' % disknum +
+                    "<td> %s </td>" % str(disk["address"]) +
+                    "<td> %s </td>" % disk["disk_UUID"] +
+                    "<td> %s </td>" % disk["level"] +
+                    '<td> %s\t : %s </td>' % (
+                        constants.DISK_STATES[disk["state"]],
+                        disconnect_form(
+                            disknum,
+                        )
                     )
                 )
             )
-        )
-        disk_num += 1
+        else:
+            table += (
+                (
+                    '<tr align="center"> %s </tr>'
+                ) % (
+                    '<td> %s </td>' % disknum
+                    + '<td colspan="4"><br> %s </td>' % (
+                        connect_form(disknum)
+                    )
+                )
+            )
+        disknum += 1
     return table
 
-def toggle_state_form(disk_num, disk_state):
-    new_disk_state = not disk_state
-
+def disconnect_form(disk_num):
     return (
-        '<form action="/togglestate" enctype="multipart/form-data" method="GET">'
+        '<form action="/disconnect" enctype="multipart/form-data" method="GET">'
         + '<input type="hidden" name="disknum" value=%s>'
-        + '<input type="submit" value=%s>'
+        + '<input type="submit" value="Disconnect">'
         + '</form>'
     ) % (
         disk_num,
-        constants.DISK_STATES[new_disk_state]
+    )
+
+def connect_form(disk_num):
+    return (
+        '<form action="/connect" enctype="multipart/form-data" method="GET">'
+        + '<input type="hidden" name="disknum" value=%s>Address: '
+        + '<input type="text" name="address">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'
+        + '<input type="submit" value="Connect">'
+        + '</form>'
+    ) % (
+        disk_num,
     )

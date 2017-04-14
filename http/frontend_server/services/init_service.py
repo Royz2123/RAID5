@@ -16,9 +16,9 @@ from http.common.utilities import constants
 from http.common.utilities import html_util
 from http.common.utilities import post_util
 from http.common.utilities import util
-from http.frontend_server.pollables import bds_client_socket
+from http.frontend_server.utilities import disk_manager
+from http.frontend_server.utilities import cache
 from http.frontend_server.utilities import disk_util
-
 
 class InitService(base_service.BaseService):
     (
@@ -43,76 +43,61 @@ class InitService(base_service.BaseService):
         self._state = InitService.SETUP_STATE
         self._mode = None
 
-        self._client_updates = []
-        self._client_contexts = []
+        self._disk_manager = None
+        self._client_contexts = {}
 
     @staticmethod
     def get_name():
         return "/init"
 
     def reset_client_contexts(self):
-        self._client_contexts = []
+        self._client_contexts = {}
         for disknum in range(len(self._disks)):
-            self._client_contexts.append(
-                {
-                    "headers" : {},
-                    "args" : {},
-                    "disknum" : disknum,
-                    "disk_address" : self._disks[disknum]["address"],
-                    "method" : "GET",
-                    "service" : "/%s%s" % (
-                        constants.DISK_INFO_NAME,
-                        disknum,
-                    ),
-                    "content" : ""
-                }
-            )
+            self._client_contexts[disknum] = {
+                "headers" : {},
+                "args" : {},
+                "disknum" : disknum,
+                "disk_address" : self._disks[disknum]["address"],
+                "method" : "GET",
+                "service" : "/%s%s" % (
+                    constants.DISK_INFO_NAME,
+                    disknum,
+                ),
+                "content" : ""
+            }
 
-    def reset_client_updates(self):
-        self._client_updates = []
-        for disk in self._disks:
-            self._client_updates.append(
-                {
-                    "finished" : False,
-                    "status" : "",
-                    "content" : "",
-                }
-            )
 
     def on_finish(self, entry):
-        if self._state == InitService.SETUP_STATE:
-            #probably should raise some kind of error,
-            #woke up when only one BDSClientSocket was active
-            if not self._client_updates[0]["finished"]:
-                return
+        if not self._disk_manager.check_if_finished():
+            return
+        client_responses = self._disk_manager.get_responses()
 
-            if self._client_updates[0]["status"] == "200":
+        if self._state == InitService.SETUP_STATE:
+            if self._disk_manager.check_common_status_code("200"):
                 self._mode = InitService.EXISTING_MODE
                 logging.debug("SYSTEM INITIALIZING FROM EXISTING MODE")
-            elif self._client_updates[0]["status"] == "404":
+            elif self._disk_manager.check_common_status_code("404"):
                 self._mode = InitService.SCRATCH_MODE
                 logging.debug("SYSTEM INITIALIZING FROM SCRATCH MODE")
             else:
                 raise RuntimeError(
-                    "Block Device Server raised an error: %s"
+                    "Block Device Server sent a bad status code: %s"
                     % (
-                        self._client_updates[0]["status"]
+                        client_responses[0]["status"]
                     )
                 )
 
         elif self._state == InitService.HANDLE_INFO_STATE:
             #check if got a response from ALL of the
             #block devices:
-            for update in self._client_updates:
-                if not update["finished"]:
-                    return
-                if update["status"] != "200":
-                    raise RuntimeError(
-                        "Block Device Server raised an error: %s"
-                        % (
-                            update["status"]
-                        )
+            if not self._disk_manager.check_common_status_code("200"):
+                raise RuntimeError(
+                    "Block Device Server sent a bad status code: %s"
+                    % (
+                        client_responses[0]["status"]
                     )
+                )
+
         self._state = InitService.STATES[self._state]["next"]
         entry.state = constants.SEND_STATUS_STATE
 
@@ -127,7 +112,8 @@ class InitService(base_service.BaseService):
                 "disk_UUID" : "",
                 "common_UUID" : "",
                 "level" : "",
-                "state" : constants.OFFLINE
+                "state" : constants.OFFLINE,
+                "cache" : cache.Cache(),
             })
 
         if len(self._disks) < 2:
@@ -136,15 +122,11 @@ class InitService(base_service.BaseService):
         #create client with the first address in order to classify mode
         #Now that disks have been established we can proceed
         self.reset_client_contexts()
-        self.reset_client_updates()
-
-        disk_util.DiskUtil.add_bds_client(
+        self._disk_manager = disk_manager.DiskManager(
+            self._socket_data,
             entry,
-            self._client_contexts[0],
-            self._client_updates[0],
-            self._socket_data
+            {0 : self._client_contexts[0]}
         )
-        entry.state = constants.SLEEPING_STATE
         return False
 
     def before_response_headers(self, entry):
@@ -193,7 +175,7 @@ class InitService(base_service.BaseService):
         for disk in self._disks:
             disk["common_UUID"] = common_uuid
             disk["state"] = constants.ONLINE
-            disk["level"] = "0"
+            disk["level"] = 0
             disk["disk_UUID"] = str(uuid.uuid4())
             disks_uuids.append(disk["disk_UUID"])
 
@@ -215,27 +197,9 @@ class InitService(base_service.BaseService):
                 disknum,
                 disks_uuids
             )
-            disk_util.DiskUtil.add_bds_client(
-                entry,
-                self._client_contexts[disknum],
-                self._client_updates[disknum],
-                self._socket_data
-            )
 
     def handle_info_existing_mode(self, entry):
         self.reset_client_contexts()
-        self.reset_client_updates()
-
-        for disknum in range(len(self._disks)):
-            disk_util.DiskUtil.add_bds_client(
-                entry,
-                self._client_contexts[disknum],
-                self._client_updates[disknum],
-                self._socket_data
-            )
-        entry.state = constants.SLEEPING_STATE
-        return True
-
 
     def mount_scratch_mode(self, entry):
         #already mounted in handle info
@@ -243,10 +207,11 @@ class InitService(base_service.BaseService):
 
     def mount_existing_mode(self, entry):
         #make the disk data easily accessible
+        client_responses = self._disk_manager.get_responses()
         disks_data = []
         for disknum in range(len(self._disks)):
             disks_data.append(
-                self._client_updates[disknum]["content"].split(
+                client_responses[disknum]["content"].split(
                     constants.CRLF_BIN
                 )
             )
@@ -290,10 +255,11 @@ class InitService(base_service.BaseService):
 
         #All the checks came back positive, ready to update disks
         for disknum in range(len(self._disks)):
-            self._disks[disknum]["level"] = disks_data[disknum][0]
+            self._disks[disknum]["level"] = int(disks_data[disknum][0])
             self._disks[disknum]["common_UUID"] = disks_data[disknum][1]
             self._disks[disknum]["disk_UUID"] = disks_data[disknum][2]
             self._disks[disknum]["state"] = constants.ONLINE
+
 
     def handle_info_state(self, entry):
         MODES = {
@@ -301,7 +267,12 @@ class InitService(base_service.BaseService):
             InitService.EXISTING_MODE : InitService.handle_info_existing_mode
         }
         MODES[self._mode](self, entry)
-        entry.state = constants.SLEEPING_STATE
+        #after info has been set, we can create a disk_manager:
+        self._disk_manager = disk_manager.DiskManager(
+            self._socket_data,
+            entry,
+            self._client_contexts
+        )
         return False
 
     def mount_state(self, entry):

@@ -42,15 +42,7 @@ class BDSClientSocket(pollable.Pollable):
             "args" : client_context["args"]
         }        #important to request
 
-        if client_context["service"] == "/getblock":
-            self._service = client_services.BDSReadClientService(self)
-        elif client_context["service"] == "/setblock":
-            self._service = client_services.BDSWriteClientService(self)
-        elif client_context["method"] == "POST":
-            self._service = client_services.BDSPostClientService(self)
-        else:
-            self._service = client_services.BDSGetFileService(self)
-
+        self._service = client_services.ClientService(self)
         self._service.response_headers = {
             "Content-Length" : len(client_context["content"])
         }

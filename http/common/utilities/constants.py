@@ -8,8 +8,11 @@ BLOCK_SIZE = 4096
 CRLF = '\r\n'
 CRLF_BIN = CRLF.encode('utf-8')
 HTTP_SIGNATURE = 'HTTP/1.1'
+
 MAX_HEADER_LENGTH = 4096
 MAX_NUMBER_OF_HEADERS = 100
+MAX_INFO_SIZE = 1000
+MAX_CACHE_SIZE = 2**20
 
 STANDARD_INPUT = 0
 STANDARD_OUTPUT = 1
@@ -43,11 +46,13 @@ MODULE_DICT = {
     BLOCK_DEVICE_SERVER : [
         "http.bds_server.services.get_block_service",
         "http.bds_server.services.set_block_service",
+        "http.bds_server.services.update_level_service",
         "http.common.services.get_file_service",
-        "http.common.services.form_service",        
+        "http.common.services.form_service",
     ],
     FRONTEND_SERVER : [
-        "http.frontend_server.services.toggle_state_service",
+        "http.frontend_server.services.disconnect_service",
+        "http.frontend_server.services.connect_service",
         "http.frontend_server.services.read_disk_service",
         "http.frontend_server.services.write_disk_service",
         "http.frontend_server.services.mul_service",

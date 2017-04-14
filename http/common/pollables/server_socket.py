@@ -261,7 +261,13 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             services[service_class.get_name()] = service_class
 
         if parse.path in services.keys():
-            if parse.path in ("/disk_read", "/disk_write", "/init"):
+            if parse.path in (
+                "/disk_read",
+                "/disk_write",
+                "/init",
+                "/disconnect",
+                "/connect"
+            ):
                 self._service = services[parse.path](
                     self,
                     self._socket_data,

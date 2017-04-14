@@ -112,6 +112,12 @@ def main():
         "max_buffer" : args.max_buffer,
         "server_type" : constants.BLOCK_DEVICE_SERVER,
         "disk_name" : "%s%s" % (constants.DISK_NAME, args.disk_num),
+        "disk_info_name" : (
+            "%s%s" % (
+                constants.DISK_INFO_NAME,
+                args.disk_num
+            )
+        ),
         "disknum" : args.disk_num
     }
     server = async_server.AsyncServer(application_context)

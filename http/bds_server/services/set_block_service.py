@@ -9,7 +9,6 @@ from http.common.services import base_service
 from http.common.utilities import constants
 from http.common.utilities import util
 
-
 class SetBlockService(base_service.BaseService):
     BLOCK_SIZE = 4096
 
@@ -22,7 +21,7 @@ class SetBlockService(base_service.BaseService):
                 os.O_RDWR,
                 0o666
             )
-        except IOError as e:
+        except OSError as e:
             self._fd = None
             raise e
 

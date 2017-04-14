@@ -20,7 +20,7 @@ class GetBlockService(base_service.BaseService):
                 os.O_RDWR,
                 0o666
             )
-        except IOError as e:
+        except OSError as e:
             self._fd = None
             raise e
 

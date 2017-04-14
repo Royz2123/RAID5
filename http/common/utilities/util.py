@@ -34,7 +34,7 @@ def read(fd, max_buffer):
     ret = ""
     while True:
         buf = os.read(fd, max_buffer - len(ret))
-        if buf is None:
+        if buf == "":
             break
         ret += buf
     return ret
