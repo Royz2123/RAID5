@@ -40,6 +40,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
 
         self._block_mode = WriteToDiskService.REGULAR
         self._block_state = WriteToDiskService.READ_STATE
+        self._faulty_disknum = None
 
         self._block_data = ""
         self._current_block = None
@@ -120,38 +121,28 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
                 "Got bad status code from BDS"
             )
 
-        if self._block_mode == WriteToDiskService.REGULAR:
-            if self._block_state == WriteToDiskService.READ_STATE:
-                self._block_state = WriteToDiskService.WRITE_STATE
+        if self._block_state == WriteToDiskService.READ_STATE:
+            self._block_state = WriteToDiskService.WRITE_STATE
+            self.handle_block()
+            return
+        elif self._block_state == WriteToDiskService.WRITE_STATE:
+            #prepare for next block, start regularly:
+            self._block_mode = WriteToDiskService.REGULAR
+
+            self._block_state = WriteToDiskService.READ_STATE
+            self._current_block += 1
+            if (
+                len(self._rest_of_data) >= constants.BLOCK_SIZE
+                or (self._finished_data and self._rest_of_data != "")
+            ):
+                self._block_data, self._rest_of_data = (
+                    self._rest_of_data[:constants.BLOCK_SIZE],
+                    self._rest_of_data[constants.BLOCK_SIZE:]
+                )
+                self._block_data = self._block_data.ljust(constants.BLOCK_SIZE, chr(0))
                 self.handle_block()
                 return
-            elif self._block_state == WriteToDiskService.WRITE_STATE:
-                self._block_state = WriteToDiskService.READ_STATE
-                self._current_block += 1
-                if (
-                    len(self._rest_of_data) >= constants.BLOCK_SIZE
-                    or (self._finished_data and self._rest_of_data != "")
-                ):
-                    self._block_data, self._rest_of_data = (
-                        self._rest_of_data[:constants.BLOCK_SIZE],
-                        self._rest_of_data[constants.BLOCK_SIZE:]
-                    )
-                    self._block_data = self._block_data.ljust(constants.BLOCK_SIZE, chr(0))
-                    self.handle_block()
-                    return
 
-        '''
-        elif self._block_mode == WriteToDiskService.RECONSTRUCT:
-            for client_update, disknum in (
-                self._client_updates,
-                range(len(self._disks))
-            ):
-                if (
-                    disknum != self._current_phy_disk
-                    and not client_update["finished"]
-                ):
-                    return
-        '''
         #if we reached here, we are ready to continue
         if not self._finished_data:
             entry.state = constants.GET_CONTENT_STATE
@@ -180,84 +171,198 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         try:
             #step 1 - get current_block and parity block contents
             #step 2 - calculate new blocks to write
+            if self._block_mode == WriteToDiskService.REGULAR:
+                if self._block_state == WriteToDiskService.READ_STATE:
+                    contexts = self.contexts_for_regular_get_block()
+                else:
+                    contexts = self.contexts_for_regular_set_block()
 
-            #TODO: Sort out if's
-            self._block_mode = WriteToDiskService.REGULAR
-
-            if self._block_state == WriteToDiskService.READ_STATE:
-                service = "/getblock"
-            else:
-                service = "/setblock"
-
-                #ALGORITHM:
-                #Lets say:
-                #x0 - contents of desired block before update
-                #x1 - contents of desired block after update
-                #p0 - contents of parity block before update
-                #p1 - contents of parity block after update
-
-                #then:
-                #p1 = p0 XOR (x1 XOR x0)
-                client_responses = self._disk_manager.get_responses()
-
-                x0 = client_responses[self._current_phy_disk]["content"]
-                x1 = self._block_data
-                p0 = client_responses[self._current_phy_parity_disk]["content"]
-                p1 = disk_util.DiskUtil.compute_missing_block([x0, x1, p0])
-
-                self._client_contexts[self._current_phy_disk]["content"] = x1
-                self._client_contexts[self._current_phy_parity_disk]["content"] = p1
-
-            non_cached_contexts = {}
-            for disk in (
-                self._current_phy_disk,
-                self._current_phy_parity_disk
-            ):
-                self._client_contexts[disk]["service"] = service
-                blocknum, block_data = (
-                    self._client_contexts[disk]["args"]["blocknum"],
-                    self._client_contexts[disk]["content"],
+                self._disk_manager = disk_manager.DiskManager(
+                    self._socket_data,
+                    self._entry,
+                    contexts
                 )
 
-                if (
-                    service == "/setblock"
-                    and self._disks[disk]["cache"].check_if_add(
-                        blocknum,
-                        block_data
-                    )
-                ):
-                    self._disks[disk]["cache"].add_block(
-                        blocknum,
-                        block_data
-                    )
-                    #adding to cache means no need for communication
-                    #with server
-                else:
-                    non_cached_contexts[disk] = self._client_contexts[disk]
-
-            self._disk_manager = disk_manager.DiskManager(
-                self._socket_data,
-                self._entry,
-                non_cached_contexts
+        except util.DiskRefused as disk_error:
+            logging.error(
+                (
+                    "%s:\t Got: %s, trying to connect with RECONSTRUCT"
+                ) % (
+                    self._entry,
+                    disk_error
+                )
             )
+            self._faulty_disknum = disk_error.disknum
+            self._block_mode = WriteToDiskService.RECONSTRUCT
+            #start reading from the beginning again:
+            self._block_state = WriteToDiskService.READ_STATE
 
-        except socket.error as e:
-            #connection refused of some sorts, must still try to write
+        #if didn't work, try with reconstruct
+        try:
             #step 1 - get all other non-parity blocks
             #step 2 - XOR and write in parity
-            try:
-                self._block_mode = WriteToDiskService.RECONSTRUCT
-                print "shit?"
+            if self._block_mode == WriteToDiskService.RECONSTRUCT:
+                if self._block_state == WriteToDiskService.READ_STATE:
+                    contexts = self.contexts_for_reconstruct_get_block()
+                else:
+                    contexts = self.contexts_for_reconstruct_set_block()
 
-            except socket.error as e:
-                #nothing to do
-                logging.error(
-                    (
-                        "%s:\t Couldn't connect to two of the"
-                         + "BDSServers, giving up: %s"
-                    ) % (
-                        entry,
-                        e
-                    )
+                self._disk_manager = disk_manager.DiskManager(
+                    self._socket_data,
+                    self._entry,
+                    contexts
                 )
-                return True
+
+        except util.DiskRefused as disk_error:
+            #nothing to do
+            logging.error(
+                (
+                    "%s:\t Couldn't connect to two of the"
+                     + "BDSServers, giving up: %s"
+                ) % (
+                    self._entry,
+                    disk_error
+                )
+            )
+
+    #Getting the blocks we want from block devices:
+
+    #GET BLOCKS, REGULAR AND RECONSTRUCT
+    def contexts_for_reconstruct_get_block(self):
+        return self.contexts_for_get_block(
+            [
+                disk for disk in range(len(self._disks))
+                if disk != self._faulty_disknum
+            ]
+        )
+
+    def contexts_for_regular_get_block(self):
+        return self.contexts_for_get_block(
+            [
+                self._current_phy_disk,
+                self._current_phy_parity_disk
+            ]
+        )
+
+
+    #SET BLOCKS, REGULAR AND RECONSTRUCT
+    def contexts_for_regular_set_block(self):
+        #first update content
+
+        #ALGORITHM:
+        #Lets say:
+        #x0 - contents of desired block before update
+        #x1 - contents of desired block after update
+        #p0 - contents of parity block before update
+        #p1 - contents of parity block after update
+
+        #then:
+        #p1 = p0 XOR (x1 XOR x0)
+
+        client_responses = self._disk_manager.get_responses()
+
+        x0 = client_responses[self._current_phy_disk]["content"]
+        x1 = self._block_data
+        p0 = client_responses[self._current_phy_parity_disk]["content"]
+        p1 = disk_util.DiskUtil.compute_missing_block([x0, x1, p0])
+
+        self._client_contexts[self._current_phy_disk]["content"] = x1
+        self._client_contexts[self._current_phy_parity_disk]["content"] = p1
+
+        #then return new client contexts
+        return self.contexts_for_set_block(
+            [
+                self._current_phy_disk,
+                self._current_phy_parity_disk
+            ]
+        )
+
+    def contexts_for_reconstruct_set_block(self):
+        #first update content
+
+        #ALGORITHM:
+        #Lets say:
+        #x0 - contents of desired block before update
+        #x1 - contents of desired block after update
+        #p0 - contents of parity block before update
+        #p1 - contents of parity block after update
+
+        #then:
+        #p1 = p0 XOR (x1 XOR x0)
+
+        #but:
+        #either x or p is down, or in other words, we cannot access x0 or p0
+        #In any case, we can represent x0 or p0 as XOR of the rest and continue
+        #regularly:
+
+        #Lets say:
+        #a0, b0, c0 ... z0 are the contents of all the disks before update
+
+        #if p is down:
+        #p1 = a0 XOR b0 ... XOR x0 XOR .. XOR z0 XOR (x1 XOR x0)
+        #   = a0 XOR b0 ... XOR z0 XOR (x1)         --> (x0 XOR x0 = "0")
+        # ---> Definition of p1!
+
+        #if x is down:
+        #p1 = p0 XOR (x1 XOR (a0 XOR b0 ... XOR z0))
+        #   = x1 XOR (a0 XOR b0 XOR ... XOR z0)         --> (p0 XOR p0 = "0")
+        # ---> Definition of p1!
+
+        client_responses = self._disk_manager.get_responses()
+
+        #first lets find the faulty disks content:
+        blocks = []
+        for disknum in range(len(self._disks)):
+            if disknum != self._faulty_disknum:
+                blocks.append(client_responses[disknum]["content"])
+        faulty_content = disk_util.DiskUtil.compute_missing_block(blocks)
+
+        #now lets set all the block content we have
+        x1 = self._block_data
+        if self._faulty_disknum == self._current_phy_disk:
+            x0 = faulty_content
+            p0 = client_responses[self._current_phy_parity_disk]["content"]
+        else:
+            #must be the other way around:
+            x0 = client_responses[self._current_phy_disk]["content"]
+            p0 = faulty_content
+        p1 = disk_util.DiskUtil.compute_missing_block([x0, x1, p0])
+
+        self._client_contexts[self._current_phy_disk]["content"] = x1
+        self._client_contexts[self._current_phy_parity_disk]["content"] = p1
+
+        #finally return new client contexts
+        return self.contexts_for_set_block(
+            [
+                self._current_phy_disk,
+                self._current_phy_parity_disk
+            ]
+        )
+
+    #SHARED FUNCTIONS
+    def contexts_for_get_block(self, disknums):
+        contexts = {}
+        for disk in disknums:
+            self._client_contexts[disk]["service"] = "/getblock"
+            contexts[disk] = self._client_contexts[disk]
+        return contexts
+
+    def contexts_for_set_block(self, disknums):
+        contexts = {}
+        for disk in disknums:
+            self._client_contexts[disk]["service"] = "/setblock"
+            blocknum, block_data = (
+                self._client_contexts[disk]["args"]["blocknum"],
+                self._client_contexts[disk]["content"],
+            )
+            #check if cache needs to update, if disk is offline
+            if self._disks[disk]["cache"].check_if_add(blocknum):
+                self._disks[disk]["cache"].add_block(
+                    blocknum,
+                    block_data
+                )
+                #adding to cache means no need for communication
+                #with server
+            else:
+                contexts[disk] = self._client_contexts[disk]
+        return contexts

@@ -107,11 +107,10 @@ class DisconnectService(base_service.BaseService):
         self.handle_disconnect(entry)
 
     def before_response_headers(self, entry):
-        #Re-send the management part
+        #Re-send the management part. No refresh so user can enter new disk
         self._response_content = html_util.create_html_page(
             html_util.create_disks_table(entry.application_context["disks"]),
             constants.HTML_MANAGEMENT_HEADER,
-            constants.DEFAULT_REFRESH_TIME
         )
 
         self._response_headers = {

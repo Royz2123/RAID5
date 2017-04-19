@@ -76,6 +76,9 @@ class BaseService(object):
     def before_terminate(self, entry):
         return True
 
+    def after_terminate(self, entry):
+        return True
+
     def handle_content(self, entry, content):
         return True
 

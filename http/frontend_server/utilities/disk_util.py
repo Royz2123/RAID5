@@ -22,7 +22,12 @@ class DiskUtil():
             family=socket.AF_INET,
             type=socket.SOCK_STREAM,
         )
-        new_socket.connect((client_context["disk_address"]))
+        try:
+            new_socket.connect((client_context["disk_address"]))
+        except socket.error as e:
+            #connection refused from disk! build disk refused and raise..
+            raise util.DiskRefused(client_context["disknum"])
+
 
         #set to non blocking
         fcntl.fcntl(

@@ -76,7 +76,7 @@ class ReadFromDiskService(base_service.BaseService):
         #if we have a pending block, send it back to client
         #Get ready for next block (if there is)
         #TODO: Too much in response_content
-        self.update_block(self._disk_manager.get_responses())
+        self.update_block()
         self._current_block += 1
         entry.state = constants.SEND_CONTENT_STATE
 
@@ -119,6 +119,7 @@ class ReadFromDiskService(base_service.BaseService):
                 )
             ),
         }
+
         self._current_block = int(self._args["firstblock"][0])
         return True
 
@@ -155,7 +156,7 @@ class ReadFromDiskService(base_service.BaseService):
                     ]
                 },
             )
-        except socket.error as e:
+        except util.DiskRefused as e:
             #probably got an error when trying to reach a certain BDS
             #ServerSocket. We shall try to get the data from the rest of
             #the disks. Otherwise, two disks are down and theres nothing
@@ -193,7 +194,8 @@ class ReadFromDiskService(base_service.BaseService):
         return False
 
     #woke up from sleeping mode, checking if got required blocks
-    def update_block(self, client_responses):
+    def update_block(self):
+        client_responses = self._disk_manager.get_responses()
         #regular block update
         if self._block_mode == ReadFromDiskService.REGULAR:
             self._response_content += (
@@ -202,11 +204,12 @@ class ReadFromDiskService(base_service.BaseService):
                     chr(0)
                 )
             )
+
         #reconstruct block update
         elif self._block_mode == ReadFromDiskService.RECONSTRUCT:
             blocks = []
             for disknum, response in client_responses.items():
-                blocks.append[response["content"]]
+                blocks.append(response["content"])
 
             self._response_content += disk_util.DiskUtil.compute_missing_block(blocks).ljust(
                 constants.BLOCK_SIZE,

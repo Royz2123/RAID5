@@ -16,7 +16,7 @@ from http.common.utilities import util
 
 
 class ManagementService(base_service.BaseService):
-    def __init__(self, entry):
+    def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(self, [])
 
     @staticmethod
@@ -26,7 +26,8 @@ class ManagementService(base_service.BaseService):
     def before_response_headers(self, entry):
         self._response_content = html_util.create_html_page(
             html_util.create_disks_table(entry.application_context["disks"]),
-            "Disk Management"
+            constants.HTML_MANAGEMENT_HEADER,
+            constants.DEFAULT_REFRESH_TIME,
         )
 
         self._response_headers = {

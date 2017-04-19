@@ -42,7 +42,7 @@ def parse_args():
     )
     parser.add_argument(
         '--base',
-        default='.',
+        default=constants.DEFAULT_BASE_DIRECTORY,
         help='Base directory to search files in, default: %(default)s',
     )
     parser.add_argument(

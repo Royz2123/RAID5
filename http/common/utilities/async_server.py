@@ -36,22 +36,7 @@ class AsyncServer(object):
         pass
 
     def run(self):
-        logging.debug("STARTED RUNNING\n\nMOUNTING THE SYSTEM...")
-        try:
-            pass
-            #self.on_start()
-        except Exception as e:
-            logging.critical(
-                (
-                    "MOUNT UNSUCCESSFUL:\n"
-                    + "Problem whilst mounting the system, failed to "
-                    + "connect to one of the Block Device Servers: %s"
-                ) % (
-                    e
-                )
-            )
-            return
-        logging.debug("FINISHED MOUNTING SUCCESSFULLY")
+        logging.debug("STARTED RUNNING..\n")
 
         #Add a listener
         sl = socket.socket(
@@ -137,7 +122,9 @@ class AsyncServer(object):
                 entry.data_to_send == ""
             ):
                 entry.on_close()
-                del self._socket_data[fd]
+                #if socket still wants to close after terminate, delete it
+                if entry.state == constants.CLOSING_STATE:
+                    del self._socket_data[fd]
 
     def close_all(self):
         for fd, entry in self._socket_data.items()[:]:

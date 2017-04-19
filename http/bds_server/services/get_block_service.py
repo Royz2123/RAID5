@@ -12,7 +12,7 @@ from http.common.utilities import util
 class GetBlockService(base_service.BaseService):
     BLOCK_SIZE = 4096
 
-    def __init__(self, entry, args):
+    def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(self, [], ["blocknum"], args)
         try:
             self._fd = os.open(

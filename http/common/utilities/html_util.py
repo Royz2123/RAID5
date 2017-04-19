@@ -10,7 +10,7 @@ from http.common.utilities import constants
 
 def create_html_page(
     content,
-    header=constants.HTML_ERROR_HEADER,
+    header=constants.HTML_DEFAULT_HEADER,
     refresh=None
 ):
     refresh_header = ""
@@ -23,12 +23,22 @@ def create_html_page(
         )
     return (
         (
-            "<HTML><HEAD>%s<TITLE>%s</TITLE></HEAD>"
+            "<HTML><HEAD>%s%s<TITLE>%s</TITLE></HEAD>"
             + "<BODY>%s</BODY></HTML>"
         )% (
+            create_style_link(),
             refresh_header,
             header,
             content
+        )
+    )
+
+def create_style_link(
+    sheet=constants.DEFAULT_STYLE_SHEET
+):
+    return (
+        "<link rel='stylesheet' type='text/css' href=%s>"  % (
+            sheet
         )
     )
 
@@ -58,24 +68,7 @@ def create_disks_table(disks):
     )
     disknum = 0
     for disk in disks:
-        if disk["state"] == constants.ONLINE:
-            table += (
-                (
-                    '<tr align="center"> %s </tr>'
-                ) % (
-                    '<td> %s </td>' % disknum +
-                    "<td> %s </td>" % str(disk["address"]) +
-                    "<td> %s </td>" % disk["disk_UUID"] +
-                    "<td> %s </td>" % disk["level"] +
-                    '<td> %s\t : %s </td>' % (
-                        constants.DISK_STATES[disk["state"]],
-                        disconnect_form(
-                            disknum,
-                        )
-                    )
-                )
-            )
-        else:
+        if disk["state"] == constants.OFFLINE:
             table += (
                 (
                     '<tr align="center"> %s </tr>'
@@ -86,8 +79,44 @@ def create_disks_table(disks):
                     )
                 )
             )
+        else:
+            table += (
+                (
+                    '<tr align="center"> %s </tr>'
+                ) % (
+                    '<td> %s </td>' % disknum +
+                    "<td> %s </td>" % str(disk["address"]) +
+                    "<td> %s </td>" % disk["disk_UUID"] +
+                    "<td> %s </td>" % disk["level"] +
+                    '<td> %s:<br>%s </td>' % (
+                        constants.DISK_STATES[disk["state"]],
+                        (
+                            (
+                                (disk["state"] == constants.ONLINE)
+                                * disconnect_form(disknum)
+                            ) + (
+                                (disk["state"] == constants.REBUILD)
+                                * html_progress_bar(disks, disknum)
+                            )
+                        )
+                    )
+                )
+            )
+
         disknum += 1
     return table
+
+
+def html_progress_bar(disks, disknum):
+    rebuild_prcntg = disks[disknum]["cache"].get_rebuild_percentage()
+    if rebuild_prcntg < 0:
+        return "Rebuilding first from scratch..."
+    return (
+        "Rebuilding progress:<progress value='%s' max='100'></progress>"
+        % (
+            rebuild_prcntg
+        )
+    )
 
 def disconnect_form(disk_num):
     return (

@@ -192,7 +192,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             traceback.print_exc()
             logging.error("%s :\t Closing socket, got : %s " % (self, e))
             self.on_error()
-            #no point in adding status, already started sending
+
 
     def get_events(self, socket_data):
         event = select.POLLERR
@@ -261,31 +261,17 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             services[service_class.get_name()] = service_class
 
         if parse.path in services.keys():
-            if parse.path in (
-                "/disk_read",
-                "/disk_write",
-                "/init",
-                "/disconnect",
-                "/connect"
-            ):
-                self._service = services[parse.path](
-                    self,
-                    self._socket_data,
-                    self._request_context["args"]
-                )
-            elif len(self._request_context["args"].keys()):
-                self._service = services[parse.path](
-                    self,
-                    self._request_context["args"]
-                )
-            else:
-                self._service = services[parse.path](self)
-
+            self._service = services[parse.path](
+                self,
+                self._socket_data,
+                self._request_context["args"]
+            )
+        
         else:
             file_name = os.path.normpath(
                 '%s%s' % (
                     self._application_context["base"],
-                    os.path.normpath(self._request_context["uri"]),
+                    self._request_context["uri"],
                 )
             )
             #if file_name[:len(base)+1] != base + '\\':

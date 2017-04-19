@@ -86,5 +86,14 @@ class InvalidArguments(RuntimeError):
     def __init__(self, desc = "Bad Arguments"):
         super(InvalidArguments, self).__init__(desc)
 
+class DiskRefused(RuntimeError):
+    def __init__(self, disknum, desc = "Disk Refused to connect"):
+        super(DiskRefused, self).__init__(desc)
+        self._disknum = disknum
+
+    @property
+    def disknum(self):
+        return self._disknum
+
 
 # vim: expandtab tabstop=4 shiftwidth=4

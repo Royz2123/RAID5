@@ -16,7 +16,7 @@ from http.frontend_server.pollables import bds_client_socket
 
 
 class MulService(base_service.BaseService):
-    def __init__(self, entry, args):
+    def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(self, [], ["a", "b"], args)
         #super(MulService, self).__init__(self, [], ["a", "b"], args)
 

@@ -18,14 +18,17 @@ STANDARD_INPUT = 0
 STANDARD_OUTPUT = 1
 STANDARD_ERROR = 2
 
+DEFAULT_BASE_DIRECTORY = "http/frontend_server/files"
 DISK_NAME = "http/bds_server/disks/disk"
 DISK_INFO_NAME =  "http/bds_server/disks/disk_info"
 TMP_FILE_NAME = "tmp_file"
 
+HTML_DEFAULT_HEADER = "RAID5 - Message"
 HTML_ERROR_HEADER = "Disk Error"
 HTML_MANAGEMENT_HEADER = "Management"
 
 DEFAULT_REFRESH_TIME = 1
+DEFAULT_STYLE_SHEET = "mystyle.css"
 
 CACHE_HEADERS = {
     "Cache-Control" : "no-cache, no-store, must-revalidate",
@@ -71,11 +74,15 @@ MODULE_DICT = {
 (
     OFFLINE,
     ONLINE,
-) = range(2)
+    REBUILD,
+    STARTUP,
+) = range(4)
 
 DISK_STATES = {
-    OFFLINE : "offline",
-    ONLINE : "online"
+    OFFLINE : "OFFLINE STATE",
+    ONLINE : "ONLINE STATE",
+    REBUILD : "REBUILD STATE",
+    STARTUP : "STARTUP STATE"
 }
 
 #HTTP STATES:
@@ -91,6 +98,7 @@ DISK_STATES = {
     SLEEPING_STATE,
     LISTEN_STATE,
     CLOSING_STATE,
-) = range(11)
+    OFFLINE_STATE,
+) = range(12)
 
 # vim: expandtab tabstop=4 shiftwidth=4

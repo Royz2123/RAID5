@@ -10,7 +10,7 @@ from http.common.utilities import constants
 from http.common.utilities import util
 
 class UpdateLevelService(base_service.BaseService):
-    def __init__(self, entry, args):
+    def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(self, [], ["add"], args)
         try:
             self._fd = os.open(

@@ -23,6 +23,7 @@ class DiskManager(object):
         self._socket_data = socket_data
         self._parent = parent
         self._disk_requests = {}
+        self._disks = parent.application_context["disks"]
         for disknum, context in client_contexts.items():
             #add to database
             self._disk_requests[disknum] = {
@@ -33,8 +34,11 @@ class DiskManager(object):
                     "content" : "",
                 }
             }
+            #if disk is in offline state, don't even try to connect,
+            if self._disks[disknum]["state"] == constants.OFFLINE:
+                raise util.DiskRefused(disknum)
 
-            #add the client to socket_data
+            #try to add the client to socket_data
             disk_util.DiskUtil.add_bds_client(
                 parent,
                 self._disk_requests[disknum]["context"],

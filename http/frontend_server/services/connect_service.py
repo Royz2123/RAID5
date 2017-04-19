@@ -19,12 +19,14 @@ from http.frontend_server.utilities import cache
 from http.frontend_server.utilities import disk_util
 from http.frontend_server.utilities import disk_manager
 
-class ConnectService(base_service.BaseService):
-    (
-        GET_DATA_STATE,
-        SET_DATA_STATE
-    )=range(2)
 
+# This service adds thewanted disk back to the disk array,
+# Rebuilding of the disk is done by the RebuildCallable, which is called
+# upon finishing of this connection service. Cannot be done in one service
+# because client is waiting for answer on management, has to be done
+# "in the background"
+
+class ConnectService(base_service.BaseService):
     def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(
             self,
@@ -34,7 +36,11 @@ class ConnectService(base_service.BaseService):
         )
         self._disks = entry.application_context["disks"]
         self._disknum = None
-        self._mode = None
+
+        self._current_block = ""
+        self._socket_data = socket_data
+
+        self._disk_built = False
         self._state = ConnectService.GET_DATA_STATE
 
         self._current_block = ""
@@ -63,29 +69,20 @@ class ConnectService(base_service.BaseService):
                 "content" : ""
             }
 
-    def on_finish(self, entry):
-        if not self._disk_manager.check_if_finished():
-            return
-        if not self._disk_manager.check_common_status_code("200"):
-            raise RuntimeError(
-                "Got bad status code from BDS"
-            )
-
-        #finished smoothly, update levels on frontend disks
-        for disknum in range(len(self._disks)):
-            if disknum != self._disknum:
-                self._disks[disknum]["level"] += 1
-        entry.state = constants.SEND_HEADERS_STATE
-
-    def decide_connection(self, entry):
+    #checks if and how the disk needs to be rebuilt, returns False if not
+    def check_if_rebuild(self, entry):
         self._disknum = int(self._args["disknum"][0])
         address = util.make_address(self._args["address"][0])
 
-        if self._disks[self._disknum]["state"] == constants.ONLINE:  #check if already connected
-            return
+        #check if already connected, no need to rebuild
+        if self._disks[self._disknum]["state"] == constants.ONLINE:
+            return False
 
-        self._mode = cache.Cache.CACHE_MODE
-        if self._disks[self._disknum]["address"] != address:
+        if self._disks[self._disknum]["address"] == address:
+            #if theres no cache to be updated, no need to rebuild
+            if self._disks[self._disknum]["cache"].is_empty():
+                return False
+        else:
             #check we don't already have this address in the system
             for disknum in range(len(self._disks)):
                 if (
@@ -94,14 +91,20 @@ class ConnectService(base_service.BaseService):
                 ):
                     raise RuntimeError("Can't connect to the same disk twice")
 
-            #will need to rebuild the disk from scratch
-            self._mode = cache.Cache.SCRATCH_MODE
-
-            #update the disk address
+            #update the disk address and cache
             self._disks[self._disknum]["address"] = address
             self._disks[self._disknum]["cache"] = cache.Cache(
                 mode=cache.Cache.SCRATCH_MODE
             )
+
+            #TODO: need to get new UUID from disk
+            # self.reset_client_contexts()
+            # self._disk_manager = disk_manager.DiskManager(
+            #    self._socket_data,
+            #    entry,
+            #    {self._disknum : self._client_contexts[self._disknum]}
+            #)
+
 
         #sanity check that this level is one less than all the others:
         for disknum in range(len(self._disks)):
@@ -114,11 +117,64 @@ class ConnectService(base_service.BaseService):
             ):
                 raise RuntimeError("Error in levels")
 
-    def before_response_status(self, entry):
-        #first decide on adding mode (cache or scratch then cache)
-        if self._mode is None:
-            self.decide_connection(entry)
+        self._disks[self._disknum]["state"] = constants.REBUILD
+        return True
 
+    def before_response_status(self, entry):
+        #note if there is need for rebuilding the disk
+        if not self.check_if_rebuild(entry):
+            self._disk_built = True
+
+        print self._disks[self._disknum]["state"]
+        #Re-send the management part
+        self._response_content = html_util.create_html_page(
+            html_util.create_disks_table(entry.application_context["disks"]),
+            constants.HTML_MANAGEMENT_HEADER,
+        )
+        self._response_headers = {
+            "Content-Length" : "%s" % len(self._response_content),
+        }
+        return True
+
+
+    #REBULD PART, DONE AFTER TERMINATE
+    (
+        GET_DATA_STATE,
+        SET_DATA_STATE
+    )=range(2)
+
+    def after_terminate(self, entry):
+        if self._disk_built:
+            return
+        entry.state = constants.SLEEPING_STATE
+        self.rebuild_disk(entry)
+
+    def on_finish(self, entry):
+        if not self._disk_manager.check_if_finished():
+            return
+        self._client_responses = self._disk_manager.get_responses()
+
+        if self._state == ConnectService.GET_DATA_STATE:
+            if not self._disk_manager.check_common_status_code("200"):
+                raise RuntimeError(
+                    "Block Device Server sent a bad status code"
+                )
+
+        elif self._state == InitService.HANDLE_INFO_STATE:
+            #check if got a response from ALL of the
+            #block devices:
+            if not self._disk_manager.check_common_status_code("200"):
+                raise RuntimeError(
+                    "Block Device Server sent a bad status code: %s"
+                    % (
+                        client_responses[0]["status"]
+                    )
+                )
+
+        self._state = InitService.STATES[self._state]["next"]
+
+
+    def rebuild_disk(self, entry):
         while True:
             next_state = ConnectService.STATES[self._state]["function"](
                 self,
@@ -147,7 +203,6 @@ class ConnectService(base_service.BaseService):
         self._current_block
 
 
-
     def set_data_state(self, entry):
         entry.state = constants.SLEEPING_STATE
         return False
@@ -163,15 +218,3 @@ class ConnectService(base_service.BaseService):
             "next": GET_DATA_STATE
         },
     }
-
-    def before_response_headers(self, entry):
-        #Re-send the management part
-        self._response_content = html_util.create_html_page(
-            html_util.create_disks_table(entry.application_context["disks"]),
-            constants.HTML_MANAGEMENT_HEADER,
-            constants.DEFAULT_REFRESH_TIME
-        )
-        self._response_headers = {
-            "Content-Length" : "%s" % len(self._response_content),
-        }
-        return True

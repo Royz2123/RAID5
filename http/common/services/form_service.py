@@ -11,6 +11,7 @@ import traceback
 
 from http.common.services import base_service
 from http.common.utilities import constants
+from http.common.utilities import html_util
 from http.common.utilities import util
 from http.common.utilities import post_util
 from http.frontend_server.pollables import bds_client_socket
@@ -183,7 +184,9 @@ class FileFormService(base_service.BaseService):
 
     def before_response_headers(self, entry):
         if self._response_status == 200:
-            self._response_content = "File was uploaded successfully"
+            self._response_content = html_util.create_html_page(
+                "File was uploaded successfully"
+            )
             self._response_headers = {
                 "Content-Length" : len(self._response_content),
             }

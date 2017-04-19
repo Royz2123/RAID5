@@ -112,7 +112,7 @@ class InitService(base_service.BaseService):
                 "disk_UUID" : "",
                 "common_UUID" : "",
                 "level" : "",
-                "state" : constants.OFFLINE,
+                "state" : constants.STARTUP,
                 "cache" : cache.Cache(),
             })
 
@@ -134,7 +134,6 @@ class InitService(base_service.BaseService):
         self._response_content = html_util.create_html_page(
             html_util.create_disks_table(entry.application_context["disks"]),
             constants.HTML_MANAGEMENT_HEADER,
-            constants.DEFAULT_REFRESH_TIME
         )
 
         self._response_headers = {
@@ -203,8 +202,9 @@ class InitService(base_service.BaseService):
         self.reset_client_contexts()
 
     def mount_scratch_mode(self, entry):
-        #already mounted in handle info
-        pass
+        #already mounted in handle info, just make online
+        for disknum in range(len(self._disks)):
+            self._disks[disknum]["state"] = constants.ONLINE
 
     def mount_existing_mode(self, entry):
         #make the disk data easily accessible

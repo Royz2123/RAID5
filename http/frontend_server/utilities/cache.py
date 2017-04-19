@@ -12,7 +12,6 @@ import traceback
 from http.bds_server.services import update_level_service
 from http.common.services import base_service
 from http.common.utilities import constants
-from http.common.utilities import html_util
 from http.common.utilities import util
 from http.frontend_server.pollables import bds_client_socket
 from http.frontend_server.utilities import disk_util
@@ -43,6 +42,9 @@ class Cache(object):
         self._mode = mode
         self._pointer = 0           # points to which block we are currently
                                     # rebuilding, relevant for scratch mode
+        self._blocks_handled = 0
+
+
     @property
     def pointer(self):
         return self._pointer
@@ -51,18 +53,43 @@ class Cache(object):
     def pointer(self, p):
         self._pointer = p
 
+    def is_empty(self):
+        return (
+            self._mode == Cache.DORMANT_MODE
+            or (
+                self._mode == Cache.CACHE_MODE
+                and self.size() == 0
+            )
+        )
+
     def size(self):
         return (
             len(self._blocks.keys())
             * constants.BLOCK_SIZE
         )
 
+    def get_rebuild_percentage(self):
+        if self._mode == Cache.DORMANT_MODE:
+            return 100
+        elif self._mode == Cache.CACHE_MODE:
+            #to avoid zero divison error
+            if len(self._blocks.keys()) == 0:
+                return 100
+            return (
+                self._blocks_handled / (
+                    self._blocks_handled
+                    + len(self._blocks.keys())
+                ) * 100
+            )
+        else:
+            return -1
+
     def cache_overflow(self):
         if self._topology == Cache.EXCLUDE_DATA:
             return False
         return self.size() > constants.MAX_CACHE_SIZE
 
-    def check_if_add(self, blocknum, block_data):
+    def check_if_add(self, blocknum):
         if (
             self._mode == Cache.DORMANT_MODE
             or (
@@ -98,7 +125,7 @@ class Cache(object):
             blocknum = sorted(self._blocks.keys())[0]
             block_data = self._blocks[blocknum]
             del self._blocks[blocknum]
-
+            self._blocks_handled += 1
         return blocknum, block_data
 
     def __repr__(self):
