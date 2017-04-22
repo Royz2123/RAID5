@@ -31,6 +31,7 @@ class AsyncServer(object):
     def __init__(self, application_context):
         self._application_context = application_context
         self._socket_data = {}
+        self._closed_sockets_data = []
 
     def on_start(self):
         pass
@@ -122,9 +123,17 @@ class AsyncServer(object):
                 entry.data_to_send == ""
             ):
                 entry.on_close()
-                #if socket still wants to close after terminate, delete it
-                if entry.state == constants.CLOSING_STATE:
-                    del self._socket_data[fd]
+                #if socket still doesn't want to close before terminate...
+                if entry.state != constants.CLOSING_STATE:
+                    #...then add it closed sockets list to be closed when wanted
+                    self._closed_sockets_data.append(entry)
+                del self._socket_data[fd]
+
+        for closed_socket in self._closed_sockets_data:
+            #check if finally ready to terminate
+            if entry.state == constants.CLOSING_STATE:
+                del closed_socket
+
 
     def close_all(self):
         for fd, entry in self._socket_data.items()[:]:

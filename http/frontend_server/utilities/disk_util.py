@@ -53,6 +53,13 @@ class DiskUtil():
         )
 
     @staticmethod
+    def all_empty(blocks):
+        for block in blocks:
+            if len(block):
+                return False
+        return True
+
+    @staticmethod
     def compute_missing_block(blocks):
         #compute the missing block using parity and XOR
         if blocks == []:

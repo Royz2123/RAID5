@@ -26,9 +26,17 @@ TMP_FILE_NAME = "tmp_file"
 HTML_DEFAULT_HEADER = "RAID5 - Message"
 HTML_ERROR_HEADER = "Disk Error"
 HTML_MANAGEMENT_HEADER = "Management"
+HTML_TOP_BAR_CODE = (
+    '<ul>'
+    +  '<li><a class="active" href="/homepage.html">Home</a></li>'
+    +  '<li><a href="/menu.html">Menu</a></li>'
+    +  '<li><a href="/about.html">About</a></li>'
+    + '</ul>'
+)
 
 DEFAULT_REFRESH_TIME = 1
 DEFAULT_STYLE_SHEET = "mystyle.css"
+DEFAULT_CONTENT_SPACE = "table-space"
 
 CACHE_HEADERS = {
     "Cache-Control" : "no-cache, no-store, must-revalidate",

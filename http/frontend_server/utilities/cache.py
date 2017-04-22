@@ -44,6 +44,9 @@ class Cache(object):
                                     # rebuilding, relevant for scratch mode
         self._blocks_handled = 0
 
+    @property
+    def mode(self):
+        return self._mode
 
     @property
     def pointer(self):
@@ -76,7 +79,7 @@ class Cache(object):
             if len(self._blocks.keys()) == 0:
                 return 100
             return (
-                self._blocks_handled / (
+                float(self._blocks_handled) / (
                     self._blocks_handled
                     + len(self._blocks.keys())
                 ) * 100

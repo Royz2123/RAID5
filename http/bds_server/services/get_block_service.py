@@ -31,6 +31,8 @@ class GetBlockService(base_service.BaseService):
     def before_response_status(self, entry):
         try:
             if not self.check_args():
+                print "ARGS:" + str(self._args)
+                print "WANTED ARGS:" + str(self._wanted_args)
                 raise RuntimeError("Invalid args")
 
             os.lseek(
@@ -41,47 +43,21 @@ class GetBlockService(base_service.BaseService):
                 ),
                 os.SEEK_SET,
             )
-
+            self._response_content = util.read(
+                self._fd,
+                constants.BLOCK_SIZE
+            )
             self._response_headers = {
-                "Content-Length" : str(GetBlockService.BLOCK_SIZE)
+                "Content-Length" : len(self._response_content)
             }
 
         except Exception as e:
             traceback.print_exc()
             logging.error("%s :\t %s " % (entry, e))
             self._response_status = 500
+
         return True
 
-    def before_response_content(
-        self,
-        entry,
-        max_buffer=constants.BLOCK_SIZE
-    ):
-        if self._response_status != 200:
-            return True
-
-        try:
-            while len(self._response_content) < GetBlockService.BLOCK_SIZE:
-                buf = os.read(
-                    self._fd,
-                    (
-                        GetBlockService.BLOCK_SIZE
-                        - len(self._response_content)
-                    )
-                )
-                if not buf:
-                    break
-                self._response_content += buf
-
-        except Exception as e:
-            traceback.print_exc()
-            logging.error("%s :\t %s " % (entry, e))
-
-        self._response_content = self._response_content.ljust(
-            constants.BLOCK_SIZE,
-            chr(0)
-        )
-        return True
 
     def before_terminate(self, entry):
         os.close(self._fd)

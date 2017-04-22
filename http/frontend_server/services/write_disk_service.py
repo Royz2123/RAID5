@@ -30,7 +30,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
     ) = range(2)
 
     def __init__(self, entry, socket_data, args):
-        form_service.FileFormService.__init__(self, entry)
+        form_service.FileFormService.__init__(self, entry, socket_data, args)
         self._disks = entry.application_context["disks"]
         self._entry = entry
         self._socket_data = socket_data
@@ -82,7 +82,12 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         #for this function, next_state indicates if we finished getting the arg
 
         self._args[self._arg_name][0] += buf
-        if next_state and self._arg_name == "firstblock":
+
+        if len(self._disks)==0:
+            raise RuntimeError("%s:\t Need to initialize system" % (
+                self._entry,
+            ))
+        elif next_state and self._arg_name == "firstblock":
             self._current_block = int(self._args[self._arg_name][0])
         elif (
             next_state

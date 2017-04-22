@@ -9,11 +9,18 @@ body {
   background:#D6DBDF;
 }
 
+.title {
+    color: #7F8C8D;
+    text-align: center;
+    font-family:  "Comic Sans MS", cursive, sans-serif;
+    font-size: 50px;
+}
+
 h1 {
   color: #7F8C8D;
   text-align: center;
   font-family:  "Comic Sans MS", cursive, sans-serif;
-  font-size: 50px;
+  font-size: 40px;
 }
 
 h2 {
@@ -23,8 +30,50 @@ h2 {
   font-size: 20px;
 }
 
-.login-form {
-  width: 350px;
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #7F8C8D;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #616A6B;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: center;
+    padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+th {
+    background-color: #7F8C8D;
+    color: white;
+}
+
+
+.content-space {
+  width: 450px;
   padding: 40px 30px;
   background: #F4F6F6    ;
   -moz-border-radius: 4px;
@@ -34,11 +83,21 @@ h2 {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  -moz-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
+  top: 20%;
+}
+
+.table-space {
+  width: 750px;
+  padding: 40px 30px;
+  background: #F4F6F6    ;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  margin: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20%;
 }
 
 .log-btn {

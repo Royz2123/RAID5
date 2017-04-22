@@ -45,7 +45,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             "method": "uknown",
             "uri": "uknown"
         }        #important stuff from request
-        self._service = None
+        self._service = base_service.BaseService()
         self._socket_data = None
 
     @property
@@ -104,8 +104,13 @@ class ServerSocket(pollable.Pollable, callable.Callable):
     def fd(self):
         return self._fd
 
-    def on_error(self):
+    def on_error(self, e):
+        http_util.add_status(self, 500, e)
         self._state = constants.CLOSING_STATE
+
+    def on_close(self):
+        self._service.before_terminate(self)
+        self._socket.close()
 
     states = {
         constants.GET_REQUEST_STATE : {
@@ -160,12 +165,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         except Exception as e:
             traceback.print_exc()
             logging.error("%s :\t Closing socket, got : %s " % (self, e))
-            self.on_error()
-            http_util.add_status(self, 500, e)
-
-
-    def on_close(self):
-        self._socket.close()
+            self.on_error(e)
 
     def on_finish(self):
         self._service.on_finish(self)
@@ -191,7 +191,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         except Exception as e:
             traceback.print_exc()
             logging.error("%s :\t Closing socket, got : %s " % (self, e))
-            self.on_error()
+            self.on_error(e)
 
 
     def get_events(self, socket_data):
@@ -239,8 +239,6 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             )
 
         if not uri or uri[0] != '/' or '\\' in uri:
-            print uri
-            time.sleep(3)
             raise RuntimeError("Invalid URI")
 
         #update request
@@ -266,7 +264,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
                 self._socket_data,
                 self._request_context["args"]
             )
-        
+
         else:
             file_name = os.path.normpath(
                 '%s%s' % (

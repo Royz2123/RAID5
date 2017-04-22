@@ -11,24 +11,29 @@ from http.common.utilities import constants
 def create_html_page(
     content,
     header=constants.HTML_DEFAULT_HEADER,
-    refresh=None
+    refresh=None,
+    redirect_url="",
 ):
     refresh_header = ""
     if refresh is not None:
         refresh_header = (
-            "<meta http-equiv='refresh' content='%s'>"
+            "<meta http-equiv='refresh' content='%s%s'>"
             % (
-                refresh
+                refresh,
+                "; %s" % (redirect_url * (redirect_url!=""))
             )
         )
+
     return (
         (
             "<HTML><HEAD>%s%s<TITLE>%s</TITLE></HEAD>"
-            + "<BODY>%s</BODY></HTML>"
+            + "<BODY>%s<div class='%s'>%s</div></BODY></HTML>"
         )% (
             create_style_link(),
             refresh_header,
             header,
+            constants.HTML_TOP_BAR_CODE,
+            constants.DEFAULT_CONTENT_SPACE,
             content
         )
     )
@@ -48,7 +53,7 @@ def create_disks_table(disks):
     if len(disks) != 0:
         common_UUID = disks[0]["common_UUID"]
 
-    table = '<table border="5" width="50%" cellpadding="4" cellspacing="3">'
+    table = '<table border="5" cellpadding="4" cellspacing="3">'
     table += (
         '<tr><th colspan="5"><br><h3> Manage Disks<br>System UUID: %s '
         '</h3></th></tr>' % common_UUID

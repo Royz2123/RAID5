@@ -81,7 +81,11 @@ class ReadFromDiskService(base_service.BaseService):
         entry.state = constants.SEND_CONTENT_STATE
 
     def before_response_status(self, entry):
-        if int(self._args["blocks"][0]) < 0:
+        if len(self._disks)==0:
+            raise RuntimeError("%s:\t Need to initialize system" % (
+                entry,
+            ))
+        elif int(self._args["blocks"][0]) < 0:
             raise RuntimeError("%s:\t Invalid amount of blocks: %s" % (
                 entry,
                 self._args["blocks"][0]

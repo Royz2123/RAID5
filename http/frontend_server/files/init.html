@@ -14,7 +14,7 @@
 
             row.insertCell(0).innerHTML= '<input type="button" value = "Remove" onClick="Javacsript:deleteRow(this)">';
             row.insertCell(1).innerHTML=( 
-                '<input type="text" name = "address'+ (rowCount-2) + '"></input>'
+                '<input type="text" name = "address'+ (rowCount-4) + '"></input>'
             );
         }
         
@@ -30,39 +30,38 @@
 </head>
 
 <body onload="load()">
-<div id="myform">
-<table border="5" width="40%" cellpadding="4" cellspacing="3">
-    <tr>
-        <th colspan="5">
-            <h2> Add disk to Disk Array: </h2>
-        </th>
-    </tr>
-    
-    <tr>
-        <td>Address:</td>
-        <th>
-            <input type="button" id="add" value="Add Disk" onclick="Javascript:addRow()"></td>
-        </th>
-    <tr>
-</table>
-</div>
-<br><br>
+    <ul>
+      <li><a class="active" href="/homepage.html">Home</a></li>
+      <li><a href="/menu.html">Menu</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul>
 
+<div class="table-space">
+<h1>Initialize System</h1>
 <div id="mydata">
 <form action="/init" enctype="multipart/form-data" method="GET">
 <table id="myTableData"  border="5" width="40%" cellpadding="4" cellspacing="3">
     <tr>
-        <th colspan="5">
-            <h2> Disk Array: </h2>
+        <th colspan="6">
+            Disk Array
         </th>
     </tr>
+    <div id="myform">
     <tr>
-        <th width="25%" ></th>
-        <th>Address</th>
+        <th text-align="left" colspan="5">
+            Add disk to Disk Array:
+            <input type="button" id="add" value="Add Disk" onclick="Javascript:addRow()"></td>
+        </th>
+    <tr>
+    </div>
+    <tr>
+        <th ></th>
+        <th >Address</th>
     </tr>
 </table>
 <br>
     <input type="submit" value="Submit"></td>
+</div>
 </div>
 </form>
     </body>

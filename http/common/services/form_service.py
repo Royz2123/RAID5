@@ -25,7 +25,7 @@ class FileFormService(base_service.BaseService):
         END_STATE,
     ) = range(4)
 
-    def __init__(self, entry):
+    def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(self, ["Content-Type"])
         #super(FileFormService, self).__init__(self, ["Content-Type"])
         self._content = ""
