@@ -142,14 +142,11 @@ class ConnectService(base_service.BaseService):
     def check_if_built(self):
         #check if already connected, no need to rebuild, or cache is empty
         if (
-            self._disks[self._disknum]["state"] == constants.ONLINE
-            or (
-                self._disks[self._disknum]["state"] == constants.REBUILD
-                and self._disks[self._disknum]["cache"].is_empty()
-            )
+            self._disks[self._disknum]["state"] == constants.REBUILD
+            and not self._disks[self._disknum]["cache"].is_empty()
         ):
-            return True
-        return False
+            return False
+        return True
 
     def on_finish(self, entry):
         if not self._disk_manager.check_if_finished():

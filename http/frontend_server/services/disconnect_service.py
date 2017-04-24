@@ -74,9 +74,9 @@ class DisconnectService(base_service.BaseService):
         if self._disks[self._disknum]["state"] != constants.ONLINE:  #check if already disconnected
             return
 
-        #check that no other disks are offline (RAID5 requirements)
+        #check that all other disks are online (RAID5 requirements)
         for disknum in range(len(self._disks)):
-            if self._disks[disknum]["state"] == constants.OFFLINE:
+            if not self._disks[disknum]["state"] == constants.ONLINE:
                 raise RuntimeError(
                     "Can't turn disk %s offline, already have disk %s offline" % (
                         self._disknum,

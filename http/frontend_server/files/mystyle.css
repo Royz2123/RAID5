@@ -120,3 +120,43 @@ th {
   font-family: "Comic Sans MS", cursive, sans-serif;
   font-size: 20px;
 }
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #7F8C8D;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 140%;
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 20%;
+    right: 100%; /* To the left of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #7F8C8D transparent transparent;
+}
+
+.help-box{
+    width:20px;
+    height:20px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
