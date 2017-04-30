@@ -103,25 +103,30 @@ class InitService(base_service.BaseService):
 
     def setup_state(self, entry):
         #first check addresses and init disks
-        for address_num, disk_address in self._args.items():
-            if not util.make_address(disk_address[0]):
+        for arg_name, arg_info in self._args.items():
+            if "scratch" == arg_name:
+                pass
+            elif not util.make_address(arg_info[0]):
                 raise RuntimeError("Args must be addresses: (address, port)")
-
-            self._disks.append({
-                "address" : util.make_address(disk_address[0]),
-                "disk_UUID" : "",
-                "common_UUID" : "",
-                "level" : "",
-                "state" : constants.STARTUP,
-                "cache" : cache.Cache(),
-            })
+            else:
+                self._disks.append({
+                    "address" : util.make_address(arg_info[0]),
+                    "disk_UUID" : "",
+                    "common_UUID" : "",
+                    "level" : "",
+                    "state" : constants.STARTUP,
+                    "cache" : cache.Cache(),
+                })
 
         if len(self._disks) < 2:
             raise RuntimeError("Not enough disks for RAID5")
 
+        self.reset_client_contexts()
+        if "scratch" in self._args.keys():
+            self._mode = InitService.SCRATCH_MODE
+            return True
         #create client with the first address in order to classify mode
         #Now that disks have been established we can proceed
-        self.reset_client_contexts()
         self._disk_manager = disk_manager.DiskManager(
             self._socket_data,
             entry,

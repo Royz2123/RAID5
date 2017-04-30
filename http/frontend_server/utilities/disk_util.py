@@ -71,9 +71,8 @@ class DiskUtil():
 
     @staticmethod
     def xor_blocks(block1, block2):
-        if len(block1) != len(block2):
-            print block2
-            raise RuntimeError("Illegal Block Size")
+        for block in (block1, block2):
+            block = block.ljust(constants.BLOCK_SIZE, chr(0))
 
         l1 = [ord(c) for c in list(block1)]
         l2 = [ord(c) for c in list(block2)]

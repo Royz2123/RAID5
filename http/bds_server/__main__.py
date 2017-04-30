@@ -62,7 +62,7 @@ def parse_args():
     )
     parser.add_argument(
         '--disk-num',
-        type=str,
+        type=int,
         default=0,
     )
     parser.add_argument(
@@ -76,7 +76,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    args.bind_port += int(args.disk_num)
+    if args.bind_port == constants.DEFAULT_BDS_HTTP_PORT:
+        args.bind_port += int(args.disk_num)
 
     #delete the previous log
     try:

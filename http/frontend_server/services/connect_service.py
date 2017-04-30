@@ -198,6 +198,7 @@ class ConnectService(base_service.BaseService):
         if self.check_if_built():
             #turn the disk online, finally connected
             self._disks[self._disknum]["state"] = constants.ONLINE
+            self._disks[self._disknum]["level"] += 1
             entry.state = constants.CLOSING_STATE
             return
 
