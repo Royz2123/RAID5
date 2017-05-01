@@ -46,7 +46,7 @@ li a {
     display: block;
     color: white;
     text-align: center;
-    padding: 14px 16px;
+    padding: 15px 30px 10px;
     text-decoration: none;
 }
 
@@ -155,6 +155,12 @@ th {
 .help-box{
     width:20px;
     height:20px;
+}
+
+.logo{
+    padding: 5px 10px 5px 20px;
+    width:80px;
+    height:40px;
 }
 
 .tooltip:hover .tooltiptext {

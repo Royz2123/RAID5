@@ -34,7 +34,7 @@ HTML_TOP_BAR_CODE = (
     + '</ul>'
 )
 
-DEFAULT_REFRESH_TIME = 1
+DEFAULT_REFRESH_TIME = 2
 DEFAULT_STYLE_SHEET = "mystyle.css"
 DEFAULT_CONTENT_SPACE = "table-space"
 
@@ -48,6 +48,7 @@ MIME_MAPPING = {
     'html': 'text/html',
     'png': 'image/png',
     'txt': 'text/plain',
+    'css': 'text/css',
 }
 
 #SERVER TYPES

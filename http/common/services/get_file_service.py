@@ -33,7 +33,7 @@ class GetFileService(base_service.BaseService):
                     os.path.splitext(
                         self._filename
                     )[1].lstrip('.'),
-                    'application/octet-stream',
+                    'txt/html',
                 )
             }
         except OSError as e:
