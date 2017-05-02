@@ -29,11 +29,11 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         WRITE_STATE
     ) = range(2)
 
-    def __init__(self, entry, socket_data, args):
-        form_service.FileFormService.__init__(self, entry, socket_data, args)
+    def __init__(self, entry, pollables, args):
+        form_service.FileFormService.__init__(self, entry, pollables, args)
         self._disks = entry.application_context["disks"]
         self._entry = entry
-        self._socket_data = socket_data
+        self._pollables = pollables
 
         self._rest_of_data = ""
         self._finished_data = True
@@ -183,7 +183,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
                     contexts = self.contexts_for_regular_set_block()
 
                 self._disk_manager = disk_manager.DiskManager(
-                    self._socket_data,
+                    self._pollables,
                     self._entry,
                     contexts
                 )
@@ -213,7 +213,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
                     contexts = self.contexts_for_reconstruct_set_block()
 
                 self._disk_manager = disk_manager.DiskManager(
-                    self._socket_data,
+                    self._pollables,
                     self._entry,
                     contexts
                 )

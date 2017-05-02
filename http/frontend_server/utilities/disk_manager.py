@@ -18,9 +18,9 @@ from http.frontend_server.utilities import disk_util
 # Manages multiple disk requests, and notifies when
 # all disks have requests have gotten a response.
 class DiskManager(object):
-    def __init__(self, socket_data, parent, client_contexts):
+    def __init__(self, pollables, parent, client_contexts):
         #client_contexts : { disknum : context}
-        self._socket_data = socket_data
+        self._pollables = pollables
         self._parent = parent
         self._disk_requests = {}
         self._disks = parent.application_context["disks"]
@@ -38,12 +38,12 @@ class DiskManager(object):
             if self._disks[disknum]["state"] == constants.OFFLINE:
                 raise util.DiskRefused(disknum)
 
-            #try to add the client to socket_data
+            #try to add the client to pollables
             disk_util.DiskUtil.add_bds_client(
                 parent,
                 self._disk_requests[disknum]["context"],
                 self._disk_requests[disknum]["update"],
-                socket_data
+                pollables
             )
         #set parent to sleeping state until finished
         self._parent.state = constants.SLEEPING_STATE

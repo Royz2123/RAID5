@@ -16,7 +16,7 @@ from http.frontend_server.pollables import bds_client_socket
 
 
 class TimeService(base_service.BaseService):
-    def __init__(self, entry, socket_data):
+    def __init__(self, entry, pollables):
         base_service.BaseService.__init__(self, [])
         #super(TimeService, self).__init__(self, [])
 

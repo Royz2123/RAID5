@@ -14,7 +14,7 @@ class Poller():
 
 
 class Select():
-    def __init__(self, socket_data, max_connections, max_buffer):
+    def __init__(self, pollables, max_connections, max_buffer):
         self._poller = select.select()
 
     def poll(self, timeout):

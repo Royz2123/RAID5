@@ -48,6 +48,10 @@ class Cache(object):
     def mode(self):
         return self._mode
 
+    @mode.setter
+    def mode(self, m):
+        self._mode = m
+
     @property
     def pointer(self):
         return self._pointer

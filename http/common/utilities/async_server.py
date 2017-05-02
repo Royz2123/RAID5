@@ -30,8 +30,8 @@ except ImportError:
 class AsyncServer(object):
     def __init__(self, application_context):
         self._application_context = application_context
-        self._socket_data = {}
-        self._closed_sockets_data = []
+        self._pollables = {}
+        self._callables = []
 
     def on_start(self):
         pass
@@ -54,7 +54,7 @@ class AsyncServer(object):
             self._application_context["bind_port"]
         ))
         sl.listen(10)
-        self._socket_data[sl.fileno()] = server_socket_listen.ServerSocketListen(
+        self._pollables[sl.fileno()] = server_socket_listen.ServerSocketListen(
             sl,
             constants.LISTEN_STATE,
             self._application_context,
@@ -62,7 +62,7 @@ class AsyncServer(object):
 
         logging.debug("READY FOR REQUESTS")
         #start running
-        while len(self._socket_data):
+        while len(self._pollables):
             try:
                 self.close_needed()
                 poll_obj = self._create_poller()
@@ -71,7 +71,7 @@ class AsyncServer(object):
                 for curr_fd, event in poll_obj.poll(
                     self._application_context["poll_timeout"]
                 ):
-                    entry = self._socket_data[curr_fd]
+                    entry = self._pollables[curr_fd]
 
                     try:
                         #pollable has error
@@ -82,12 +82,12 @@ class AsyncServer(object):
                         #pollable has read
                         if event & select.POLLIN:
                             logging.debug("%s:\tEntry has read" % entry)
-                            entry.on_read(self._socket_data)
+                            entry.on_read(self._pollables)
 
                         #pollable has write
                         if event & select.POLLOUT:
                             logging.debug("%s:\tEntry has write" % entry)
-                            entry.on_write(self._socket_data)
+                            entry.on_write(self._pollables)
 
                     except util.Disconnect as e:
                         logging.error("%s:\tSocket disconnected, closing...")
@@ -101,41 +101,40 @@ class AsyncServer(object):
     def _create_poller(self):
         poll_obj = self._application_context["poll_type"]()
 
-        for fd, entry in self._socket_data.items():
+        for fd, entry in self._pollables.items():
             poll_obj.register(
                 fd,
-                entry.get_events(self._socket_data)
+                entry.get_events(self._pollables)
             )
         return poll_obj
 
     @property
-    def socket_data(self):
-        return self._socket_data
+    def pollables(self):
+        return self._pollables
 
-    @socket_data.setter
-    def socket_data(self, s):
-        self._socket_data = s
+    @pollables.setter
+    def pollables(self, s):
+        self._pollables = s
 
     def close_needed(self):
-        for fd, entry in self._socket_data.items()[:]:
+        for fd, entry in self._pollables.items()[:]:
             if (
                 entry.state == constants.CLOSING_STATE and
                 entry.data_to_send == ""
             ):
                 entry.on_close()
-                #if socket still doesn't want to close before terminate...
-                if entry.state != constants.CLOSING_STATE:
-                    #...then add it closed sockets list to be closed when wanted
-                    self._closed_sockets_data.append(entry)
-                del self._socket_data[fd]
+                #if socket still doesn't want to close before terminate
+                #then add it callables list to be closed when wanted
+                self._callables.append(entry)
+                del self._pollables[fd]
 
-        for closed_socket in self._closed_sockets_data:
+        for closed_socket in self._callables:
             #check if finally ready to terminate
             if entry.state == constants.CLOSING_STATE:
                 del closed_socket
 
 
     def close_all(self):
-        for fd, entry in self._socket_data.items()[:]:
+        for fd, entry in self._pollables.items()[:]:
             entry.on_close()
-            del self._socket_data[fd]
+            del self._pollables[fd]

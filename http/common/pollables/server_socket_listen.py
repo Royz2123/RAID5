@@ -48,7 +48,7 @@ class ServerSocketListen(pollable.Pollable):
         self._state = s
 
     #state functions
-    def listen_state(self, socket_data):
+    def listen_state(self, pollables):
         new_socket, address = self._socket.accept()
 
         #set to non blocking
@@ -64,7 +64,7 @@ class ServerSocketListen(pollable.Pollable):
             constants.GET_REQUEST_STATE,
             self._application_context
         )
-        socket_data[new_socket.fileno()] = new_http_socket
+        pollables[new_socket.fileno()] = new_http_socket
         logging.debug(
             "%s :\t Added a new HttpSocket, %s"
             % (
@@ -88,10 +88,10 @@ class ServerSocketListen(pollable.Pollable):
         }
     }
 
-    def on_read(self, socket_data):
+    def on_read(self, pollables):
         try:
             if self._state == constants.LISTEN_STATE:
-                self.listen_state(socket_data)
+                self.listen_state(pollables)
 
         except Exception as e:
             logging.error("%s :\t %s" %
@@ -105,11 +105,11 @@ class ServerSocketListen(pollable.Pollable):
     def on_error(self):
         self._state = constants.CLOSING_STATE
 
-    def get_events(self, socket_data):
+    def get_events(self, pollables):
         event = select.POLLERR
         if (
             self._state == constants.LISTEN_STATE and
-            len(socket_data) < self._application_context["max_connections"]
+            len(pollables) < self._application_context["max_connections"]
         ):
             event |= select.POLLIN
         return event

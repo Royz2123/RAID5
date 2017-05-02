@@ -22,7 +22,7 @@ class ReadFromDiskService(base_service.BaseService):
         RECONSTRUCT
     ) = range(2)
 
-    def __init__(self, entry, socket_data, args):
+    def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(
             self,
             ["Content-Type"],
@@ -30,7 +30,7 @@ class ReadFromDiskService(base_service.BaseService):
             args
         )
         self._disks = entry.application_context["disks"]
-        self._socket_data = socket_data
+        self._pollables = pollables
 
         self._block_mode = ReadFromDiskService.REGULAR
         self._current_block = None
@@ -152,7 +152,7 @@ class ReadFromDiskService(base_service.BaseService):
         try:
             self._block_mode = ReadFromDiskService.REGULAR
             self._disk_manager = disk_manager.DiskManager(
-                self._socket_data,
+                self._pollables,
                 entry,
                 {
                     self._current_phy_disk : self._client_contexts[
@@ -175,7 +175,7 @@ class ReadFromDiskService(base_service.BaseService):
             try:
                 self._block_mode = ReadFromDiskService.RECONSTRUCT
                 self._disk_manager = disk_manager.DiskManager(
-                    self._socket_data,
+                    self._pollables,
                     entry,
                     {
                         k : v for k, v in (

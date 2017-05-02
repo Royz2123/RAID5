@@ -33,7 +33,8 @@ class ConnectService(base_service.BaseService):
         SETUP_STATE,
         GET_DATA_STATE,
         SET_DATA_STATE,
-    )=range(3)
+        FINAL_SETUP_STATE,
+    )=range(4)
 
     def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(
@@ -187,6 +188,11 @@ class ConnectService(base_service.BaseService):
                     blocks
                 )
 
+        elif self._state == ConnectService.FINAL_SETUP_STATE:
+            self._disks[self._disknum]["state"] = constants.ONLINE
+            self._disks[self._disknum]["level"] += 1
+            entry.state = constants.CLOSING_STATE
+            return
         elif self._state == ConnectService.SET_DATA_STATE:
             pass
 
@@ -197,10 +203,7 @@ class ConnectService(base_service.BaseService):
     def rebuild_disk(self, entry):
         if self.check_if_built():
             #turn the disk online, finally connected
-            self._disks[self._disknum]["state"] = constants.ONLINE
-            self._disks[self._disknum]["level"] += 1
-            entry.state = constants.CLOSING_STATE
-            return
+            self._state = ConnectService.FINAL_SETUP_STATE
 
         while ConnectService.STATES[self._state]["function"](
             self,
@@ -249,6 +252,22 @@ class ConnectService(base_service.BaseService):
         )
         return False
 
+    def final_setup_state(self, entry):
+        self.reset_client_contexts()
+        self._client_contexts[self._disknum]["args"] = {
+            "add" : "1"
+        }
+        self._client_contexts[self._disknum]["service"] = (
+            update_level_service.UpdateLevelService.get_name()
+        )
+        self._disk_manager = disk_manager.DiskManager(
+            self._socket_data,
+            entry,
+            {self._disknum : self._client_contexts[self._disknum]}
+        )
+        return False
+
+
     STATES = {
         GET_DATA_STATE: {
             "function": get_data_state,
@@ -257,5 +276,9 @@ class ConnectService(base_service.BaseService):
         SET_DATA_STATE: {
             "function": set_data_state,
             "next": GET_DATA_STATE
+        },
+        FINAL_SETUP_STATE: {
+            "function": final_setup_state,
+            "next": FINAL_SETUP_STATE,
         },
     }

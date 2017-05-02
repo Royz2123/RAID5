@@ -157,7 +157,7 @@ class BDSClientSocket(pollable.Pollable):
         }
     }
 
-    def on_read(self, socket_data):
+    def on_read(self, pollables):
         try:
             http_util.get_buf(self)
             while (self._state <= constants.GET_CONTENT_STATE and (
@@ -181,7 +181,7 @@ class BDSClientSocket(pollable.Pollable):
     def on_error(self):
         self._state = constants.CLOSING_STATE
 
-    def on_write(self, socket_data):
+    def on_write(self, pollables):
         while ((
             self._state <= constants.SEND_CONTENT_STATE
         ) and (
@@ -197,7 +197,7 @@ class BDSClientSocket(pollable.Pollable):
             )
         http_util.send_buf(self)
 
-    def get_events(self, socket_data):
+    def get_events(self, pollables):
         event = select.POLLERR
         if (
             self._state >= constants.GET_STATUS_STATE and

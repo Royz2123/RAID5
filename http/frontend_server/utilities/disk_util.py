@@ -17,7 +17,7 @@ from http.frontend_server.pollables import bds_client_socket
 
 class DiskUtil():
     @staticmethod
-    def add_bds_client(parent, client_context, client_update, socket_data):
+    def add_bds_client(parent, client_context, client_update, pollables):
         new_socket = socket.socket(
             family=socket.AF_INET,
             type=socket.SOCK_STREAM,
@@ -43,7 +43,7 @@ class DiskUtil():
             client_update,
             parent
         )
-        socket_data[new_socket.fileno()] = new_bds_client
+        pollables[new_socket.fileno()] = new_bds_client
         logging.debug(
             "%s :\t Added a new BDS client, %s"
             % (

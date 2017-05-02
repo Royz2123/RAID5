@@ -32,10 +32,10 @@ class InitService(base_service.BaseService):
         MOUNT_STATE,
     ) = range(3)
 
-    def __init__(self, entry, socket_data, args):
+    def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(self)
         self._args = args     #args will be checked independently
-        self._socket_data = socket_data
+        self._pollables = pollables
 
         entry.application_context["disks"] = []
         self._disks = entry.application_context["disks"]
@@ -128,7 +128,7 @@ class InitService(base_service.BaseService):
         #create client with the first address in order to classify mode
         #Now that disks have been established we can proceed
         self._disk_manager = disk_manager.DiskManager(
-            self._socket_data,
+            self._pollables,
             entry,
             {0 : self._client_contexts[0]}
         )
@@ -275,7 +275,7 @@ class InitService(base_service.BaseService):
         MODES[self._mode](self, entry)
         #after info has been set, we can create a disk_manager:
         self._disk_manager = disk_manager.DiskManager(
-            self._socket_data,
+            self._pollables,
             entry,
             self._client_contexts
         )

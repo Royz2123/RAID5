@@ -16,7 +16,7 @@ from http.common.utilities import util
 
 
 class ManagementService(base_service.BaseService):
-    def __init__(self, entry, socket_data, args):
+    def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(self, [])
 
     @staticmethod

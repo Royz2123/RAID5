@@ -46,7 +46,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             "uri": "uknown"
         }        #important stuff from request
         self._service = base_service.BaseService()
-        self._socket_data = None
+        self._pollables = None
 
     @property
     def state(self):
@@ -143,8 +143,8 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         }
     }
 
-    def on_read(self, socket_data):
-        self._socket_data = socket_data         #for some services
+    def on_read(self, pollables):
+        self._pollables = pollables         #for some services
         try:
             http_util.get_buf(self)
             while (self._state < constants.SEND_STATUS_STATE and (
@@ -170,7 +170,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
     def on_finish(self):
         self._service.on_finish(self)
 
-    def on_write(self, socket_data):
+    def on_write(self, pollables):
         try:
             while (self._state <= constants.SEND_CONTENT_STATE and (
                 ServerSocket.states[self._state]["function"](self)
@@ -194,7 +194,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             self.on_error(e)
 
 
-    def get_events(self, socket_data):
+    def get_events(self, pollables):
         event = select.POLLERR
         if (
             self._state >= constants.GET_REQUEST_STATE and
@@ -239,6 +239,8 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             )
 
         if not uri or uri[0] != '/' or '\\' in uri:
+            print uri
+            time.sleep(2)
             raise RuntimeError("Invalid URI")
 
         #update request
@@ -261,7 +263,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         if parse.path in services.keys():
             self._service = services[parse.path](
                 self,
-                self._socket_data,
+                self._pollables,
                 self._request_context["args"]
             )
 

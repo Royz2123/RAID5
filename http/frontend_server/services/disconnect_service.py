@@ -20,7 +20,7 @@ from http.frontend_server.utilities import disk_util
 from http.frontend_server.utilities import disk_manager
 
 class DisconnectService(base_service.BaseService):
-    def __init__(self, entry, socket_data, args):
+    def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(
             self,
             [],
@@ -30,7 +30,7 @@ class DisconnectService(base_service.BaseService):
         self._disks = entry.application_context["disks"]
         self._disknum = None
 
-        self._socket_data = socket_data
+        self._pollables = pollables
 
         self._client_contexts = {}
         self._disk_manager = None
@@ -94,7 +94,7 @@ class DisconnectService(base_service.BaseService):
         #check this isn't the disk we are disconnecting
         self.reset_client_contexts()
         self._disk_manager = disk_manager.DiskManager(
-            self._socket_data,
+            self._pollables,
             entry,
             {
                 k : v for k, v in (
