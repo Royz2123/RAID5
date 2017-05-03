@@ -20,6 +20,34 @@ from http.frontend_server.utilities import disk_manager
 from http.frontend_server.utilities import cache
 from http.frontend_server.utilities import disk_util
 
+
+# State machine:
+
+#           SETUP_STATE
+#           /         \
+#    EXST_INFO       SCRTCH_INFO
+#        |               |
+#    EXST_MOUNT      SCRATCH_MOUNT
+#          \          /
+#           FINAL_STATE
+
+(
+    SETUP_STATE,
+    EXISTING_HANDLE_INFO_STATE,
+    EXISTING_MOUNT_STATE,
+    SCRATCH_HANDLE_INFO_STATE,
+    SCRATCH_MOUNT_STATE,
+    FINAL_STATE,
+)=range(6)
+#
+#STATES = [
+#    state.State(
+#        0,
+#
+#    )
+#
+#]
+
 class InitService(base_service.BaseService):
     (
         SCRATCH_MODE,

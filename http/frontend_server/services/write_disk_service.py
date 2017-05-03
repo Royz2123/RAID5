@@ -16,6 +16,7 @@ from http.common.utilities import util
 from http.frontend_server.pollables import bds_client_socket
 from http.frontend_server.utilities import disk_util
 from http.frontend_server.utilities import disk_manager
+from http.frontend_server.utilities import service_util
 
 
 class WriteToDiskService(form_service.FileFormService, base_service.BaseService):
@@ -48,34 +49,10 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         self._current_phy_parity_disk = None
 
         self._disk_manager = None
-        self._client_contexts = {}
-        self.reset_client_contexts()
 
     @staticmethod
     def get_name():
         return "/disk_write"
-
-    def reset_client_contexts(self):
-        self._client_contexts = {}
-        for disknum in range(len(self._disks)):
-            self._client_contexts[disknum] = {
-                "headers" : {},
-                "method" : "GET",
-                "args" : {"blocknum" : self._current_block},
-                "disknum" : disknum,
-                "disk_address" : self._disks[disknum]["address"],
-                "service" : "/setblock",
-                "content" : "",
-            }
-
-
-    @property
-    def client_contexts(self):
-        return self._client_contexts
-
-    @client_contexts.setter
-    def client_contexts(self, c_c):
-        self._client_contexts = c_c
 
     #override arg and file handle from FileFormService
     def arg_handle(self, buf, next_state):
@@ -133,7 +110,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         elif self._block_state == WriteToDiskService.WRITE_STATE:
             #prepare for next block, start regularly:
             self._block_mode = WriteToDiskService.REGULAR
-
+            self._faulty_disknum = None
             self._block_state = WriteToDiskService.READ_STATE
             self._current_block += 1
             if (
@@ -161,16 +138,15 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         return True
 
     def handle_block(self):
-        self._current_phy_disk = disk_util.DiskUtil.get_physical_disk_num(
+        self._current_phy_disk = disk_util.get_physical_disk_num(
             self._disks,
             int(self._args["disk"][0]),
             self._current_block
         )
-        self._current_phy_parity_disk = disk_util.DiskUtil.get_parity_disk_num(
+        self._current_phy_parity_disk = disk_util.get_parity_disk_num(
             self._disks,
             self._current_block
         )
-        self.reset_client_contexts()
 
         #first try writing the block regularly
         try:
@@ -212,6 +188,9 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
                 else:
                     contexts = self.contexts_for_reconstruct_set_block()
 
+                print contexts
+
+
                 self._disk_manager = disk_manager.DiskManager(
                     self._pollables,
                     self._entry,
@@ -231,24 +210,24 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
             )
 
     #Getting the blocks we want from block devices:
-
     #GET BLOCKS, REGULAR AND RECONSTRUCT
     def contexts_for_reconstruct_get_block(self):
-        return self.contexts_for_get_block(
-            [
-                disk for disk in range(len(self._disks))
+        return service_util.create_get_block_contexts(
+            self._disks,
+            {
+                disk : self._current_block for disk in range(len(self._disks))
                 if disk != self._faulty_disknum
-            ]
+            }
         )
 
     def contexts_for_regular_get_block(self):
-        return self.contexts_for_get_block(
-            [
-                self._current_phy_disk,
-                self._current_phy_parity_disk
-            ]
+        return service_util.create_get_block_contexts(
+            self._disks,
+            {
+                self._current_phy_disk : self._current_block,
+                self._current_phy_parity_disk : self._current_block
+            }
         )
-
 
     #SET BLOCKS, REGULAR AND RECONSTRUCT
     def contexts_for_regular_set_block(self):
@@ -263,23 +242,20 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
 
         #then:
         #p1 = p0 XOR (x1 XOR x0)
-
         client_responses = self._disk_manager.get_responses()
 
         x0 = client_responses[self._current_phy_disk]["content"]
         x1 = self._block_data
         p0 = client_responses[self._current_phy_parity_disk]["content"]
-        p1 = disk_util.DiskUtil.compute_missing_block([x0, x1, p0])
-
-        self._client_contexts[self._current_phy_disk]["content"] = x1
-        self._client_contexts[self._current_phy_parity_disk]["content"] = p1
+        p1 = disk_util.compute_missing_block([x0, x1, p0])
 
         #then return new client contexts
-        return self.contexts_for_set_block(
-            [
-                self._current_phy_disk,
-                self._current_phy_parity_disk
-            ]
+        return service_util.create_set_block_contexts(
+            self._disks,
+            self.create_set_request_info(dict(zip(
+                [self._current_phy_disk, self._current_phy_parity_disk],
+                [x1, p1]
+            )))
         )
 
     def contexts_for_reconstruct_set_block(self):
@@ -320,7 +296,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         for disknum in range(len(self._disks)):
             if disknum != self._faulty_disknum:
                 blocks.append(client_responses[disknum]["content"])
-        faulty_content = disk_util.DiskUtil.compute_missing_block(blocks)
+        faulty_content = disk_util.compute_missing_block(blocks)
 
         #now lets set all the block content we have
         x1 = self._block_data
@@ -331,43 +307,35 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
             #must be the other way around:
             x0 = client_responses[self._current_phy_disk]["content"]
             p0 = faulty_content
-        p1 = disk_util.DiskUtil.compute_missing_block([x0, x1, p0])
-
-        self._client_contexts[self._current_phy_disk]["content"] = x1
-        self._client_contexts[self._current_phy_parity_disk]["content"] = p1
+        p1 = disk_util.compute_missing_block([x0, x1, p0])
 
         #finally return new client contexts
-        return self.contexts_for_set_block(
-            [
-                self._current_phy_disk,
-                self._current_phy_parity_disk
-            ]
+        return service_util.create_set_block_contexts(
+            self._disks,
+            self.create_set_request_info(dict(zip(
+                [self._current_phy_disk, self._current_phy_parity_disk],
+                [x1, p1]
+            )))
         )
 
-    #SHARED FUNCTIONS
-    def contexts_for_get_block(self, disknums):
-        contexts = {}
-        for disk in disknums:
-            self._client_contexts[disk]["service"] = "/getblock"
-            contexts[disk] = self._client_contexts[disk]
-        return contexts
-
-    def contexts_for_set_block(self, disknums):
-        contexts = {}
-        for disk in disknums:
-            self._client_contexts[disk]["service"] = "/setblock"
-            blocknum, block_data = (
-                self._client_contexts[disk]["args"]["blocknum"],
-                self._client_contexts[disk]["content"],
-            )
-            #check if cache needs to update, if disk is offline
-            if self._disks[disk]["cache"].check_if_add(blocknum):
-                self._disks[disk]["cache"].add_block(
-                    blocknum,
-                    block_data
+    #SHARED FUNCTION
+    def create_set_request_info(self, disk_content):
+        #disk_content needs to be a dict of { disknum : content }
+        request_info = {}
+        for disknum, content in disk_content.items():
+            if (
+                disknum == self._faulty_disknum
+                and self._disks[disknum]["cache"].check_if_add(self._current_block)
+            ):
+                self._disks[disknum]["cache"].add_block(
+                    self._current_block,
+                    content
                 )
                 #adding to cache means no need for communication
                 #with server
             else:
-                contexts[disk] = self._client_contexts[disk]
-        return contexts
+                request_info[disknum] = {
+                    "blocknum" : self._current_block,
+                    "content" : content
+                }
+        return request_info

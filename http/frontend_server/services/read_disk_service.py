@@ -15,8 +15,18 @@ from http.common.utilities import util
 from http.frontend_server.pollables import bds_client_socket
 from http.frontend_server.utilities import disk_manager
 from http.frontend_server.utilities import disk_util
+from http.frontend_server.utilities import service_util
+from http.frontend_server.utilities.state_util import state
+from http.frontend_server.utilities.state_util import state_machine
+
 
 class ReadFromDiskService(base_service.BaseService):
+    (
+        READ_STATE,
+        FINAL_STATE
+    )=range(2)
+
+    #read mode
     (
         REGULAR,
         RECONSTRUCT
@@ -35,39 +45,76 @@ class ReadFromDiskService(base_service.BaseService):
         self._block_mode = ReadFromDiskService.REGULAR
         self._current_block = None
         self._current_phy_disk = None
+        self._disknum = None
 
-        self._client_contexts = {}
         self._disk_manager = None
-        self.reset_client_contexts()
+        self._state_machine = None
 
     @staticmethod
     def get_name():
         return "/disk_read"
 
-    def reset_client_contexts(self):
-        self._client_contexts = {}
-        for disknum in range(len(self._disks)):
-            self._client_contexts[disknum] = {
-                "headers" : {},
-                "method" : "GET",
-                "args" : {"blocknum" : self._current_block},
-                "disknum" : disknum,
-                "disk_address" : self._disks[disknum]["address"],
-                "service" : "/getblock",
-                "content" : ""
-            }
+    def before_read(self, entry):
+        self._current_phy_disk = disk_util.get_physical_disk_num(
+            self._disks,
+            self._disknum,
+            self._current_block
+        )
+        try:
+            self._block_mode = ReadFromDiskService.REGULAR
+            self._disk_manager = disk_manager.DiskManager(
+                self._pollables,
+                entry,
+                service_util.create_get_block_contexts(
+                    self._disks,
+                    {self._current_phy_disk : self._current_block}
+                ),
+            )
+        except util.DiskRefused as e:
+            #probably got an error when trying to reach a certain BDS
+            #ServerSocket. We shall try to get the data from the rest of
+            #the disks. Otherwise, two disks are down and theres nothing
+            #we can do
+            logging.debug(
+                "%s:\t Couldn't connect to one of the BDSServers, %s: %s" % (
+                    entry,
+                    self._current_phy_disk,
+                    e
+                )
+            )
+            try:
+                self._block_mode = ReadFromDiskService.RECONSTRUCT
 
-    @property
-    def client_contexts(self):
-        return self._client_contexts
+                #create request info for all the other disks
+                request_info = {}
+                for disknum in range(len(self._disks)):
+                    if disknum != self._current_phy_disk:
+                        request_info[disknum] = self._current_block
 
-    @client_contexts.setter
-    def client_contexts(self, c_c):
-        self._client_contexts = c_c
+                self._disk_manager = disk_manager.DiskManager(
+                    self._pollables,
+                    entry,
+                    service_util.create_get_block_contexts(
+                        self._disks,
+                        request_info
+                    ),
+                )
+            except socket.error as e:
+                #Got another bad connection (Connection refused most likely)
+                raise RuntimeError(
+                    (
+                        "%s:\t Couldn't connect to two of the"
+                         + "BDSServers, giving up: %s"
+                    ) % (
+                        entry,
+                        e
+                    )
+                )
+        entry.state = constants.SLEEPING_STATE
 
-    def on_finish(self, entry):
+    def after_read(self, entry):
         if not self._disk_manager.check_if_finished():
-            return
+            return None
         if not self._disk_manager.check_common_status_code("200"):
             raise RuntimeError(
                 "Got bad status code from BDS"
@@ -75,10 +122,57 @@ class ReadFromDiskService(base_service.BaseService):
 
         #if we have a pending block, send it back to client
         #Get ready for next block (if there is)
+
         #TODO: Too much in response_content
         self.update_block()
         self._current_block += 1
         entry.state = constants.SEND_CONTENT_STATE
+        if (
+            self._current_block
+            == (
+                int(self._args["firstblock"][0])
+                + int(self._args["blocks"][0])
+            )
+        ):
+            return ReadFromDiskService.FINAL_STATE
+        return ReadFromDiskService.READ_STATE
+
+    #woke up from sleeping mode, checking if got required blocks
+    def update_block(self):
+        client_responses = self._disk_manager.get_responses()
+        #regular block update
+        if self._block_mode == ReadFromDiskService.REGULAR:
+            self._response_content += (
+                client_responses[self._current_phy_disk]["content"].ljust(
+                    constants.BLOCK_SIZE,
+                    chr(0)
+                )
+            )
+
+        #reconstruct block update
+        elif self._block_mode == ReadFromDiskService.RECONSTRUCT:
+            blocks = []
+            for disknum, response in client_responses.items():
+                blocks.append(response["content"])
+
+            self._response_content += disk_util.compute_missing_block(blocks).ljust(
+                constants.BLOCK_SIZE,
+                chr(0)
+            )
+
+    STATES = [
+        state.State(
+            READ_STATE,
+            [READ_STATE, FINAL_STATE],
+            before_read,
+            after_read
+        ),
+        state.State(
+            FINAL_STATE,
+            [FINAL_STATE]
+        )
+    ]
+
 
     def before_response_status(self, entry):
         if len(self._disks)==0:
@@ -123,99 +217,26 @@ class ReadFromDiskService(base_service.BaseService):
                 )
             ),
         }
-
+        self._disknum = int(self._args["disk"][0])
         self._current_block = int(self._args["firstblock"][0])
+
+        #initialize state machine for reading
+        first_state = ReadFromDiskService.READ_STATE
+        if int(self._args["blocks"][0]) == 0:
+            first_state = ReadFromDiskService.FINAL_STATE
+
+        self._state_machine = state_machine.StateMachine(
+            ReadFromDiskService.STATES,
+            ReadFromDiskService.STATES[first_state],
+            ReadFromDiskService.STATES[ReadFromDiskService.FINAL_STATE]
+        )
         return True
 
     def before_response_content(self, entry):
-        #we shouldnt get here, but for now
-        if entry.state == constants.SLEEPING_STATE:
-            return False
+        #pass args to the machine, will use *args to pass them on
+        #if the machine returns True, we know we can move on
+        return self._state_machine.run_machine((self, entry))
 
-        #check if there are no more blocks to send
-        if (
-            self._current_block
-            == (
-                int(self._args["firstblock"][0])
-                + int(self._args["blocks"][0])
-            )
-        ):
-            return True
-
-        self._current_phy_disk = disk_util.DiskUtil.get_physical_disk_num(
-            self._disks,
-            int(self._args["disk"][0]),
-            self._current_block
-        )
-        self.reset_client_contexts()
-
-        try:
-            self._block_mode = ReadFromDiskService.REGULAR
-            self._disk_manager = disk_manager.DiskManager(
-                self._pollables,
-                entry,
-                {
-                    self._current_phy_disk : self._client_contexts[
-                        self._current_phy_disk
-                    ]
-                },
-            )
-        except util.DiskRefused as e:
-            #probably got an error when trying to reach a certain BDS
-            #ServerSocket. We shall try to get the data from the rest of
-            #the disks. Otherwise, two disks are down and theres nothing
-            #we can do
-            logging.debug(
-                "%s:\t Couldn't connect to one of the BDSServers, %s: %s" % (
-                    entry,
-                    self._current_phy_disk,
-                    e
-                )
-            )
-            try:
-                self._block_mode = ReadFromDiskService.RECONSTRUCT
-                self._disk_manager = disk_manager.DiskManager(
-                    self._pollables,
-                    entry,
-                    {
-                        k : v for k, v in (
-                            self._client_contexts.items()
-                        ) if k != self._current_phy_disk
-                    },
-                )
-            except socket.error as e:
-                #Got another bad connection (Connection refused most likely)
-                logging.error(
-                    (
-                        "%s:\t Couldn't connect to two of the"
-                         + "BDSServers, giving up: %s"
-                    ) % (
-                        entry,
-                        e
-                    )
-                )
-                return True
-        return False
-
-    #woke up from sleeping mode, checking if got required blocks
-    def update_block(self):
-        client_responses = self._disk_manager.get_responses()
-        #regular block update
-        if self._block_mode == ReadFromDiskService.REGULAR:
-            self._response_content += (
-                client_responses[self._current_phy_disk]["content"].ljust(
-                    constants.BLOCK_SIZE,
-                    chr(0)
-                )
-            )
-
-        #reconstruct block update
-        elif self._block_mode == ReadFromDiskService.RECONSTRUCT:
-            blocks = []
-            for disknum, response in client_responses.items():
-                blocks.append(response["content"])
-
-            self._response_content += disk_util.DiskUtil.compute_missing_block(blocks).ljust(
-                constants.BLOCK_SIZE,
-                chr(0)
-            )
+    def on_finish(self, entry):
+        #pass args to the machine, will use *args to pass them on
+        self._state_machine.run_machine((self, entry))

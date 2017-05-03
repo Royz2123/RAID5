@@ -39,7 +39,7 @@ class DiskManager(object):
                 raise util.DiskRefused(disknum)
 
             #try to add the client to pollables
-            disk_util.DiskUtil.add_bds_client(
+            disk_util.add_bds_client(
                 parent,
                 self._disk_requests[disknum]["context"],
                 self._disk_requests[disknum]["update"],
