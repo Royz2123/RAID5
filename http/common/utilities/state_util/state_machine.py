@@ -1,4 +1,4 @@
-from http.frontend_server.utilities.state_util import state
+from http.common.utilities.state_util import state
 
 class StateMachine(object):
     (

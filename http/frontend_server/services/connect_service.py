@@ -20,8 +20,8 @@ from http.frontend_server.utilities import cache
 from http.frontend_server.utilities import disk_manager
 from http.frontend_server.utilities import disk_util
 from http.frontend_server.utilities import service_util
-from http.frontend_server.utilities.state_util import state
-from http.frontend_server.utilities.state_util import state_machine
+from http.common.utilities.state_util import state
+from http.common.utilities.state_util import state_machine
 
 # This service adds the wanted disk back to the disk array,
 # Rebuilding of the disk is done after terminate, since it has to be done in the
