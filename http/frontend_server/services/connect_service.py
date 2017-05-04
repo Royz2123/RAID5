@@ -115,7 +115,7 @@ class ConnectService(base_service.BaseService):
 
     #STATE FUNCTIONS:
 
-    def before_new_disk_setup(self):
+    def before_new_disk_setup(self, entry):
         #get info file from the new disk
         self._disk_manager = disk_manager.DiskManager(
             self._socket_data,
@@ -125,8 +125,9 @@ class ConnectService(base_service.BaseService):
                 [self._disknum]
             )
         )
+        return False     #need input, not an epsilon path
 
-    def after_new_disk_setup(self):
+    def after_new_disk_setup(self, entry):
         if not self._disk_manager.check_if_finished():
             return None
         elif self._disk_manager.check_common_status_code("404"):
@@ -169,7 +170,8 @@ class ConnectService(base_service.BaseService):
         )
         if self._current_data is not None:
             #got data stored in cache, no need for hard rebuild
-            return False
+            # ==> This is an epsilon_path
+            return True
         else:
             #need to retreive data from XOR of all the disks besides the current
             #in order to rebuild it
@@ -187,7 +189,7 @@ class ConnectService(base_service.BaseService):
                 )
             )
             entry.state = constants.SLEEPING_STATE
-            return True
+            return False     #need input, not an epsilon path
 
     def after_get_data(self, entry):
         # first check if the data has come from the cache
@@ -243,8 +245,7 @@ class ConnectService(base_service.BaseService):
             )
         )
         entry.state = constants.SLEEPING_STATE
-        #will always return True because we shall always wait for input
-        return True
+        return False     #need input, not an epsilon path
 
     def after_set_data(self, entry):
         if not self._disk_manager.check_if_finished():
@@ -269,8 +270,7 @@ class ConnectService(base_service.BaseService):
             )
         )
         entry.state = constants.SLEEPING_STATE
-        #will always return True because we shall always wait for input
-        return True
+        return False     #need input, not an epsilon path
 
     def after_update_level(self, entry):
         if not self._disk_manager.check_if_finished():
@@ -324,6 +324,7 @@ class ConnectService(base_service.BaseService):
         elif self.check_if_built():
             first_state_index = ConnectService.UPDATE_LEVEL_STATE
 
+        #create rebuild state machine
         self._state_machine = state_machine.StateMachine(
             ConnectService.STATES,
             ConnectService.STATES[first_state_index],

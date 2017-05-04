@@ -19,46 +19,17 @@ from http.common.utilities import util
 from http.frontend_server.utilities import disk_manager
 from http.frontend_server.utilities import cache
 from http.frontend_server.utilities import disk_util
-
-
-# State machine:
-
-#           SETUP_STATE
-#           /         \
-#    EXST_INFO       SCRTCH_INFO
-#        |               |
-#    EXST_MOUNT      SCRATCH_MOUNT
-#          \          /
-#           FINAL_STATE
-
-(
-    SETUP_STATE,
-    EXISTING_HANDLE_INFO_STATE,
-    EXISTING_MOUNT_STATE,
-    SCRATCH_HANDLE_INFO_STATE,
-    SCRATCH_MOUNT_STATE,
-    FINAL_STATE,
-)=range(6)
-#
-#STATES = [
-#    state.State(
-#        0,
-#
-#    )
-#
-#]
+from http.frontend_server.utilities import service_util
+from http.frontend_server.utilities.state_util import state
+from http.frontend_server.utilities.state_util import state_machine
 
 class InitService(base_service.BaseService):
     (
-        SCRATCH_MODE,
-        EXISTING_MODE
-    ) = range(2)
-
-    (
         SETUP_STATE,
-        HANDLE_INFO_STATE,
-        MOUNT_STATE,
-    ) = range(3)
+        EXISTING_MOUNT_STATE,
+        SCRATCH_MOUNT_STATE,
+        FINAL_STATE,
+    )=range(4)
 
     def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(self)
@@ -68,68 +39,18 @@ class InitService(base_service.BaseService):
         entry.application_context["disks"] = []
         self._disks = entry.application_context["disks"]
 
-        self._state = InitService.SETUP_STATE
         self._mode = None
 
         self._disk_manager = None
-        self._client_contexts = {}
+        self._state_machine = None
 
     @staticmethod
     def get_name():
         return "/init"
 
-    def reset_client_contexts(self):
-        self._client_contexts = {}
-        for disknum in range(len(self._disks)):
-            self._client_contexts[disknum] = {
-                "headers" : {},
-                "args" : {},
-                "disknum" : disknum,
-                "disk_address" : self._disks[disknum]["address"],
-                "method" : "GET",
-                "service" : "/%s%s" % (
-                    constants.DISK_INFO_NAME,
-                    disknum,
-                ),
-                "content" : ""
-            }
+    #STATE FUNCTIONS
 
-
-    def on_finish(self, entry):
-        if not self._disk_manager.check_if_finished():
-            return
-        client_responses = self._disk_manager.get_responses()
-
-        if self._state == InitService.SETUP_STATE:
-            if self._disk_manager.check_common_status_code("200"):
-                self._mode = InitService.EXISTING_MODE
-                logging.debug("SYSTEM INITIALIZING FROM EXISTING MODE")
-            elif self._disk_manager.check_common_status_code("404"):
-                self._mode = InitService.SCRATCH_MODE
-                logging.debug("SYSTEM INITIALIZING FROM SCRATCH MODE")
-            else:
-                raise RuntimeError(
-                    "Block Device Server sent a bad status code: %s"
-                    % (
-                        client_responses[0]["status"]
-                    )
-                )
-
-        elif self._state == InitService.HANDLE_INFO_STATE:
-            #check if got a response from ALL of the
-            #block devices:
-            if not self._disk_manager.check_common_status_code("200"):
-                raise RuntimeError(
-                    "Block Device Server sent a bad status code: %s"
-                    % (
-                        client_responses[0]["status"]
-                    )
-                )
-
-        self._state = InitService.STATES[self._state]["next"]
-        entry.state = constants.SEND_STATUS_STATE
-
-    def setup_state(self, entry):
+    def before_setup(self, entry):
         #first check addresses and init disks
         for arg_name, arg_info in self._args.items():
             if "scratch" == arg_name:
@@ -147,101 +68,75 @@ class InitService(base_service.BaseService):
                 })
 
         if len(self._disks) < 2:
-            raise RuntimeError("Not enough disks for RAID5")
+            raise RuntimeError(
+                "%s:\tNot enough disks for RAID5: %s"
+                % (
+                    entry,
+                    len(self._disks)
+                )
+            )
 
-        self.reset_client_contexts()
         if "scratch" in self._args.keys():
-            self._mode = InitService.SCRATCH_MODE
-            return True
+            return True    #this is an epsilon_path, no need to classify system
+
         #create client with the first address in order to classify mode
         #Now that disks have been established we can proceed
         self._disk_manager = disk_manager.DiskManager(
             self._pollables,
             entry,
-            {0 : self._client_contexts[0]}
-        )
-        return False
-
-    def before_response_headers(self, entry):
-        #Re-send the management part
-        self._response_content = html_util.create_html_page(
-            html_util.create_disks_table(entry.application_context["disks"]),
-            constants.HTML_MANAGEMENT_HEADER,
-        )
-
-        self._response_headers = {
-            "Content-Length" : "%s" % len(self._response_content),
-        }
-        return True
-
-    def before_response_status(self, entry):
-        while True:
-            next_state = InitService.STATES[self._state]["function"](
-                self,
-                entry
+            service_util.create_get_disk_info_contexts(
+                self._disks,
+                [0]
             )
-            if next_state == 0:
-                return False
-            elif (
-                entry.state == constants.SLEEPING_STATE
-                or (
-                    self._state == InitService.MOUNT_STATE
-                    and next_state == 1
-                )
-            ):
-                break
-            self._state = InitService.STATES[self._state]["next"]
+        )
+        entry.state = constants.SLEEPING_STATE
+        return False    #will always need input, not an epsilon_path
 
-            logging.debug(
-                "%s :\t Initializing disks, current state: %s"
+    def after_setup(self, entry):
+        if not self._disk_manager.check_if_finished():
+            return None
+        elif self._disk_manager.check_common_status_code("200"):
+            logging.debug("SYSTEM INITIALIZING FROM EXISTING MODE")
+            return InitService.EXISTING_MOUNT_STATE
+        elif self._disk_manager.check_common_status_code("404"):
+            logging.debug("SYSTEM INITIALIZING FROM SCRATCH MODE")
+            return InitService.SCRATCH_MOUNT_STATE
+        else:
+            raise RuntimeError(
+                "Block Device Server sent a bad status code: %s"
                 % (
-                    entry,
-                    self._state
+                    self._disk_manager.get_responses()[0]["status"]
                 )
             )
-        return True
 
-    def handle_info_scratch_mode(self, entry):
-        common_uuid = str(uuid.uuid4())
-        disks_uuids = []
-
-        for disk in self._disks:
-            disk["common_UUID"] = common_uuid
-            disk["state"] = constants.ONLINE
-            disk["level"] = 0
-            disk["disk_UUID"] = str(uuid.uuid4())
-            disks_uuids.append(disk["disk_UUID"])
-
-        for disknum in range(len(self._disks)):
-            self._boundary = post_util.generate_boundary()
-            self._client_contexts[disknum]["method"] = "POST"
-            self._client_contexts[disknum]["headers"] = {
-                "Content-Type" : "multipart/form-data; boundary=%s" % (
-                    self._boundary
-                )
-            }
-            self._client_contexts[disknum][
-                "service"
-            ] = form_service.FileFormService.get_name()
-
-            self._client_contexts[disknum][
-                "content"
-            ] += self.create_disk_info_content(
-                disknum,
-                disks_uuids
+    def before_existing_mount(self, entry):
+        self._disk_manager = disk_manager.DiskManager(
+            self._pollables,
+            entry,
+            service_util.create_get_disk_info_contexts(
+                self._disks,
+                range(len(self._disks))
             )
+        )
+        entry.state = constants.SLEEPING_STATE
+        return False    #will always need input, not an epsilon_path
 
-    def handle_info_existing_mode(self, entry):
-        self.reset_client_contexts()
-
-    def mount_scratch_mode(self, entry):
-        #already mounted in handle info, just make online
-        for disknum in range(len(self._disks)):
-            self._disks[disknum]["state"] = constants.ONLINE
-
-    def mount_existing_mode(self, entry):
-        #make the disk data easily accessible
+    def after_existing_mount(self, entry):
+        #check if got a response from ALL of the
+        #block devices:
+        if not self._disk_manager.check_if_finished():
+            return None
+        if not self._disk_manager.check_common_status_code("200"):
+            raise RuntimeError(
+                "Block Device Server sent a bad status code: %s"
+                % (
+                    client_responses[0]["status"]
+                )
+            )
+        #check the actual response topology
         client_responses = self._disk_manager.get_responses()
+
+        #make the disks_data easily accessible
         disks_data = []
         for disknum in range(len(self._disks)):
             disks_data.append(
@@ -250,6 +145,7 @@ class InitService(base_service.BaseService):
                 )
             )
 
+        #check if a disk need to be rebuilt
         rebuild_disk = None
         for disknum in range(len(self._disks)):
             #first lets check the common_uuid:
@@ -292,49 +188,134 @@ class InitService(base_service.BaseService):
             self._disks[disknum]["level"] = int(disks_data[disknum][0])
             self._disks[disknum]["common_UUID"] = disks_data[disknum][1]
             self._disks[disknum]["disk_UUID"] = disks_data[disknum][2]
-            self._disks[disknum]["state"] = constants.ONLINE
 
+            if disknum == rebuild_disk:
+                self._disks[disknum]["state"] = constants.REBUILD
+                #TODO: NEED TO ADD ACTUAL REBUILD TO STATE_MACHINE
+                #return InitService.REBUILD_STATE
+            else:
+                self._disks[disknum]["state"] = constants.ONLINE
 
-    def handle_info_state(self, entry):
-        MODES = {
-            InitService.SCRATCH_MODE : InitService.handle_info_scratch_mode,
-            InitService.EXISTING_MODE : InitService.handle_info_existing_mode
-        }
-        MODES[self._mode](self, entry)
-        #after info has been set, we can create a disk_manager:
+        entry.state = constants.SEND_CONTENT_STATE
+        return InitService.FINAL_STATE
+
+    def before_scratch_mount(self, entry):
+        common_uuid = str(uuid.uuid4())
+        disks_uuids = []
+
+        for disk in self._disks:
+            disk["common_UUID"] = common_uuid
+            disk["state"] = constants.ONLINE
+            disk["level"] = 0
+            disk["disk_UUID"] = str(uuid.uuid4())
+            disks_uuids.append(disk["disk_UUID"])
+
+        request_info = {}
+        for disknum in range(len(self._disks)):
+            boundary = post_util.generate_boundary()
+            request_info[disknum] = {
+                "boundary" : boundary,
+                "content" : self.create_disk_info_content(
+                    boundary,
+                    disknum,
+                    disks_uuids
+                )
+            }
+
+        #create a disk manager
         self._disk_manager = disk_manager.DiskManager(
             self._pollables,
             entry,
-            self._client_contexts
+            service_util.create_file_upload_contexts(
+                self._disks,
+                request_info
+            )
         )
-        return False
+        entry.state = constants.SLEEPING_STATE
+        return False    #need input, not an epsilon_path
 
-    def mount_state(self, entry):
-        MODES = {
-            InitService.SCRATCH_MODE : InitService.mount_scratch_mode,
-            InitService.EXISTING_MODE : InitService.mount_existing_mode
-        }
-        MODES[self._mode](self, entry)
+    def after_scratch_mount(self, entry):
+        #check if got a response from ALL of the
+        #block devices:
+        if not self._disk_manager.check_if_finished():
+            return None
+        if not self._disk_manager.check_common_status_code("200"):
+            #Should delete the disk array, initilization has failed
+            raise RuntimeError(
+                (
+                    "Initilization failed"
+                    + "Block Device Server sent a bad status code: %s"
+                ) % (
+                    client_responses[0]["status"]
+                )
+            )
+        entry.state = constants.SEND_CONTENT_STATE
+        return InitService.FINAL_STATE
+
+    # STATE_MACHINE:
+
+    #           SETUP_STATE
+    #           /         \
+    #    EXST_MOUNT      SCRATCH_MOUNT
+    #          \          /
+    #           FINAL_STATE
+
+    STATES = [
+        state.State(
+            SETUP_STATE,
+            [SCRATCH_MOUNT_STATE, EXISTING_MOUNT_STATE],    #order matters! scratch arg
+            before_setup,
+            after_setup
+        ),
+        state.State(
+            EXISTING_MOUNT_STATE,
+            [FINAL_STATE],
+            before_existing_mount,
+            after_existing_mount
+        ),
+        state.State(
+            SCRATCH_MOUNT_STATE,
+            [FINAL_STATE],
+            before_scratch_mount,
+            after_scratch_mount
+        ),
+        state.State(
+            FINAL_STATE,
+            [FINAL_STATE]
+        )
+    ]
+
+    def before_response_status(self, entry):
+        #create initilization state machine
+        self._state_machine = state_machine.StateMachine(
+            InitService.STATES,
+            InitService.STATES[InitService.SETUP_STATE],
+            InitService.STATES[InitService.FINAL_STATE]
+        )
         return True
 
+    def before_response_headers(self, entry):
+        #pass args to the machine, will use *args to pass them on
+        return self._state_machine.run_machine((self, entry))
 
-    STATES = {
-        SETUP_STATE: {
-            "function": setup_state,
-            "next": HANDLE_INFO_STATE,
-        },
-        HANDLE_INFO_STATE: {
-            "function": handle_info_state,
-            "next": MOUNT_STATE
-        },
-        MOUNT_STATE: {
-            "function": mount_state,
-            "next": MOUNT_STATE,
+    def before_response_content(self, entry):
+        #Re-send the management part
+        self._response_content = html_util.create_html_page(
+            html_util.create_disks_table(entry.application_context["disks"]),
+            constants.HTML_MANAGEMENT_HEADER,
+        )
+        self._response_headers = {
+            "Content-Length" : "%s" % len(self._response_content),
         }
-    }
+        return True
+
+    def on_finish(self, entry):
+        #pass args to the machine, will use *args to pass them on
+        self._state_machine.run_machine((self, entry))
 
     def create_disk_info_content(
         self,
+        boundary,
         disknum,
         disks_uuids,
     ):
@@ -346,7 +327,7 @@ class InitService(base_service.BaseService):
         # peer_uuids \r\n
 
         return post_util.make_post_content(
-            self._boundary,
+            boundary,
             {
                 (
                     (

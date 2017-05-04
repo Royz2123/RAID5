@@ -39,7 +39,7 @@ def create_get_block_contexts(disks, request_info):
     return client_contexts
 
 def create_get_disk_info_contexts(disks, request_info):
-    # request_info should just be a list of disks that we want their infos
+    # request_info should just be a list of disknums that we want their infos
     client_contexts = {}
     for disknum in request_info:
         client_contexts[disknum] = {
@@ -97,7 +97,7 @@ def create_update_level_contexts(disks, request_info):
     return client_contexts
 
 
-def create_upload_file_contexts(disks, request_info):
+def create_file_upload_contexts(disks, request_info):
     # request_info should be a dict {
     #   disknum : {
     #       "boundary" : boundary,

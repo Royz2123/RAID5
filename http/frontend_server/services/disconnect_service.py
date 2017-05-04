@@ -23,7 +23,6 @@ from http.frontend_server.utilities.state_util import state
 from http.frontend_server.utilities.state_util import state_machine
 
 class DisconnectService(base_service.BaseService):
-
     (
         DISCONNECT_STATE,
         FINAL_STATE,
@@ -82,6 +81,8 @@ class DisconnectService(base_service.BaseService):
                 }
             ),
         )
+        return False    #will always need input, not an epsilon_path
+
 
     def after_disconnect(self, entry):
         if not self._disk_manager.check_if_finished():

@@ -111,6 +111,8 @@ class ReadFromDiskService(base_service.BaseService):
                     )
                 )
         entry.state = constants.SLEEPING_STATE
+        return False     #always need input, not an epsilon path
+
 
     def after_read(self, entry):
         if not self._disk_manager.check_if_finished():

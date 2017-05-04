@@ -6,7 +6,7 @@ class State(object):
     # None - Incomplete
     # Some index - Complete input, next state (based on input)
     def default_before_input_func(self, entry):
-        pass
+        return True     #set default state to have an epsilon_path
 
     def default_after_input_func(self, entry):
         return self._next_states[0]
@@ -33,6 +33,10 @@ class State(object):
     @property
     def before_input_func(self):
         return self._before_input_func
+
+    @property
+    def next_states(self):
+        return self._next_states
 
     @property
     def after_input_func(self):
