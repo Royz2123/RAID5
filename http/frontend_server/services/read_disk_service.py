@@ -45,7 +45,7 @@ class ReadFromDiskService(base_service.BaseService):
         self._block_mode = ReadFromDiskService.REGULAR
         self._current_block = None
         self._current_phy_disk = None
-        self._disknum = None
+        self._disk_num = None
 
         self._disk_manager = None
         self._state_machine = None
@@ -57,7 +57,7 @@ class ReadFromDiskService(base_service.BaseService):
     def before_read(self, entry):
         self._current_phy_disk = disk_util.get_physical_disk_num(
             self._disks,
-            self._disknum,
+            self._disk_num,
             self._current_block
         )
         try:
@@ -72,7 +72,7 @@ class ReadFromDiskService(base_service.BaseService):
             )
         except util.DiskRefused as e:
             #probably got an error when trying to reach a certain BDS
-            #ServerSocket. We shall try to get the data from the rest of
+            #ServiceSocket. We shall try to get the data from the rest of
             #the disks. Otherwise, two disks are down and theres nothing
             #we can do
             logging.debug(
@@ -87,9 +87,9 @@ class ReadFromDiskService(base_service.BaseService):
 
                 #create request info for all the other disks
                 request_info = {}
-                for disknum in range(len(self._disks)):
-                    if disknum != self._current_phy_disk:
-                        request_info[disknum] = self._current_block
+                for disk_num in range(len(self._disks)):
+                    if disk_num != self._current_phy_disk:
+                        request_info[disk_num] = self._current_block
 
                 self._disk_manager = disk_manager.DiskManager(
                     self._pollables,
@@ -154,7 +154,7 @@ class ReadFromDiskService(base_service.BaseService):
         #reconstruct block update
         elif self._block_mode == ReadFromDiskService.RECONSTRUCT:
             blocks = []
-            for disknum, response in client_responses.items():
+            for disk_num, response in client_responses.items():
                 blocks.append(response["content"])
 
             self._response_content += disk_util.compute_missing_block(blocks).ljust(
@@ -219,7 +219,7 @@ class ReadFromDiskService(base_service.BaseService):
                 )
             ),
         }
-        self._disknum = int(self._args["disk"][0])
+        self._disk_num = int(self._args["disk"][0])
         self._current_block = int(self._args["firstblock"][0])
 
         #initialize state machine for reading

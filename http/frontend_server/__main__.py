@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 import argparse
-import contextlib
-import datetime
-import errno
-import fcntl
+import ConfigParser
 import logging
 import os
-import socket
-import select
-import sys
 import traceback
 
 from http.common.utilities import async_server
+from http.common.utilities import config_util
 from http.common.utilities import poller
 from http.common.utilities import constants
 
@@ -48,7 +43,7 @@ def parse_args():
     parser.add_argument(
         '--poll-timeout',
         type=int,
-        default=1000,
+        default=constants.DEFAULT_FRONTEND_POLL_TIMEOUT,
     )
     parser.add_argument(
         '--poll-type',
@@ -68,8 +63,13 @@ def parse_args():
     )
     parser.add_argument(
         '--log-file',
-        type=int,
+        type=str,
         default=None,
+    )
+    parser.add_argument(
+        '--config-file',
+        type=str,
+        required=True,
     )
     args = parser.parse_args()
     args.base = os.path.normpath(os.path.realpath(args.base))
@@ -77,7 +77,10 @@ def parse_args():
 
 
 def main():
+    #parse args
     args = parse_args()
+    #parse the config file
+    config_sections = config_util.parse_config(args.config_file)
 
     #delete the previous log
     try:
@@ -98,7 +101,11 @@ def main():
         "max_connections" : args.max_connections,
         "max_buffer" : args.max_buffer,
         "server_type" : constants.FRONTEND_SERVER,
-        "disks" : []
+        "disks" : {},
+        "available_disks" : {},
+        "multicast_group" : config_sections["MulticastGroup"],
+        "authentication" : config_sections["Authentication"],
+        "server_info" : config_sections["Server"],
     }
     server = async_server.AsyncServer(application_context)
     server.run()

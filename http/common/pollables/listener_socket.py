@@ -7,7 +7,7 @@ import select
 import socket
 import traceback
 
-import server_socket
+import service_socket
 
 from http.common.pollables import pollable
 from http.common.utilities import constants
@@ -23,13 +23,15 @@ except ImportError:
     urlparse = urllib.parse
 
 
-class ServerSocketListen(pollable.Pollable):
-    def __init__(self, socket, state, application_context):
+class ListenerSocket(pollable.Pollable):
+    def __init__(self, socket, state, application_context, pollables):
         self._application_context = application_context
         self._socket = socket
         self._fd = socket.fileno()
         self._state = constants.LISTEN_STATE
         self._data_to_send = ""
+
+        self._pollables = pollables
 
     @property
     def fd(self):
@@ -48,7 +50,7 @@ class ServerSocketListen(pollable.Pollable):
         self._state = s
 
     #state functions
-    def listen_state(self, pollables):
+    def listen_state(self):
         new_socket, address = self._socket.accept()
 
         #set to non blocking
@@ -59,12 +61,13 @@ class ServerSocketListen(pollable.Pollable):
         )
 
         #add to database
-        new_http_socket = server_socket.ServerSocket(
+        new_http_socket = service_socket.ServiceSocket(
             new_socket,
             constants.GET_REQUEST_STATE,
-            self._application_context
+            self._application_context,
+            self._pollables
         )
-        pollables[new_socket.fileno()] = new_http_socket
+        self._pollables[new_socket.fileno()] = new_http_socket
         logging.debug(
             "%s :\t Added a new HttpSocket, %s"
             % (
@@ -72,6 +75,9 @@ class ServerSocketListen(pollable.Pollable):
                 new_http_socket
             )
         )
+
+    def is_closing(self):
+        return self._state == constants.CLOSING_STATE
 
     def on_close(self):
         self._socket.close()
@@ -88,10 +94,10 @@ class ServerSocketListen(pollable.Pollable):
         }
     }
 
-    def on_read(self, pollables):
+    def on_read(self):
         try:
             if self._state == constants.LISTEN_STATE:
-                self.listen_state(pollables)
+                self.listen_state()
 
         except Exception as e:
             logging.error("%s :\t %s" %
@@ -105,11 +111,11 @@ class ServerSocketListen(pollable.Pollable):
     def on_error(self):
         self._state = constants.CLOSING_STATE
 
-    def get_events(self, pollables):
+    def get_events(self):
         event = select.POLLERR
         if (
             self._state == constants.LISTEN_STATE and
-            len(pollables) < self._application_context["max_connections"]
+            len(self._pollables) < self._application_context["max_connections"]
         ):
             event |= select.POLLIN
         return event

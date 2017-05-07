@@ -41,7 +41,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
 
         self._block_mode = WriteToDiskService.REGULAR
         self._block_state = WriteToDiskService.READ_STATE
-        self._faulty_disknum = None
+        self._faulty_disk_num = None
 
         self._block_data = ""
         self._current_block = None
@@ -57,7 +57,6 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
     #override arg and file handle from FileFormService
     def arg_handle(self, buf, next_state):
         #for this function, next_state indicates if we finished getting the arg
-
         self._args[self._arg_name][0] += buf
 
         if len(self._disks)==0:
@@ -110,7 +109,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
         elif self._block_state == WriteToDiskService.WRITE_STATE:
             #prepare for next block, start regularly:
             self._block_mode = WriteToDiskService.REGULAR
-            self._faulty_disknum = None
+            self._faulty_disk_num = None
             self._block_state = WriteToDiskService.READ_STATE
             self._current_block += 1
             if (
@@ -130,12 +129,6 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
             entry.state = constants.GET_CONTENT_STATE
         else:
             entry.state = constants.SEND_STATUS_STATE
-
-    def before_response_status(self, entry):
-        self._response_headers = {
-            "Content-Length" : "0"
-        }
-        return True
 
     def handle_block(self):
         self._current_phy_disk = disk_util.get_physical_disk_num(
@@ -173,7 +166,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
                     disk_error
                 )
             )
-            self._faulty_disknum = disk_error.disknum
+            self._faulty_disk_num = disk_error.disk_num
             self._block_mode = WriteToDiskService.RECONSTRUCT
             #start reading from the beginning again:
             self._block_state = WriteToDiskService.READ_STATE
@@ -216,7 +209,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
             self._disks,
             {
                 disk : self._current_block for disk in range(len(self._disks))
-                if disk != self._faulty_disknum
+                if disk != self._faulty_disk_num
             }
         )
 
@@ -293,14 +286,14 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
 
         #first lets find the faulty disks content:
         blocks = []
-        for disknum in range(len(self._disks)):
-            if disknum != self._faulty_disknum:
-                blocks.append(client_responses[disknum]["content"])
+        for disk_num in range(len(self._disks)):
+            if disk_num != self._faulty_disk_num:
+                blocks.append(client_responses[disk_num]["content"])
         faulty_content = disk_util.compute_missing_block(blocks)
 
         #now lets set all the block content we have
         x1 = self._block_data
-        if self._faulty_disknum == self._current_phy_disk:
+        if self._faulty_disk_num == self._current_phy_disk:
             x0 = faulty_content
             p0 = client_responses[self._current_phy_parity_disk]["content"]
         else:
@@ -320,21 +313,21 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
 
     #SHARED FUNCTION
     def create_set_request_info(self, disk_content):
-        #disk_content needs to be a dict of { disknum : content }
+        #disk_content needs to be a dict of { disk_num : content }
         request_info = {}
-        for disknum, content in disk_content.items():
+        for disk_num, content in disk_content.items():
             if (
-                disknum == self._faulty_disknum
-                and self._disks[disknum]["cache"].check_if_add(self._current_block)
+                disk_num == self._faulty_disk_num
+                and self._disks[disk_num]["cache"].check_if_add(self._current_block)
             ):
-                self._disks[disknum]["cache"].add_block(
+                self._disks[disk_num]["cache"].add_block(
                     self._current_block,
                     content
                 )
                 #adding to cache means no need for communication
                 #with server
             else:
-                request_info[disknum] = {
+                request_info[disk_num] = {
                     "blocknum" : self._current_block,
                     "content" : content
                 }

@@ -138,63 +138,63 @@ class InitService(base_service.BaseService):
 
         #make the disks_data easily accessible
         disks_data = []
-        for disknum in range(len(self._disks)):
+        for disk_num in range(len(self._disks)):
             disks_data.append(
-                client_responses[disknum]["content"].split(
+                client_responses[disk_num]["content"].split(
                     constants.CRLF_BIN
                 )
             )
 
         #check if a disk need to be rebuilt
         rebuild_disk = None
-        for disknum in range(len(self._disks)):
+        for disk_num in range(len(self._disks)):
             #first lets check the common_uuid:
-            if disks_data[disknum][1] != disks_data[0][1]:
+            if disks_data[disk_num][1] != disks_data[0][1]:
                 raise RuntimeError(
                     "Got two different topoligies: \n%s\n%s" % (
-                        disks_data[disknum][1],
+                        disks_data[disk_num][1],
                         disks_data[0][1]
                     )
                 )
 
             #next lets check the generation level
             #By RAID5, we can only rebuild one disk at a time
-            if disks_data[disknum][0] != disks_data[0][0]:
+            if disks_data[disk_num][0] != disks_data[0][0]:
                 if rebuild_disk is not None:
                     raise RuntimeError(
                         "Already rebuilding disk: %s, can't rebuild 2: %s" % (
-                            disks_data[disknum][0],
+                            disks_data[disk_num][0],
                             disks_data[0][0]
                         )
                     )
                 else:
-                    rebuild_disk = disknum
+                    rebuild_disk = disk_num
 
             #Lets now check the disk UUID:
-            if disks_data[disknum][3:].count(disks_data[disknum][2]) != 1:
+            if disks_data[disk_num][3:].count(disks_data[disk_num][2]) != 1:
                 raise RuntimeError(
                     "Disk UUID shows up an invalid amount"
                     + " of times in peers %s" % (
-                        disknum
+                        disk_num
                     )
                 )
 
             #And finally, check all the peers UUID's:
-            if disks_data[disknum][3:] != disks_data[0][3:]:
+            if disks_data[disk_num][3:] != disks_data[0][3:]:
                 raise RuntimeError("Unsynced peers")
 
         #All the checks came back positive, ready to update disks
-        for disknum in range(len(self._disks)):
-            self._disks[disknum]["level"] = int(disks_data[disknum][0])
-            self._disks[disknum]["common_UUID"] = disks_data[disknum][1]
-            self._disks[disknum]["disk_UUID"] = disks_data[disknum][2]
+        for disk_num in range(len(self._disks)):
+            self._disks[disk_num]["level"] = int(disks_data[disk_num][0])
+            self._disks[disk_num]["common_UUID"] = disks_data[disk_num][1]
+            self._disks[disk_num]["disk_UUID"] = disks_data[disk_num][2]
 
-            if disknum == rebuild_disk:
-                self._disks[disknum]["state"] = constants.REBUILD
+            if disk_num == rebuild_disk:
+                self._disks[disk_num]["state"] = constants.REBUILD
                 #TODO: NEED TO ADD ACTUAL REBUILD TO STATE_MACHINE
                 #return InitService.REBUILD_STATE
             else:
-                self._disks[disknum]["state"] = constants.ONLINE
+                self._disks[disk_num]["state"] = constants.ONLINE
 
         entry.state = constants.SEND_CONTENT_STATE
         return InitService.FINAL_STATE
@@ -211,13 +211,13 @@ class InitService(base_service.BaseService):
             disks_uuids.append(disk["disk_UUID"])
 
         request_info = {}
-        for disknum in range(len(self._disks)):
+        for disk_num in range(len(self._disks)):
             boundary = post_util.generate_boundary()
-            request_info[disknum] = {
+            request_info[disk_num] = {
                 "boundary" : boundary,
                 "content" : self.create_disk_info_content(
                     boundary,
-                    disknum,
+                    disk_num,
                     disks_uuids
                 )
             }
@@ -316,7 +316,7 @@ class InitService(base_service.BaseService):
     def create_disk_info_content(
         self,
         boundary,
-        disknum,
+        disk_num,
         disks_uuids,
     ):
         #actual file content
@@ -334,17 +334,17 @@ class InitService(base_service.BaseService):
                         "Content-Disposition : form-data; filename='%s%s'"
                     ) % (
                         constants.DISK_INFO_NAME,
-                        disknum
+                        disk_num
                     )
                 ) : (
                     (
                         "%s"*7
                     ) % (
-                        self._disks[disknum]["level"],
+                        self._disks[disk_num]["level"],
                         constants.CRLF_BIN,
-                        self._disks[disknum]["common_UUID"],
+                        self._disks[disk_num]["common_UUID"],
                         constants.CRLF_BIN,
-                        self._disks[disknum]["disk_UUID"],
+                        self._disks[disk_num]["disk_UUID"],
                         constants.CRLF_BIN,
                         constants.CRLF_BIN.join(disks_uuids)
                     )

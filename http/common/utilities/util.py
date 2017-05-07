@@ -18,7 +18,7 @@ except ImportError:
 
 def make_address(add):
     try:
-        address, port = add.split(',')
+        address, port = add.split(constants.ADDRESS_SEPERATOR)
         return (str(address), int(port))
     except:
         return False
@@ -87,13 +87,13 @@ class InvalidArguments(RuntimeError):
         super(InvalidArguments, self).__init__(desc)
 
 class DiskRefused(RuntimeError):
-    def __init__(self, disknum, desc = "Disk Refused to connect"):
+    def __init__(self, disk_num, desc = "Disk Refused to connect"):
         super(DiskRefused, self).__init__(desc)
-        self._disknum = disknum
+        self._disk_num = disk_num
 
     @property
-    def disknum(self):
-        return self._disknum
+    def disk_num(self):
+        return self._disk_num
 
 
 # vim: expandtab tabstop=4 shiftwidth=4

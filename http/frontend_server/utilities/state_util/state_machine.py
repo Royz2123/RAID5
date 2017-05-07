@@ -27,11 +27,11 @@ class StateMachine(object):
         self._inner_state = StateMachine.BEFORE_INPUT
 
     def __repr__(self):
-        s = "STATE MACHINE:\n"
+        s = ""
         for state in self._states:
-            s += "%s:\t%s%s\n" % (
+            s += "%s, %s%s\n" % (
                 state,
-                "FIRST STATE " * (state == self._first_state),
+                "FIRST STATE, " * (state == self._first_state),
                 "FINAL STATE" * (state == self._final_state),
             )
         return s
@@ -39,6 +39,7 @@ class StateMachine(object):
     #we assume that all the functions called by the machine will use the same
     # args, in order to reduce compexity
     def run_machine(self, args):
+        print "yo"
         while True:
             #returns True if the machine has finished running
             if self._current_state == self._final_state:
@@ -58,6 +59,7 @@ class StateMachine(object):
                 #require input. Since our State Machine is Semi-Deterministic,
                 #we can assume that there is only one state to which we can
                 #reach (next_states[0])
+                print self._current_state.before_input_func(*args)
                 epsilon_path = self._current_state.before_input_func(*args)
                 if epsilon_path:
                     #if there is no need for input, move to next states

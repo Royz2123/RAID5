@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import argparse
 import contextlib
 import errno
@@ -49,6 +48,10 @@ class BDSClientSocket(pollable.Pollable):
         self._service.response_headers.update(client_context["headers"])
         self._service.response_content = client_context["content"]
         self._parent = parent
+
+
+    def is_closing(self):
+        return self._state == constants.CLOSING_STATE
 
     @property
     def state(self):
@@ -157,7 +160,7 @@ class BDSClientSocket(pollable.Pollable):
         }
     }
 
-    def on_read(self, pollables):
+    def on_read(self):
         try:
             http_util.get_buf(self)
             while (self._state <= constants.GET_CONTENT_STATE and (
@@ -181,7 +184,7 @@ class BDSClientSocket(pollable.Pollable):
     def on_error(self):
         self._state = constants.CLOSING_STATE
 
-    def on_write(self, pollables):
+    def on_write(self):
         while ((
             self._state <= constants.SEND_CONTENT_STATE
         ) and (
@@ -197,7 +200,7 @@ class BDSClientSocket(pollable.Pollable):
             )
         http_util.send_buf(self)
 
-    def get_events(self, pollables):
+    def get_events(self):
         event = select.POLLERR
         if (
             self._state >= constants.GET_STATUS_STATE and

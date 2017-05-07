@@ -1,8 +1,10 @@
 * {
+  transition: all 0.5s ease;
+
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
-  font-family: arial;
+   font-family: 'Hind Madurai', sans-serif;
 }
 
 body {
@@ -12,21 +14,68 @@ body {
 .title {
     color: #7F8C8D;
     text-align: center;
-    font-family:  "Comic Sans MS", cursive, sans-serif;
+    font-family: 'Hind Madurai', sans-serif;
     font-size: 50px;
+    font-weight: 900;
+}
+
+.disks-list {
+    background-color: transparent;
+    float: left;
+}
+
+.online-disk-option {
+    float: left;
+    align: center;
+    border-radius: 15px;
+    border-color: #7F8C8D;
+    border-width: 5px;
+    border-style: solid;
+    background: #d5ffd5;
+    padding: 0px 10px;
+    width: 100%;
+    margin: 5px 0px;
+    height: 100px;
+}
+
+.online-disk-option:hover{
+    background: #99ff99;
+    width: 100%;
+    height: 110px;
+}
+
+.offline-disk-option {
+    float: left;
+    border-radius: 15px;
+    border-color: #7F8C8D;
+    border-width: 5px;
+    border-style: solid;
+    background: #fec2b8;
+    padding: 0px 10px;
+    width: 100%;
+    margin: 5px 0px;
+    height: 100px;
+}
+
+.offline-disk-option:hover{
+    background: #f49790;
+    width: 100%;
+    height: 110px;
 }
 
 h1 {
   color: #7F8C8D;
   text-align: center;
-  font-family:  "Comic Sans MS", cursive, sans-serif;
+  font-family: 'Hind Madurai', sans-serif;
   font-size: 40px;
 }
 
 h2 {
+  float:left;
+  width:100%;
   color: #616A6B;
   text-align: center;
-  font-family: "Comic Sans MS", cursive, sans-serif;
+  font-family: 'Hind Madurai', sans-serif;
   font-size: 20px;
 }
 
@@ -55,21 +104,16 @@ li a:hover {
 }
 
 table {
-    border-collapse: collapse;
+    border-width: medium;
+    border-color: ;
     width: 100%;
 }
 
 th, td {
     text-align: center;
-    padding: 8px;
+    padding: 2px;
 }
 
-tr:nth-child(even){background-color: #f2f2f2}
-
-th {
-    background-color: #7F8C8D;
-    color: white;
-}
 
 
 .content-space {
@@ -114,10 +158,15 @@ th {
   border-radius: 4px;
 }
 
+.log-btn:hover {
+  background: #49c9da;
+
+}
+
 .reg-text {
   color: #FBFCFC;
   text-align: center;
-  font-family: "Comic Sans MS", cursive, sans-serif;
+  font-family: 'Hind Madurai', sans-serif;
   font-size: 20px;
 }
 

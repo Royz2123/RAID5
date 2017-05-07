@@ -31,8 +31,8 @@ CACHE_HEADERS = {
     "Expires" : "0"
 }
 
-class ServerSocket(pollable.Pollable, callable.Callable):
-    def __init__(self, socket, state, application_context):
+class ServiceSocket(pollable.Pollable, callable.Callable):
+    def __init__(self, socket, state, application_context, pollables):
         self._application_context = application_context
         self._socket = socket
         self._fd = socket.fileno()
@@ -46,7 +46,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             "uri": "uknown"
         }        #important stuff from request
         self._service = base_service.BaseService()
-        self._pollables = None
+        self._pollables = pollables
 
     @property
     def state(self):
@@ -112,6 +112,9 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         self._service.before_terminate(self)
         self._socket.close()
 
+    def is_closing(self):
+        return self._state == constants.CLOSING_STATE
+
     states = {
         constants.GET_REQUEST_STATE : {
             "function" : http_util.get_request_state,
@@ -143,17 +146,16 @@ class ServerSocket(pollable.Pollable, callable.Callable):
         }
     }
 
-    def on_read(self, pollables):
-        self._pollables = pollables         #for some services
+    def on_read(self):
         try:
             http_util.get_buf(self)
             while (self._state < constants.SEND_STATUS_STATE and (
-                ServerSocket.states[self._state]["function"](self)
+                ServiceSocket.states[self._state]["function"](self)
             )):
                 if self._state == constants.SLEEPING_STATE:
                     return
 
-                self._state = ServerSocket.states[self._state]["next"]
+                self._state = ServiceSocket.states[self._state]["next"]
                 logging.debug(
                     "%s :\t Reading, current state: %s"
                     % (
@@ -170,15 +172,15 @@ class ServerSocket(pollable.Pollable, callable.Callable):
     def on_finish(self):
         self._service.on_finish(self)
 
-    def on_write(self, pollables):
+    def on_write(self):
         try:
             while (self._state <= constants.SEND_CONTENT_STATE and (
-                ServerSocket.states[self._state]["function"](self)
+                ServiceSocket.states[self._state]["function"](self)
             )):
                 if self._state == constants.SLEEPING_STATE:
                     return
 
-                self._state = ServerSocket.states[self._state]["next"]
+                self._state = ServiceSocket.states[self._state]["next"]
                 logging.debug(
                     "%s :\t Writing, current state: %s"
                     % (
@@ -194,7 +196,7 @@ class ServerSocket(pollable.Pollable, callable.Callable):
             self.on_error(e)
 
 
-    def get_events(self, pollables):
+    def get_events(self):
         event = select.POLLERR
         if (
             self._state >= constants.GET_REQUEST_STATE and
@@ -214,9 +216,9 @@ class ServerSocket(pollable.Pollable, callable.Callable):
 
     def __repr__(self):
         if self._service is None:
-            return "ServerSocket Object: %s" % self._fd
+            return "ServiceSocket Object: %s" % self._fd
         return (
-            "ServerSocket Object: %s, %s"
+            "ServiceSocket Object: %s, %s"
         ) % (
             self._fd,
             self._service.__class__.__name__,

@@ -19,13 +19,20 @@ STANDARD_OUTPUT = 1
 STANDARD_ERROR = 2
 
 DEFAULT_BASE_DIRECTORY = "http/frontend_server/files"
+DEFAULT_BLOCK_CONFIG_DIR = "http/bds_server/disks/"
+DEFAULT_FRONTEND_CONFIG_DIR = "http/frontend_server/"
+
 DISK_NAME = "http/bds_server/disks/disk"
 DISK_INFO_NAME =  "http/bds_server/disks/disk_info"
 TMP_FILE_NAME = "tmp_file"
 
+DISCONNECT_TIME = 5
+TERMINATE_TIME = 20
+
 HTML_DEFAULT_HEADER = "RAID5 - Message"
 HTML_ERROR_HEADER = "Disk Error"
 HTML_MANAGEMENT_HEADER = "Management"
+HTML_DISPLAY_HEADER = "Available disks"
 HTML_TOP_BAR_CODE = (
     '<ul>'
     +  '<li><a class="active" href="/homepage.html">Home</a></li>'
@@ -44,6 +51,8 @@ CACHE_HEADERS = {
     "Expires" : "0"
 }
 
+ADDRESS_SEPERATOR = ":"
+
 MIME_MAPPING = {
     'html': 'text/html',
     'png': 'image/png',
@@ -56,6 +65,9 @@ MIME_MAPPING = {
     BLOCK_DEVICE_SERVER,
     FRONTEND_SERVER,
 )=range(2)
+
+DEFAULT_BLOCK_POLL_TIMEOUT = 1000
+DEFAULT_FRONTEND_POLL_TIMEOUT = 200
 
 MODULE_DICT = {
     BLOCK_DEVICE_SERVER : [
@@ -74,6 +86,7 @@ MODULE_DICT = {
         "http.frontend_server.services.time_service",
         "http.frontend_server.services.init_service",
         "http.frontend_server.services.management_service",
+        "http.frontend_server.services.display_disks_service",
         "http.common.services.get_file_service",
         "http.common.services.form_service",
     ],

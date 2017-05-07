@@ -22,14 +22,14 @@ from http.common.utilities import util
 # devices much easier to handle
 
 def create_get_block_contexts(disks, request_info):
-    # request_info should be a dict { disknum : blocknum }
+    # request_info should be a dict { disk_num : blocknum }
     client_contexts = {}
-    for disknum, blocknum in request_info.items():
-        client_contexts[disknum] = {
+    for disk_num, blocknum in request_info.items():
+        client_contexts[disk_num] = {
             "headers" : {},
             "args" : {"blocknum" : blocknum},
-            "disknum" : disknum,
-            "disk_address" : disks[disknum]["address"],
+            "disk_num" : disk_num,
+            "disk_address" : disks[disk_num]["address"],
             "method" : "GET",
             "service" : (
                 get_block_service.GetBlockService.get_name()
@@ -39,18 +39,18 @@ def create_get_block_contexts(disks, request_info):
     return client_contexts
 
 def create_get_disk_info_contexts(disks, request_info):
-    # request_info should just be a list of disknums that we want their infos
+    # request_info should just be a list of disk_nums that we want their infos
     client_contexts = {}
-    for disknum in request_info:
-        client_contexts[disknum] = {
+    for disk_num in request_info:
+        client_contexts[disk_num] = {
             "headers" : {},
             "args" : {},
-            "disknum" : disknum,
-            "disk_address" : disks[disknum]["address"],
+            "disk_num" : disk_num,
+            "disk_address" : disks[disk_num]["address"],
             "method" : "GET",
             "service" : "/%s%s" % (
                 constants.DISK_INFO_NAME,
-                disknum,
+                disk_num,
             ),
             "content" : ""
         }
@@ -58,37 +58,37 @@ def create_get_disk_info_contexts(disks, request_info):
 
 def create_set_block_contexts(disks, request_info):
     # request_info should be a dict {
-    #     disknum : {
+    #     disk_num : {
     #         "blocknum" : blocknum
     #         "content" : content
     #     }
     # }
     client_contexts = {}
-    for disknum in request_info.keys():
-        client_contexts[disknum] = {
+    for disk_num in request_info.keys():
+        client_contexts[disk_num] = {
             "headers" : {},
             "method" : "GET",
-            "args" : {"blocknum" : request_info[disknum]["blocknum"]},
-            "disknum" : disknum,
-            "disk_address" : disks[disknum]["address"],
+            "args" : {"blocknum" : request_info[disk_num]["blocknum"]},
+            "disk_num" : disk_num,
+            "disk_address" : disks[disk_num]["address"],
             "service" : (
                 set_block_service.SetBlockService.get_name()
             ),
-            "content" : request_info[disknum]["content"],
+            "content" : request_info[disk_num]["content"],
         }
     return client_contexts
 
 
 def create_update_level_contexts(disks, request_info):
-    # request_info should be a dict { disknum : addition }
+    # request_info should be a dict { disk_num : addition }
     client_contexts = {}
-    for disknum, addition in request_info.items():
-        client_contexts[disknum] = {
+    for disk_num, addition in request_info.items():
+        client_contexts[disk_num] = {
             "headers" : {},
             "method" : "GET",
             "args" : {"add" : addition},
-            "disknum" : disknum,
-            "disk_address" : disks[disknum]["address"],
+            "disk_num" : disk_num,
+            "disk_address" : disks[disk_num]["address"],
             "service" : (
                 update_level_service.UpdateLevelService.get_name()
             ),
@@ -99,26 +99,26 @@ def create_update_level_contexts(disks, request_info):
 
 def create_file_upload_contexts(disks, request_info):
     # request_info should be a dict {
-    #   disknum : {
+    #   disk_num : {
     #       "boundary" : boundary,
     #       "content" : content
     #   }
     # }
     client_contexts = {}
-    for disknum in request_info.keys():
-        client_contexts[disknum] = {
+    for disk_num in request_info.keys():
+        client_contexts[disk_num] = {
             "headers" : {
                 "Content-Type" : "multipart/form-data; boundary=%s" % (
-                    request_info[disknum]["boundary"]
+                    request_info[disk_num]["boundary"]
                 )
             },
             "method" : "POST",
             "args" : {},
-            "disknum" : disknum,
-            "disk_address" : disks[disknum]["address"],
+            "disk_num" : disk_num,
+            "disk_address" : disks[disk_num]["address"],
             "service" : (
                 form_service.FileFormService.get_name()
             ),
-            "content" : request_info[disknum]["content"],
+            "content" : request_info[disk_num]["content"],
         }
     return client_contexts

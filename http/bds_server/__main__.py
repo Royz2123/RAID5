@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import argparse
+import ConfigParser
 import logging
 import os
 import traceback
 
 from http.common.utilities import async_server
+from http.common.utilities import config_util
 from http.common.utilities import constants
 from http.common.utilities import poller
 from http.common.utilities import util
@@ -42,7 +44,7 @@ def parse_args():
     parser.add_argument(
         '--poll-timeout',
         type=int,
-        default=1000,
+        default=constants.DEFAULT_BLOCK_POLL_TIMEOUT,
     )
     parser.add_argument(
         '--poll-type',
@@ -66,6 +68,11 @@ def parse_args():
         default=0,
     )
     parser.add_argument(
+        '--config-file',
+        type=str,
+        required=True
+    )
+    parser.add_argument(
         '--log-file',
         type=str,
         default=None
@@ -85,8 +92,10 @@ def main():
             os.remove(args.log_file)
     except:
         pass
-
     logging.basicConfig(filename=args.log_file, level=logging.DEBUG)
+
+    #parse the config file
+    config_sections = config_util.parse_config(args.config_file)
 
     #check that the disk file and dis info file is ok before running the server
     #create file if necessary
@@ -104,6 +113,7 @@ def main():
     #if args.daemon:
     #    daemonize()
     application_context = {
+        "server_type" : constants.BLOCK_DEVICE_SERVER,
         "bind_address" : args.bind_address,
         "bind_port" : args.bind_port,
         "base" : args.base,
@@ -111,7 +121,6 @@ def main():
         "poll_timeout" : args.poll_timeout,
         "max_connections" : args.max_connections,
         "max_buffer" : args.max_buffer,
-        "server_type" : constants.BLOCK_DEVICE_SERVER,
         "disk_name" : "%s%s" % (constants.DISK_NAME, args.disk_num),
         "disk_info_name" : (
             "%s%s" % (
@@ -119,10 +128,15 @@ def main():
                 args.disk_num
             )
         ),
-        "disknum" : args.disk_num
+        "disk_num" : args.disk_num,
+        "multicast_group" : config_sections["MulticastGroup"],
+        "authentication" : config_sections["Authentication"],
+        "server_info" : config_sections["Server"]
     }
     server = async_server.AsyncServer(application_context)
     server.run()
+
+
 
 
 def daemonize():

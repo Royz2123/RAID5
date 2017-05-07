@@ -32,11 +32,11 @@ class DisconnectService(base_service.BaseService):
         base_service.BaseService.__init__(
             self,
             [],
-            ["disknum"],
+            ["disk_num"],
             args
         )
         self._disks = entry.application_context["disks"]
-        self._disknum = None
+        self._disk_num = None
 
         self._pollables = pollables
 
@@ -48,23 +48,23 @@ class DisconnectService(base_service.BaseService):
         return "/disconnect"
 
     def before_disconnect(self, entry):
-        self._disknum = int(self._args["disknum"][0])
-        if self._disks[self._disknum]["state"] != constants.ONLINE:  #check if already disconnected
+        self._disk_num = int(self._args["disk_num"][0])
+        if self._disks[self._disk_num]["state"] != constants.ONLINE:  #check if already disconnected
             return
 
         #check that all other disks are online (RAID5 requirements)
-        for disknum in range(len(self._disks)):
-            if not self._disks[disknum]["state"] == constants.ONLINE:
+        for disk_num in range(len(self._disks)):
+            if not self._disks[disk_num]["state"] == constants.ONLINE:
                 raise RuntimeError(
                     "Can't turn disk %s offline, already have disk %s offline" % (
-                        self._disknum,
-                        disknum
+                        self._disk_num,
+                        disk_num
                     )
                 )
 
         #already set to offline so that another attempt to disconnect shall be denied
-        self._disks[self._disknum]["state"] = constants.OFFLINE
-        self._disks[self._disknum]["cache"] = cache.Cache(
+        self._disks[self._disk_num]["state"] = constants.OFFLINE
+        self._disks[self._disk_num]["cache"] = cache.Cache(
             mode=cache.Cache.CACHE_MODE
         )
 
@@ -76,8 +76,8 @@ class DisconnectService(base_service.BaseService):
             service_util.create_update_level_contexts(
                 self._disks,
                 {
-                    disknum : "1" for disknum in range(len(self._disks))
-                    if disknum != self._disknum
+                    disk_num : "1" for disk_num in range(len(self._disks))
+                    if disk_num != self._disk_num
                 }
             ),
         )
@@ -93,9 +93,9 @@ class DisconnectService(base_service.BaseService):
             )
 
         #finished smoothly, update levels on frontend disks
-        for disknum in range(len(self._disks)):
-            if disknum != self._disknum:
-                self._disks[disknum]["level"] += 1
+        for disk_num in range(len(self._disks)):
+            if disk_num != self._disk_num:
+                self._disks[disk_num]["level"] += 1
         entry.state = constants.SEND_HEADERS_STATE
         return DisconnectService.FINAL_STATE
 

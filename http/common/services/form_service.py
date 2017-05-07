@@ -15,6 +15,8 @@ from http.common.utilities import html_util
 from http.common.utilities import util
 from http.common.utilities import post_util
 from http.frontend_server.pollables import bds_client_socket
+from http.common.utilities.state_util import state
+from http.common.utilities.state_util import state_machine
 
 
 class FileFormService(base_service.BaseService):
@@ -22,7 +24,7 @@ class FileFormService(base_service.BaseService):
         START_STATE,
         HEADERS_STATE,
         CONTENT_STATE,
-        END_STATE,
+        FINAL_STATE,
     ) = range(4)
 
     def __init__(self, entry, pollables, args):
@@ -31,7 +33,8 @@ class FileFormService(base_service.BaseService):
         self._content = ""
         self._boundary = None
         self._fields = {}
-        self._state = FileFormService.START_STATE
+
+        self._state_machine = None
 
         self._fd = None
         self._filename = None
@@ -41,30 +44,23 @@ class FileFormService(base_service.BaseService):
     def get_name():
         return "/fileupload"
 
-    def before_content(self, entry):
-        content_type = entry.request_context["headers"]["Content-Type"]
-        if (
-            content_type.find("multipart/form-data") == -1 or
-            content_type.find("boundary") == -1
-        ):
-            raise RuntimeError("Bad Form Request")
-        self._boundary = content_type.split("boundary=")[1]
+    # STATE FUNCTIONS
 
-    def start_state(self):
+    def after_start(self, entry):
         if self._content.find("--%s" % self._boundary) == -1:
-            return False
+            return None
         self._content = self._content.split(
             "--%s%s" % (
                 self._boundary,
                 constants.CRLF_BIN
             ), 1
         )[1]
-        return True
+        return FileFormService.HEADERS_STATE
 
-    def headers_state(self):
+    def after_headers(self, entry):
         lines = self._content.split(constants.CRLF_BIN)
         if "" not in lines:
-            return False
+            return None
 
         #got all the headers, process them
         headers = {}
@@ -89,7 +85,6 @@ class FileFormService(base_service.BaseService):
             name, info = field.split('=', 1)
             #the info part is surrounded by parenthesies
             info = info[1:-1]
-            print name
             if name == "filename":
                 self._filename = info
                 self._fd = os.open(
@@ -100,39 +95,25 @@ class FileFormService(base_service.BaseService):
             elif name == "name":
                 self._arg_name = info
                 self._args[info] = [""]
-        return True
+        return FileFormService.CONTENT_STATE
 
-    def end_boundary(self):
-        return "%s--%s--%s" % (
-            constants.CRLF_BIN,
-            self._boundary,
-            constants.CRLF_BIN
-        )
-
-    def mid_boundary(self):
-        return "%s--%s%s" % (
-            constants.CRLF_BIN,
-            self._boundary,
-            constants.CRLF_BIN
-        )
-
-    def content_state(self):
+    def after_content(self, entry):
         #first we must check if there are any more mid - boundaries
         if self._content.find(post_util.mid_boundary(self._boundary)) != -1:
             buf = self._content.split(
                 post_util.mid_boundary(self._boundary),
                 1,
             )[0]
-            next_state = 1
+            next_state = FileFormService.HEADERS_STATE
         elif self._content.find(post_util.end_boundary(self._boundary)) != -1:
             buf = self._content.split(
                 post_util.end_boundary(self._boundary),
                 1,
             )[0]
-            next_state = 2
+            next_state = FileFormService.FINAL_STATE
         else:
             buf = self._content
-            next_state = 0
+            next_state = None
 
         if self._filename is not None:
             self.file_handle(buf, next_state)
@@ -140,47 +121,58 @@ class FileFormService(base_service.BaseService):
             self.arg_handle(buf, next_state)
         self._content = self._content[len(buf):]
 
-        if next_state == 1:
+        if next_state == FileFormService.HEADERS_STATE:
             self._content = self._content.split(
                 post_util.mid_boundary(self._boundary),
                 1
             )[1]
-
         return next_state
 
-    BOUNDARY_STATES = {
-        START_STATE: {
-            "function": start_state,
-            "next": HEADERS_STATE,
-        },
-        HEADERS_STATE: {
-            "function": headers_state,
-            "next": CONTENT_STATE
-        },
-        CONTENT_STATE: {
-            "function": content_state,
-            "next": HEADERS_STATE,
-        }
-    }
+    STATES = [
+        state.State(
+            START_STATE,
+            [HEADERS_STATE],
+            after_func = after_start,
+        ),
+        state.State(
+            HEADERS_STATE,
+            [CONTENT_STATE],
+            after_func = after_headers
+        ),
+        state.State(
+            CONTENT_STATE,
+            [HEADERS_STATE, FINAL_STATE],
+            after_func = after_content
+        ),
+        state.State(
+            FINAL_STATE,
+            [FINAL_STATE]
+        )
+    ]
 
-    def handle_content(self, entry, content):
-        self._content += content
-        while True:
-            next_state = FileFormService.BOUNDARY_STATES[self._state]["function"](self)
-            if next_state == 0:
-                return False
-            elif (self._state == FileFormService.CONTENT_STATE and next_state == 2):
-                break
-            self._state = FileFormService.BOUNDARY_STATES[self._state]["next"]
-
-            logging.debug(
-                "%s :\t handling content, current state: %s"
-                % (
+    def before_content(self, entry):
+        content_type = entry.request_context["headers"]["Content-Type"]
+        if (
+            content_type.find("multipart/form-data") == -1 or
+            content_type.find("boundary") == -1
+        ):
+            raise RuntimeError(
+                "%s:\tBad Form Request%s" % (
                     entry,
-                    self._state
+                    content_type
                 )
             )
-        return True
+        self._boundary = content_type.split("boundary=")[1]
+
+        self._state_machine = state_machine.StateMachine(
+            FileFormService.STATES,
+            FileFormService.STATES[FileFormService.START_STATE],
+            FileFormService.STATES[FileFormService.FINAL_STATE]
+        )
+
+    def handle_content(self, entry, content):
+        #pass args to the machine, will use *args to pass them on
+        self._state_machine.run_machine((self, entry))
 
     def before_response_headers(self, entry):
         if self._response_status == 200:
@@ -194,7 +186,6 @@ class FileFormService(base_service.BaseService):
 
     def arg_handle(self, arg, next_state):
         self._args[self._arg_name][0] += buf
-
 
     def file_handle(self, buf, next_state):
         while buf:

@@ -24,7 +24,7 @@ def add_bds_client(parent, client_context, client_update, pollables):
         new_socket.connect((client_context["disk_address"]))
     except socket.error as e:
         #connection refused from disk! build disk refused and raise..
-        raise util.DiskRefused(client_context["disknum"])
+        raise util.DiskRefused(client_context["disk_num"])
 
 
     #set to non blocking

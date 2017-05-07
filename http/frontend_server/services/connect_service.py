@@ -32,11 +32,11 @@ class ConnectService(base_service.BaseService):
         base_service.BaseService.__init__(
             self,
             [],
-            ["disknum", "address"],
+            ["disk_num", "address"],
             args
         )
         self._disks = entry.application_context["disks"]
-        self._disknum = None
+        self._disk_num = None
         self._new_disk_mode = False
 
         self._disk_built = False
@@ -54,39 +54,39 @@ class ConnectService(base_service.BaseService):
 
     #checks if and how the disk needs to be rebuilt, returns False if not
     def initial_setup(self, entry):
-        self._disknum = int(self._args["disknum"][0])
+        self._disk_num = int(self._args["disk_num"][0])
         address = util.make_address(self._args["address"][0])
 
         #see if we are dealing with a familiar disk or not
-        if self._disks[self._disknum]["address"] != address:
+        if self._disks[self._disk_num]["address"] != address:
             self._new_disk_mode = True
             #check we don't already have this address in the system
-            for disknum in range(len(self._disks)):
+            for disk_num in range(len(self._disks)):
                 if (
-                    disknum != self._disknum
-                    and address == self._disks[disknum]["address"]
+                    disk_num != self._disk_num
+                    and address == self._disks[disk_num]["address"]
                 ):
                     raise RuntimeError("Can't connect to the same disk twice")
 
             #update the disk address and cache
-            self._disks[self._disknum]["address"] = address
-            self._disks[self._disknum]["cache"] = cache.Cache(
+            self._disks[self._disk_num]["address"] = address
+            self._disks[self._disk_num]["cache"] = cache.Cache(
                 mode=cache.Cache.SCRATCH_MODE
             )
-            self._disks[self._disknum]["disk_UUID"] = "UKNOWN"
+            self._disks[self._disk_num]["disk_UUID"] = "UKNOWN"
 
         #sanity check that this level is one less than all the others:
-        for disknum in range(len(self._disks)):
+        for disk_num in range(len(self._disks)):
             if (
-                disknum != self._disknum
+                disk_num != self._disk_num
                 and (
-                    self._disks[disknum]["level"]
-                    <= self._disks[self._disknum]["level"]
+                    self._disks[disk_num]["level"]
+                    <= self._disks[self._disk_num]["level"]
                 )
             ):
                 raise RuntimeError("Error in levels")
 
-        self._disks[self._disknum]["state"] = constants.REBUILD
+        self._disks[self._disk_num]["state"] = constants.REBUILD
 
 
     def before_response_status(self, entry):
@@ -122,7 +122,7 @@ class ConnectService(base_service.BaseService):
             entry,
             service_util.create_get_disk_info_contexts(
                 self._disks,
-                [self._disknum]
+                [self._disk_num]
             )
         )
         return False     #need input, not an epsilon path
@@ -142,22 +142,22 @@ class ConnectService(base_service.BaseService):
         #update the new uuid from the disk file, and check that the new disk
         # is part of the system
         disk_data = (
-            self._disk_manager.get_responses()[self._disknum]["content"].split(
+            self._disk_manager.get_responses()[self._disk_num]["content"].split(
                 constants.CRLF_BIN
             )
         )
-        comparable_disknum = not self._disknum
+        comparable_disk_num = not self._disk_num
 
         #lets check that the common_uuid is identical:
-        if disk_data[1] != self._disks[comparable_disknum]["common_UUID"]:
+        if disk_data[1] != self._disks[comparable_disk_num]["common_UUID"]:
             raise RuntimeError(
                 "Got two different topoligies: \n%s\n%s" % (
                     disk_data[1],
-                    self._disks[comparable_disknum]["common_UUID"]
+                    self._disks[comparable_disk_num]["common_UUID"]
                 )
             )
 
-        self._disks[self._disknum]["disk_UUID"] = disk_data[2]
+        self._disks[self._disk_num]["disk_UUID"] = disk_data[2]
 
         #move on to rebuilding disk
         if self.check_if_built():
@@ -166,7 +166,7 @@ class ConnectService(base_service.BaseService):
 
     def before_get_data(self, entry):
         self._current_blocknum, self._current_data = (
-            self._disks[self._disknum]["cache"].next_block()
+            self._disks[self._disk_num]["cache"].next_block()
         )
         if self._current_data is not None:
             #got data stored in cache, no need for hard rebuild
@@ -176,9 +176,9 @@ class ConnectService(base_service.BaseService):
             #need to retreive data from XOR of all the disks besides the current
             #in order to rebuild it
             request_info = {}
-            for disknum in range(len(self._disks)):
-                if disknum != self._disknum:
-                    request_info[disknum] = self._current_blocknum
+            for disk_num in range(len(self._disks)):
+                if disk_num != self._disk_num:
+                    request_info[disk_num] = self._current_blocknum
 
             self._disk_manager = disk_manager.DiskManager(
                 self._socket_data,
@@ -207,18 +207,18 @@ class ConnectService(base_service.BaseService):
 
         #data not saved in cache, need to xor all the blocks
         blocks = []
-        for disknum, response in self._disk_manager.get_responses().items():
+        for disk_num, response in self._disk_manager.get_responses().items():
             blocks.append(response["content"])
 
         #check if finished scratch mode for cache
         if (
             (
-                self._disks[self._disknum]["cache"].mode
+                self._disks[self._disk_num]["cache"].mode
                 == cache.Cache.SCRATCH_MODE
             ) and disk_util.all_empty(blocks)
         ):
             #all the blocks we got are empty, change to cache mode
-            self._disks[self._disknum]["cache"].mode = (
+            self._disks[self._disk_num]["cache"].mode = (
                 cache.Cache.CACHE_MODE
             )
             #nothing to set now, we stay in GET_DATA_STATE and start working
@@ -237,7 +237,7 @@ class ConnectService(base_service.BaseService):
             service_util.create_set_block_contexts(
                 self._disks,
                 {
-                    self._disknum : {
+                    self._disk_num : {
                         "blocknum" : self._current_blocknum,
                         "content" : self._current_data
                     }
@@ -266,7 +266,7 @@ class ConnectService(base_service.BaseService):
             entry,
             service_util.create_update_level_contexts(
                 self._disks,
-                { self._disknum : "1"}
+                { self._disk_num : "1"}
             )
         )
         entry.state = constants.SLEEPING_STATE
@@ -280,8 +280,8 @@ class ConnectService(base_service.BaseService):
                 "Block Device Server sent a bad status code"
             )
 
-        self._disks[self._disknum]["level"] += 1
-        self._disks[self._disknum]["state"] = constants.ONLINE
+        self._disks[self._disk_num]["level"] += 1
+        self._disks[self._disk_num]["state"] = constants.ONLINE
         entry.state = constants.CLOSING_STATE
         return ConnectService.FINAL_STATE
 
@@ -337,12 +337,12 @@ class ConnectService(base_service.BaseService):
         #pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
-    #checks if self._disknum is built
+    #checks if self._disk_num is built
     def check_if_built(self):
         #check if already connected, no need to rebuild, or cache is empty
         if (
-            self._disks[self._disknum]["state"] == constants.REBUILD
-            and not self._disks[self._disknum]["cache"].is_empty()
+            self._disks[self._disk_num]["state"] == constants.REBUILD
+            and not self._disks[self._disk_num]["cache"].is_empty()
         ):
             return False
         return True

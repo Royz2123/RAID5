@@ -6,7 +6,7 @@ class State(object):
     # None - Incomplete
     # Some index - Complete input, next state (based on input)
     def default_before_input_func(self, entry):
-        return False     #set default state to not have an epsilon_path
+        return True     #set default state to have an epsilon_path
 
     def default_after_input_func(self, entry):
         return self._next_states[0]
@@ -28,7 +28,7 @@ class State(object):
         return self._index
 
     def __repr__(self):
-        return "State from State machine:\t%s" % self._index
+        return "State from State machine:\t%s\n" % self._index
 
     @property
     def before_input_func(self):
