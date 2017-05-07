@@ -26,13 +26,8 @@ def parse_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--bind-address',
-        default=constants.DEFAULT_HTTP_ADDRESS,
-        help='Bind address, default: %(default)s',
-    )
-    parser.add_argument(
         '--bind-port',
-        default=constants.DEFAULT_BDS_HTTP_PORT,
+        required=True,
         type=int,
         help='Bind port, default: %(default)s',
     )
@@ -63,11 +58,6 @@ def parse_args():
         default=1000,
     )
     parser.add_argument(
-        '--disk-num',
-        type=int,
-        default=0,
-    )
-    parser.add_argument(
         '--config-file',
         type=str,
         required=True
@@ -83,8 +73,6 @@ def parse_args():
 
 def main():
     args = parse_args()
-    if args.bind_port == constants.DEFAULT_BDS_HTTP_PORT:
-        args.bind_port += int(args.disk_num)
 
     #delete the previous log
     try:
@@ -101,7 +89,7 @@ def main():
     #create file if necessary
     try:
         disk_fd = os.open(
-            "%s%s" % (constants.DISK_NAME, args.disk_num),
+            config_sections["Server"]["disk_name"],
             os.O_RDONLY | os.O_CREAT,
             0o666
         )
@@ -114,21 +102,15 @@ def main():
     #    daemonize()
     application_context = {
         "server_type" : constants.BLOCK_DEVICE_SERVER,
-        "bind_address" : args.bind_address,
+        "bind_address" : constants.DEFAULT_HTTP_ADDRESS,
         "bind_port" : args.bind_port,
         "base" : args.base,
         "poll_type" : POLL_TYPE[args.poll_type],
         "poll_timeout" : args.poll_timeout,
         "max_connections" : args.max_connections,
         "max_buffer" : args.max_buffer,
-        "disk_name" : "%s%s" % (constants.DISK_NAME, args.disk_num),
-        "disk_info_name" : (
-            "%s%s" % (
-                constants.DISK_INFO_NAME,
-                args.disk_num
-            )
-        ),
-        "disk_num" : args.disk_num,
+        "disk_name" : config_sections["Server"]["disk_name"],
+        "disk_info_name" : config_sections["Server"]["disk_info_name"],
         "multicast_group" : config_sections["MulticastGroup"],
         "authentication" : config_sections["Authentication"],
         "server_info" : config_sections["Server"]

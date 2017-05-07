@@ -118,6 +118,7 @@ def create_disks_table(disks):
 def create_disks_list(disks):
     online_disks, offline_disks = sort_disks(disks)
 
+    #print online disks
     disk_list = "<h2>Online Disks</h2>"
     disk_list += (
         "<form action='/init' enctype='multipart/form-data'"
@@ -129,11 +130,23 @@ def create_disks_list(disks):
             create_checkbox(index, disk),
         )
 
-    disk_list += (
-        "<button type='submit' form='init_form' value='Submit'>"
-        + "Submit</button></form>"
-    )
+    if len(online_disks) > 1:
+        #add scratch mode and help box
+        disk_list += (
+            '<br><input type="checkbox" name="scratch" value="True" unchecked>'
+            + '&nbsp&nbspFrom scratch&nbsp&nbsp'
+            + '<div class="tooltip"><img src="/help_box.jpg" class="help-box">'
+            + '<span class="tooltiptext">'
+            + 'To restart the system, and override existing settings'
+            + '</span></div>'
+        )
+        #submit form for init
+        disk_list += (
+            "<br><button type='submit' form='init_form' value='Submit'>"
+            + "Submit</button></form>"
+        )
 
+    #show offline disks
     disk_list += "<h2>Offine Disks</h2>"
     disk_list += "<div class='disk-group'>"
     for index, disk in offline_disks.items():
