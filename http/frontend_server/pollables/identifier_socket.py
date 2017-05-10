@@ -60,23 +60,16 @@ class IdentifierSocket(pollable.Pollable):
         #check if we already have uuid in the system:
         disk_index = len(self._application_context["available_disks"])
         for index, disk in self._application_context["available_disks"].items():
-            if disk["UUID"] == content[0]:
+            if disk["disk_UUID"] == content[0]:
                 disk_index = index
 
         #update the disk in available_disks
         self._application_context["available_disks"][disk_index] = {
             "state" : constants.ONLINE,
-            "UUID" : content[0],
+            "disk_UUID" : content[0],
             "UDP_address" : address,
             "TCP_address" : (address[0], content[1]),
             "timestamp" : time.time(),
-        }
-
-    def parse_decleration(self, buf):
-        buf = buf.split(constants.CRLF_BIN)
-        return {
-            "UUID" : buf[0],
-            "State" : buf[1],
         }
 
     def get_events(self):

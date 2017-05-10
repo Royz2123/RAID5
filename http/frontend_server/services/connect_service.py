@@ -15,7 +15,7 @@ from http.common.utilities import constants
 from http.common.utilities import html_util
 from http.common.utilities import util
 from http.frontend_server.pollables import bds_client_socket
-from http.frontend_server.services import management_service
+from http.frontend_server.services import display_disks_service
 from http.frontend_server.utilities import cache
 from http.frontend_server.utilities import disk_manager
 from http.frontend_server.utilities import disk_util
@@ -96,8 +96,9 @@ class ConnectService(base_service.BaseService):
         #Re-send the management part
         self._response_content = html_util.create_html_page(
             "",
-            refresh=0,
-            redirect_url=management_service.ManagementService.get_name()
+            constants.HTML_DISPLAY_HEADER,
+            0,
+            display_disks_service.DisplayDisksService.get_name(),
         )
         self._response_headers = {
             "Content-Length" : "%s" % len(self._response_content),

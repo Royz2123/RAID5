@@ -16,6 +16,7 @@ from http.common.utilities import constants
 from http.common.utilities import html_util
 from http.common.utilities import post_util
 from http.common.utilities import util
+from http.frontend_server.services import display_disks_service
 from http.frontend_server.utilities import disk_manager
 from http.frontend_server.utilities import cache
 from http.frontend_server.utilities import disk_util
@@ -301,8 +302,10 @@ class InitService(base_service.BaseService):
     def before_response_content(self, entry):
         #Re-send the management part
         self._response_content = html_util.create_html_page(
-            html_util.create_disks_table(entry.application_context["disks"]),
-            constants.HTML_MANAGEMENT_HEADER,
+            "",
+            constants.HTML_DISPLAY_HEADER,
+            0,
+            display_disks_service.DisplayDisksService.get_name(),
         )
         self._response_headers = {
             "Content-Length" : "%s" % len(self._response_content),

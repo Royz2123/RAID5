@@ -8,6 +8,17 @@ import traceback
 
 from http.common.utilities import constants
 
+ALIGNMENTS = {
+    True : "left-volume-disk-pic",
+    False : "right-volume-disk-pic",
+}
+IMAGES = {
+    constants.OFFLINE : "offline_disk1.png",
+    constants.ONLINE : "online_disk.png",
+    constants.REBUILD : "rebuild_disk.gif"
+}
+
+
 def create_html_page(
     content,
     header=constants.HTML_DEFAULT_HEADER,
@@ -51,75 +62,41 @@ def create_style_link(
     )
 
 
-def create_disks_table(disks):
-    common_UUID = "undefined"
-    if len(disks) != 0:
-        common_UUID = disks[0]["common_UUID"]
+def create_disks_list(available_disks, volume):
+    online_disks, offline_disks = sort_disks(available_disks)
 
-    table = '<table border="5" cellpadding="4" cellspacing="3">'
-    table += (
-        '<tr><th colspan="5"><br><h3> Manage Disks<br>System UUID: %s '
-        '</h3></th></tr>' % common_UUID
-    )
-    table += '<tr><th colspan="5"> Disks: %s </th></tr>' % len(disks)
-    table += (
-        (
-            "<tr><th> %s </th><th> %s </th><th> %s"
-            + "</th><th> %s </th><th> %s </th></tr>"
-        ) % (
-            "",
-            "Disk Address",
-            "Disk UUID",
-            "Level",
-            "State",
-        )
-    )
-    disk_num = 0
-    for disk in disks:
-        if disk["state"] == constants.OFFLINE:
-            table += (
-                (
-                    '<tr align="center"> %s </tr>'
-                ) % (
-                    '<td> %s </td>' % disk_num
-                    + '<td colspan="4"><br> %s </td>' % (
-                        connect_form(disk_num)
-                    )
-                )
+    disk_list = ""
+    if len(volume) != 0:
+        disk_list += "<h2>Volume</h2>"
+        disk_list += "<div class='volume'>"
+
+        alignment = True
+        for disk_num in range(len(volume)):
+            disk = volume[disk_num]
+
+            #set the disk_list
+            if disk["state"] == constants.OFFLINE:
+                html_obj = connect_form(disk_num)
+            elif disk["state"] == constants.REBUILD:
+                html_obj = html_progress_bar(volume, disk_num)
+            else:
+                html_obj = disconnect_form(disk_num)
+
+            disk_list += create_html_volume_disk(
+                ALIGNMENTS[alignment],
+                "UUID: %s<br>Level:%s, Disknum: %s" % (
+                    disk["disk_UUID"],
+                    disk["level"],
+                    disk_num
+                ),
+                IMAGES[disk["state"]],
+                html_obj,
             )
-        else:
-            table += (
-                (
-                    '<tr align="center"> %s </tr>'
-                ) % (
-                    '<td> %s </td>' % disk_num +
-                    "<td> %s </td>" % printable_address(disk["address"]) +
-                    "<td> %s </td>" % disk["disk_UUID"] +
-                    "<td> %s </td>" % disk["level"] +
-                    '<td> %s:<br>%s </td>' % (
-                        constants.DISK_STATES[disk["state"]],
-                        (
-                            (
-                                (disk["state"] == constants.ONLINE)
-                                * disconnect_form(disk_num)
-                            ) + (
-                                (disk["state"] == constants.REBUILD)
-                                * html_progress_bar(disks, disk_num)
-                            )
-                        )
-                    )
-                )
-            )
-
-        disk_num += 1
-    return table
-
-
-def create_disks_list(disks):
-    online_disks, offline_disks = sort_disks(disks)
+            alignment = not alignment
+        disk_list += "</div>"
 
     #print online disks
-    disk_list = "<h2>Online Disks</h2>"
+    disk_list += "<h2>All Online Disks</h2>"
     disk_list += (
         "<form action='/init' enctype='multipart/form-data'"
         + "id='init_form' method='GET'>"
@@ -143,11 +120,11 @@ def create_disks_list(disks):
         #submit form for init
         disk_list += (
             "<br><button type='submit' form='init_form' value='Submit'>"
-            + "Submit</button></form>"
+            + "Create Volume</button></form>"
         )
 
     #show offline disks
-    disk_list += "<h2>Offine Disks</h2>"
+    disk_list += "<h2>All Offine Disks</h2>"
     disk_list += "<div class='disk-group'>"
     for index, disk in offline_disks.items():
         disk_list += "<button class='offline-disk-option'>%s</button>" % (
@@ -156,6 +133,28 @@ def create_disks_list(disks):
     disk_list += "</div>"
 
     return disk_list
+
+
+def create_html_volume_disk(alignment_class, info, picture, html_obj):
+    #we want to print the disk in the following way:
+    # Disk info
+    # picture
+    # html_obj
+    return (
+        (
+            "<div class='%s'>"
+            + "<p>%s<p>"
+            + "<img src='/%s' class='disk-img'><br>"
+            + "%s"
+            + "</div>"
+        ) % (
+            alignment_class,
+            info,
+            picture,
+            html_obj
+        )
+    )
+
 
 
 def create_checkbox(index, disk):
@@ -178,10 +177,27 @@ def create_disk_info(disk):
             + "<td>TCP Address: %s</td></tr>"
             + "</table>"
         ) % (
-            disk["UUID"],
+            disk["disk_UUID"],
             time.time() - disk["timestamp"],
             printable_address(disk["UDP_address"]),
             printable_address(disk["TCP_address"])
+        )
+    )
+
+def create_volume_disk_info(disk, disk_num):
+    return (
+        (
+            "<table>"
+            + "<tr><td>UUID: %s</td>"
+            + "<td>Disknum: %s</td></tr>"
+            + "<tr><td>Level: %s</td>"
+            + "<td>TCP Address: %s</td></tr>"
+            + "</table>"
+        ) % (
+            disk["disk_UUID"],
+            disk_num,
+            disk["level"],
+            printable_address(disk["address"])
         )
     )
 

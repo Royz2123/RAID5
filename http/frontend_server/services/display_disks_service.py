@@ -24,7 +24,10 @@ class DisplayDisksService(base_service.BaseService):
 
     def before_response_headers(self, entry):
         self._response_content = html_util.create_html_page(
-            html_util.create_disks_list(entry.application_context["available_disks"]),
+            html_util.create_disks_list(
+                entry.application_context["available_disks"],
+                entry.application_context["disks"]
+            ),
             constants.HTML_DISPLAY_HEADER,
             constants.DEFAULT_REFRESH_TIME,
         )

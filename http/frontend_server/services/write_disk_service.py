@@ -131,6 +131,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
             entry.state = constants.SEND_STATUS_STATE
 
     def handle_block(self):
+        print "HEYOOO"
         self._current_phy_disk = disk_util.get_physical_disk_num(
             self._disks,
             int(self._args["disk"][0]),
@@ -150,7 +151,7 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
                     contexts = self.contexts_for_regular_get_block()
                 else:
                     contexts = self.contexts_for_regular_set_block()
-
+                print "HEYYYY"
                 self._disk_manager = disk_manager.DiskManager(
                     self._pollables,
                     self._entry,

@@ -10,6 +10,7 @@ def create_bds_config(filename, index):
     cfgfile = open(filename,'w')
     parser = ConfigParser.ConfigParser()
     common_config(parser)
+    parser.set("Server", "disk_UUID", str(uuid.uuid4()))
     parser.set("Server", "disk_info_name", "%s%s" % (
         constants.DISK_INFO_NAME,
         index
@@ -24,6 +25,7 @@ def create_frontend_config(filename):
     cfgfile = open(filename,'w')
     parser = ConfigParser.ConfigParser()
     common_config(parser)
+    parser.set("Server", "UUID", str(uuid.uuid4()))
     parser.write(cfgfile)
 
 def common_config(parser):
@@ -37,7 +39,6 @@ def common_config(parser):
     parser.set("Authentication", "LongPassword", "")
 
     parser.add_section("Server")
-    parser.set("Server", "UUID", str(uuid.uuid4()))
 
 
 def parse_config(config_file):

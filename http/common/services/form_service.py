@@ -171,6 +171,7 @@ class FileFormService(base_service.BaseService):
         )
 
     def handle_content(self, entry, content):
+        self._content += content
         #pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 

@@ -47,7 +47,7 @@ class DeclarerSocket(pollable.Pollable):
     def create_content(self):
         return (
             "%s%s%s%s" % (
-                self._application_context["server_info"]["uuid"],
+                self._application_context["server_info"]["disk_uuid"],
                 constants.CRLF_BIN,
                 self._application_context["bind_port"],
                 constants.CRLF_BIN
