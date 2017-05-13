@@ -53,6 +53,12 @@ python config_disks.py <NUM_OF_BLOCK_DEVICES>
 ```
 Note: UUID's can be changed manually from the configuration files
 
+### Testing
+
+Another python test script from the parent directory (RAID5), has also been provided, that writes to the first disk a long sequence of numbers, for testing purposes:
+```
+python test.py
+```
 
 ## Authors
 
