@@ -21,6 +21,7 @@ Here are the things you will need to download in order to get this system up and
 Running the servers can be done as follows:
 
 WINDOWS & LINUX ALIKE:
+
 Reach parent directory (RAID5)
 ```
 cd [location of RAID5]
@@ -45,6 +46,7 @@ python -m block_device --config-file block_device/disks/config0.ini --bind-port 
 python -m block_device --config-file block_device/disks/config1.ini --bind-port 8091
 ```
 Note: All other Arguments are optional, see --help for help
+
 Note: The configuration files can be created from scratch by a python script from the parent directory (RAID5):
 ```
 python config_disks.py <NUM_OF_BLOCK_DEVICES>
