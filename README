@@ -15,27 +15,27 @@ By being in specific directory:
 > cd [location of RAID5]
 
 RUNNING FRONTEND SERVER
-> python -m frontend_server [args]
+> python -m frontend [args]
 RUNNING BLOCK DEVICE SERVER
-> python -m bds_server [args]
+> python -m block_device [args]
 
 $ cd [location of http parent]
 
 RUNNING FRONTEND SERVER
-$ python -m frontend_server [args]
+$ python -m frontend [args]
 RUNNING BLOCK DEVICE SERVER
-$ python -m bds_server [args]
+$ python -m block_device [args]
 
 By modifying python path:
 
 > set PYTHONPATH=[location of http parent]
 RUNNING FRONTEND SERVER
-> python -m frontend_server [args]
+> python -m frontend [args]
 RUNNING BLOCK DEVICE SERVER
-> python -m bds_server [args]
+> python -m block_device [args]
 
 $ PYTHONPATH=[location of http parent] \
     RUNNING FRONTEND SERVER
-    python -m frontend_server [args]
+    python -m frontend [args]
     RUNNING BLOCK DEVICE SERVER
-    python -m bds_server [args]
+    python -m block_device [args]

@@ -12,13 +12,13 @@ import sys
 import time
 import traceback
 
-from bds_server.pollables import declarer_socket
+from block_device.pollables import declarer_socket
 from common.pollables import listener_socket
 from common.pollables import service_socket
 from common.utilities import constants
 from common.utilities import poller
 from common.utilities import util
-from frontend_server.pollables import identifier_socket
+from frontend.pollables import identifier_socket
 
 # python-3 woodo
 try:
@@ -126,12 +126,12 @@ class AsyncServer(object):
             self._application_context["server_type"]
             == constants.BLOCK_DEVICE_SERVER
         ):
-            #need to declare constantly so frontend_servers
+            #need to declare constantly so frontends
             #recognize and add us:
             self.add_declarer()
         elif (
             self._application_context["server_type"]
-            == constants.FRONTEND_SERVER
+            == constants.frontend
         ):
             #need to constantly identify new connections
             self.add_identifier()

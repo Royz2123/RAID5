@@ -12,7 +12,7 @@ import traceback
 from common.services import base_service
 from common.utilities import constants
 from common.utilities import util
-from frontend_server.pollables import bds_client_socket
+from frontend.pollables import bds_client_socket
 
 class GetFileService(base_service.BaseService):
     def __init__(self, entry, filename):

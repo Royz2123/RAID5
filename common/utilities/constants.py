@@ -18,12 +18,12 @@ STANDARD_INPUT = 0
 STANDARD_OUTPUT = 1
 STANDARD_ERROR = 2
 
-DEFAULT_BASE_DIRECTORY = "frontend_server/files"
-DEFAULT_BLOCK_CONFIG_DIR = "bds_server/disks/"
-DEFAULT_FRONTEND_CONFIG_DIR = "frontend_server/"
+DEFAULT_BASE_DIRECTORY = "frontend/files"
+DEFAULT_BLOCK_CONFIG_DIR = "block_device/disks/"
+DEFAULT_FRONTEND_CONFIG_DIR = "frontend/"
 
-DISK_NAME = "bds_server/disks/disk"
-DISK_INFO_NAME =  "bds_server/disks/disk_info"
+DISK_NAME = "block_device/disks/disk"
+DISK_INFO_NAME =  "block_device/disks/disk_info"
 TMP_FILE_NAME = "tmp_file"
 
 DISCONNECT_TIME = 5
@@ -63,7 +63,7 @@ MIME_MAPPING = {
 #SERVER TYPES
 (
     BLOCK_DEVICE_SERVER,
-    FRONTEND_SERVER,
+    frontend,
 )=range(2)
 
 DEFAULT_BLOCK_POLL_TIMEOUT = 1000
@@ -71,25 +71,25 @@ DEFAULT_FRONTEND_POLL_TIMEOUT = 200
 
 MODULE_DICT = {
     BLOCK_DEVICE_SERVER : [
-        "bds_server.services.get_block_service",
-        "bds_server.services.set_block_service",
-        "bds_server.services.login_service",
-        "bds_server.services.get_disk_info_service",
-        "bds_server.services.set_disk_info_service",
-        "bds_server.services.update_level_service",
+        "block_device.services.get_block_service",
+        "block_device.services.set_block_service",
+        "block_device.services.login_service",
+        "block_device.services.get_disk_info_service",
+        "block_device.services.set_disk_info_service",
+        "block_device.services.update_level_service",
         "common.services.get_file_service",
         "common.services.form_service",
     ],
-    FRONTEND_SERVER : [
-        "frontend_server.services.disconnect_service",
-        "frontend_server.services.connect_service",
-        "frontend_server.services.read_disk_service",
-        "frontend_server.services.write_disk_service",
-        "frontend_server.services.mul_service",
-        "frontend_server.services.time_service",
-        "frontend_server.services.init_service",
-        "frontend_server.services.management_service",
-        "frontend_server.services.display_disks_service",
+    frontend : [
+        "frontend.services.disconnect_service",
+        "frontend.services.connect_service",
+        "frontend.services.read_disk_service",
+        "frontend.services.write_disk_service",
+        "frontend.services.mul_service",
+        "frontend.services.time_service",
+        "frontend.services.init_service",
+        "frontend.services.management_service",
+        "frontend.services.display_disks_service",
         "common.services.get_file_service",
         "common.services.form_service",
     ],

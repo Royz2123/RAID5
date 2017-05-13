@@ -5,8 +5,8 @@ import ConfigParser
 from common.utilities import constants
 from common.utilities import util
 
-#creates a config file in filename specified, same for both frontend_server
-# and bds_server for now
+#creates a config file in filename specified, same for both frontend
+# and block_device for now
 def create_bds_config(filename, index):
     with open(filename, 'w') as config_file:
         parser = ConfigParser.ConfigParser()

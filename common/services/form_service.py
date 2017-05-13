@@ -14,7 +14,7 @@ from common.utilities import constants
 from common.utilities import html_util
 from common.utilities import util
 from common.utilities import post_util
-from frontend_server.pollables import bds_client_socket
+from frontend.pollables import bds_client_socket
 from common.utilities.state_util import state
 from common.utilities.state_util import state_machine
 
