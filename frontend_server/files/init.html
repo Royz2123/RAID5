@@ -1,0 +1,76 @@
+<html>
+<head>
+    <title>Disks Initialization</title>
+    
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Hind+Madurai">
+
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+
+    <script type="text/javascript">
+        function addRow() {
+             
+            var table = document.getElementById("myTableData");
+
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+            row.insertCell(0).innerHTML= '<input type="button" value = "Remove" onClick="Javacsript:deleteRow(this)">';
+            row.insertCell(1).innerHTML=( 
+                '<input type="text" name = "address'+ (rowCount-4) + '"></input>'
+            );
+        }
+        
+        function deleteRow(obj) {
+     
+            var index = obj.parentNode.parentNode.rowIndex;
+            var table = document.getElementById("myTableData");
+            table.deleteRow(index);
+           
+        }
+        
+    </script>
+</head>
+
+<body onload="load()">
+    <ul>
+      <li><img src="/logo.png" class="logo"></li>
+      <li><a class="active" href="/homepage.html">Home</a></li>
+      <li><a href="/menu.html">Menu</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul>
+
+<div class="table-space">
+<h1>Initialize System</h1>
+<div id="mydata">
+<form action="/init" enctype="multipart/form-data" method="GET">
+<table id="myTableData"  border="5" width="40%" cellpadding="4" cellspacing="3">
+    <tr>
+        <th colspan="6">
+            Disk Array
+        </th>
+    </tr>
+    <div id="myform">
+    <tr>
+        <th text-align="left" colspan="5">
+            Add disk to Disk Array:
+            <input type="button" id="add" value="Add Disk" onclick="Javascript:addRow()"></td>
+        </th>
+    <tr>
+    </div>
+    <tr>
+        <th ></th>
+        <th >Address</th>
+    </tr>
+</table>
+    <br>
+    <input type="checkbox" name="scratch" value="True" unchecked> From scratch  
+        <div class="tooltip"><img src="/help_box.jpg"class="help-box">
+          <span class="tooltiptext">To restart the system, and override existing settings</span>
+        </div>
+    <br><br>
+    <input type="submit" value="Submit"></td>
+</div>
+</div>
+</form>
+    </body>
+</html>

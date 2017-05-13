@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<HTML>
+    <head>
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Hind+Madurai">
+
+        <link rel="stylesheet" type="text/css" href="mystyle.css">
+        <title>RAID5 - Disk Write</title>
+    </head>
+
+    <body>
+        <ul>
+          <li><img src="/logo.png" class="logo"></li>
+          <li><a class="active" href="/homepage.html">Home</a></li>
+          <li><a href="/menu.html">Menu</a></li>
+          <li><a href="/about.html">About</a></li>
+        </ul>
+
+
+      <div class="content-space">
+        <h1>Disk Write</h1>
+
+        <form action="/disk_write" enctype="multipart/form-data" method="POST">
+            <br>
+            Volume UUID:    <input type="text" name="volume_UUID">
+            <br><br>
+            Disk UUID:    <input type="text" name="disk_UUID">
+            <br><br>
+            First Block:    <input type="text" name="firstblock">
+            <br><br>
+            File:           <input type="file" name="file">
+            <br><br>
+            <input type="submit" value="Submit">
+        </form>
+      </div>
+
+    </body>
+</HTML>

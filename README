@@ -12,30 +12,30 @@ $ - *NIX
 
 By being in specific directory:
 
-> cd [location of http parent]
+> cd [location of RAID5]
 
 RUNNING FRONTEND SERVER
-> python -m http.frontend_server [args]
+> python -m frontend_server [args]
 RUNNING BLOCK DEVICE SERVER
-> python -m http.bds_server [args]
+> python -m bds_server [args]
 
 $ cd [location of http parent]
 
 RUNNING FRONTEND SERVER
-$ python -m http.frontend_server [args]
+$ python -m frontend_server [args]
 RUNNING BLOCK DEVICE SERVER
-$ python -m http.bds_server [args]
+$ python -m bds_server [args]
 
 By modifying python path:
 
 > set PYTHONPATH=[location of http parent]
 RUNNING FRONTEND SERVER
-> python -m http.frontend_server [args]
+> python -m frontend_server [args]
 RUNNING BLOCK DEVICE SERVER
-> python -m http.bds_server [args]
+> python -m bds_server [args]
 
 $ PYTHONPATH=[location of http parent] \
     RUNNING FRONTEND SERVER
-    python -m http.frontend_server [args]
+    python -m frontend_server [args]
     RUNNING BLOCK DEVICE SERVER
-    python -m http.bds_server [args]
+    python -m bds_server [args]

@@ -10,19 +10,19 @@ $ - *NIX
 By being in specific directory:
 
 > cd [location of http parent]
-> python -m http.client [args]
-> python -m http.server [args]
+> python -m client [args]
+> python -m server [args]
 
 $ cd [location of http parent]
-$ python -m http.client [args]
-$ python -m http.server [args]
+$ python -m client [args]
+$ python -m server [args]
 
 By modifying python path:
 
 > set PYTHONPATH=[location of http parent]
-> python -m http.client [args]
-> python -m http.server [args]
+> python -m client [args]
+> python -m server [args]
 
 $ PYTHONPATH=[location of http parent] \
-    python -m http.client [args]
-    python -m http.server [args]
+    python -m client [args]
+    python -m server [args]
