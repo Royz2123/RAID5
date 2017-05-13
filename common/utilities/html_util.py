@@ -182,7 +182,7 @@ def create_disks_list(available_disks, volumes):
     if len(online_disks) > 1:
         #add scratch mode and help box
         disk_list += (
-            '<br><input type="checkbox" name="scratch" value="True" unchecked>'
+            '<br><input type="checkbox" name="scratch" value="True" autocomplete="on" unchecked>'
             + '&nbsp&nbspFrom scratch&nbsp&nbsp'
             + '<div class="tooltip"><img src="/help_box.jpg" class="help-box">'
             + '<span class="tooltiptext">'
@@ -231,7 +231,7 @@ def create_html_volume_disk(alignment_class, info, picture, html_obj):
 def create_checkbox(index, disk_UUID, disk):
     return (
         (
-            '<input type="checkbox" name="disk%s" value="%s">'
+            '<input type="checkbox" name="disk%s" autocomplete="on" value="%s">'
         ) % (
             index,
             disk_UUID,

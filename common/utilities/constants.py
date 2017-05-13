@@ -42,7 +42,7 @@ HTML_TOP_BAR_CODE = (
     + '</ul>'
 )
 
-DEFAULT_REFRESH_TIME = 2
+DEFAULT_REFRESH_TIME = 4
 DEFAULT_STYLE_SHEET = "mystyle.css"
 DEFAULT_CONTENT_SPACE = "table-space"
 

@@ -35,7 +35,7 @@ class ReadFromDiskService(base_service.BaseService):
     def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(
             self,
-            ["Content-Type"],
+            ["Content-Type", "Authorization"],
             ["volume_UUID", "disk_UUID", "firstblock", "blocks"],
             args
         )
@@ -180,6 +180,14 @@ class ReadFromDiskService(base_service.BaseService):
 
 
     def before_response_status(self, entry):
+        #first check login
+        if not util.check_login(entry):
+            #login was unsucsessful, notify the user agent
+            self._response_status = 401
+            self._response_headers["WWW-Authenticate"] = "Basic realm='myRealm'"
+            return True
+
+        #login went smoothly, moving on to disk read
         self._disk_UUID = self._args["disk_UUID"][0]
         self._volume_UUID = self._args["volume_UUID"][0]
 
@@ -252,6 +260,10 @@ class ReadFromDiskService(base_service.BaseService):
         return True
 
     def before_response_content(self, entry):
+        #first check if we have an error and we don't want to read
+        if self._response_status != 200:
+            return True
+
         #pass args to the machine, will use *args to pass them on
         #if the machine returns True, we know we can move on
         return self._state_machine.run_machine((self, entry))

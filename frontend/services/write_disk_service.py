@@ -32,6 +32,9 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
 
     def __init__(self, entry, pollables, args):
         form_service.FileFormService.__init__(self, entry, pollables, args)
+        #update Authorization
+        self._wanted_headers.append("Authorization")
+
         self._entry = entry
         self._pollables = pollables
 
@@ -56,6 +59,17 @@ class WriteToDiskService(form_service.FileFormService, base_service.BaseService)
     @staticmethod
     def get_name():
         return "/disk_write"
+
+    def before_content(self, entry):
+        #first check login
+        if not util.check_login(entry):
+            #login was unsucsessful, notify the user agent
+            self._response_status = 401
+            self._response_headers["WWW-Authenticate"] = "Basic realm='myRealm'"
+            return True
+
+        #otherwise continue regularly
+        form_service.FileFormService.before_content(self, entry)
 
     #override arg and file handle from FileFormService
     def arg_handle(self, buf, next_state):

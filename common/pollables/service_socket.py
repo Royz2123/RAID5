@@ -25,12 +25,6 @@ except ImportError:
     urlparse = urllib.parse
 
 
-CACHE_HEADERS = {
-    "Cache-Control" : "no-cache, no-store, must-revalidate",
-    "Pragm" : "no-cache",
-    "Expires" : "0"
-}
-
 class ServiceSocket(pollable.Pollable, callable.Callable):
     def __init__(self, socket, state, application_context, pollables):
         self._application_context = application_context

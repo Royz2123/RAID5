@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import errno
 import os
 import socket
@@ -23,6 +24,31 @@ def generate_uuid():
 #generates a long password for communication with block device server
 def generate_password():
     return "hello"
+
+#checks the Basic Authentication of an entry, returns if there has been a
+# successful_login
+def check_login(entry):
+    successful_login = False
+    if "Authorization" in entry.request_context["headers"].keys():
+        auth_type, auth_content = entry.request_context["headers"][
+            "Authorization"
+        ].split(" ", 2)
+        if auth_type == "Basic":
+            username, password = decode_authorization(auth_content)
+            application_auth = entry.application_context["authentication"]
+            successful_login = (
+                username == application_auth["common_user"]
+                and password == application_auth["common_password"]
+            )
+    return successful_login
+
+#decodes the convention of Basic Authentication using base64
+def decode_authorization(auth_content):
+    return tuple(base64.b64decode(auth_content).split(':', 1))
+
+#encodes the convention of Basic Authentication using base64
+def encode_authorization(username, password):
+    return base64.b64encode("%s:%s" % (username, password))
 
 #returns a dict of only the initialized volumes
 def initialized_volumes(volumes):

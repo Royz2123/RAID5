@@ -51,12 +51,12 @@ def write_field_config(filename, section, fieldname, value):
 
 def common_config(parser):
     parser.add_section("MulticastGroup")
-    parser.set("MulticastGroup", "Address", "239.192.0.100")
-    parser.set("MulticastGroup", "Port", "5000")
+    parser.set("MulticastGroup", "address", "239.192.0.100")
+    parser.set("MulticastGroup", "port", "5000")
 
     parser.add_section("Authentication")
-    parser.set("Authentication", "CommonUser", "Roy")
-    parser.set("Authentication", "CommonPassword", "12345")
+    parser.set("Authentication", "common_user", "Roy")
+    parser.set("Authentication", "common_password", "12345")
 
 
 def parse_config(config_file):

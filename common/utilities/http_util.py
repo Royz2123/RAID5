@@ -31,7 +31,6 @@ STATUS_CODES = {
     500 : "Internal Error",
 }
 
-
 def get_status_state(entry):
     index = entry.recvd_data.find(constants.CRLF_BIN)
     if index == -1:
@@ -118,8 +117,8 @@ def send_status_state(entry):
 def send_headers_state(entry):
     entry.service.before_response_headers(entry)
     headers = entry.service.response_headers
-    headers.update(constants.CACHE_HEADERS)
 
+    print headers.items()
     for header, content in headers.items():
         entry.data_to_send += (
             (
