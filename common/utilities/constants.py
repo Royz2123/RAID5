@@ -23,7 +23,7 @@ DEFAULT_BLOCK_CONFIG_DIR = "block_device/disks/"
 DEFAULT_FRONTEND_CONFIG_DIR = "frontend/"
 
 DISK_NAME = "block_device/disks/disk"
-DISK_INFO_NAME =  "block_device/disks/disk_info"
+DISK_INFO_NAME = "block_device/disks/disk_info"
 TMP_FILE_NAME = "tmp_file"
 
 DISCONNECT_TIME = 5
@@ -33,6 +33,7 @@ HTML_DEFAULT_HEADER = "RAID5 - Message"
 HTML_ERROR_HEADER = "Disk Error"
 HTML_MANAGEMENT_HEADER = "Management"
 HTML_DISPLAY_HEADER = "Available disks"
+
 HTML_TOP_BAR_CODE = (
     '<ul>'
     +  '<li><a class="active" href="/homepage.html">Home</a></li>'
