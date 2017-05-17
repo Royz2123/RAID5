@@ -16,6 +16,14 @@ Here are the things you will need to download in order to get this system up and
 3) Download and install any modern browser
 ```
 
+#### Browser Issues
+
+Chrome:
+By default, chrome doesn't save form data upon refresh. Therefore on "Manage Disks", the refresh time might not be sufficient for user purposes. Looking into solutions.
+
+Firefox:
+Firefox currently disables basic authentication so could be problematical and will need to add this option manually. This can be done in the about:config section of firefox. Looking into better solutions
+
 ### Execution
 
 Running the servers can be done as follows:
@@ -35,7 +43,7 @@ Running Block Device Server:
 python -m block_device [args]
 ```
 
-Testing the servers can be done from any browser. Basic Authentication is required with common_user and common_password specified in frontend/config.ini. Firefox currently disables basic authentication so could be problematical and will need to add this option manually.
+Testing the servers can be done from any browser. Basic Authentication is required with common_user and common_password specified in frontend/config.ini.
 
 ### Arguments
 
@@ -55,7 +63,7 @@ Note: UUID's can be changed manually from the configuration files
 
 ### Testing
 
-Another python test script from the parent directory (RAID5), has also been provided, that writes to the first disk a long sequence of numbers, for testing purposes:
+Another python test script from the parent directory (RAID5), has also been provided, that writes to the first disk (disk0) a long sequence of numbers, for testing purposes:
 ```
 python test.py
 ```
