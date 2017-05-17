@@ -2,7 +2,6 @@
 import contextlib
 import datetime
 import errno
-import fcntl
 import logging
 import os
 import socket
@@ -27,11 +26,7 @@ def add_bds_client(parent, client_context, client_update, pollables):
         raise util.DiskRefused(client_context["disk_UUID"])
 
     # set to non blocking
-    fcntl.fcntl(
-        new_socket.fileno(),
-        fcntl.F_SETFL,
-        fcntl.fcntl(new_socket.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK
-    )
+    new_socket.setblocking(0)
 
     # add to database, need to specify blocknum
     new_bds_client = bds_client_socket.BDSClientSocket(

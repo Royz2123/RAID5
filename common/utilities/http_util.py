@@ -2,7 +2,6 @@
 import argparse
 import contextlib
 import errno
-import fcntl
 import logging
 import os
 import select

@@ -48,7 +48,7 @@ class DeclarerSocket(pollable.Pollable):
         )
 
     def get_events(self):
-        return select.POLLERR
+        return constants.POLLERR
 
     def is_closing(self):
         return False
@@ -90,3 +90,6 @@ class DeclarerSocket(pollable.Pollable):
 
     def on_close(self):
         self._socket.close()
+
+    def __repr__(self):
+        return ("DeclarerSocket Object: %s\t\t\t" % self._fd)

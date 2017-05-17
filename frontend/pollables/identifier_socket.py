@@ -69,7 +69,7 @@ class IdentifierSocket(pollable.Pollable):
         }
 
     def get_events(self):
-        return select.POLLERR | select.POLLIN
+        return constants.POLLERR | constants.POLLIN
 
     def is_closing(self):
         return False
@@ -111,3 +111,6 @@ class IdentifierSocket(pollable.Pollable):
 
     def on_close(self):
         self._socket.close()
+
+    def __repr__(self):
+        return ("IdentifierSocket Object: %s\t\t\t" % self._fd)

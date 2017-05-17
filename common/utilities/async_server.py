@@ -2,7 +2,6 @@
 import contextlib
 import datetime
 import errno
-import fcntl
 import logging
 import os
 import socket
@@ -37,22 +36,21 @@ class AsyncServer(object):
         self._callables = []
 
     def add_listener(self):
-        sl = socket.socket(
+        sock = socket.socket(
             family=socket.AF_INET,
             type=socket.SOCK_STREAM,
         )
-        fcntl.fcntl(
-            sl.fileno(),
-            fcntl.F_SETFL,
-            fcntl.fcntl(sl.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK,
-        )
-        sl.bind((
+        # set to non-blocking
+        sock.setblocking(0)
+
+        # bind to the server address
+        sock.bind((
             self._application_context["bind_address"],
             self._application_context["bind_port"]
         ))
-        sl.listen(10)
-        self._pollables[sl.fileno()] = listener_socket.ListenerSocket(
-            sl,
+        sock.listen(10)
+        self._pollables[sock.fileno()] = listener_socket.ListenerSocket(
+            sock,
             constants.LISTEN_STATE,
             self._application_context,
             self._pollables
@@ -69,11 +67,8 @@ class AsyncServer(object):
             socket.IP_MULTICAST_TTL,
             2
         )
-        fcntl.fcntl(
-            sock.fileno(),
-            fcntl.F_SETFL,
-            fcntl.fcntl(sock.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK,
-        )
+        # set socket to non-blocking
+        sock.setblocking(0)
         self._pollables[sock.fileno()] = declarer_socket.DeclarerSocket(
             sock,
             self._application_context,
@@ -107,11 +102,8 @@ class AsyncServer(object):
                 socket.INADDR_ANY
             )
         )
-        fcntl.fcntl(
-            sock.fileno(),
-            fcntl.F_SETFL,
-            fcntl.fcntl(sock.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK,
-        )
+        # set socket to non-blocking
+        sock.setblocking(0)
         self._pollables[sock.fileno()] = identifier_socket.IdentifierSocket(
             sock,
             self._application_context,
@@ -141,17 +133,17 @@ class AsyncServer(object):
 
             try:
                 # pollable has error
-                if event & (select.POLLHUP | select.POLLERR):
+                if event & (constants.POLLHUP | constants.POLLERR):
                     logging.debug("%s:\tEntry has error" % entry)
                     entry.on_error()
 
                 # pollable has read
-                if event & select.POLLIN:
+                if event & constants.POLLIN:
                     logging.debug("%s:\tEntry has read" % entry)
                     entry.on_read()
 
                 # pollable has write
-                if event & select.POLLOUT:
+                if event & constants.POLLOUT:
                     logging.debug("%s:\tEntry has write" % entry)
                     entry.on_write()
 

@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+import os
+import select
+
+# Define polling constants based on OS
+POLLIN, POLLOUT, POLLERR, POLLHUP = (
+    1, 4, 8, 16,
+) if os.name == "nt" else (
+    select.POLLIN, select.POLLOUT, select.POLLERR, select.POLLHUP,
+)
+
+POLL_EVENTS = {
+    POLLIN : "POLLIN",
+    POLLOUT : "POLLOUT",
+    POLLERR : "POLLERR",
+    POLLHUP : "POLLHUP",
+}
 
 DEFAULT_FRONTEND_HTTP_PORT = 8000
 DEFAULT_BDS_HTTP_PORT = 8090

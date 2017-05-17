@@ -1,7 +1,6 @@
 import argparse
 import contextlib
 import errno
-import fcntl
 import logging
 import os
 import select
@@ -201,19 +200,19 @@ class BDSClientSocket(pollable.Pollable):
         http_util.send_buf(self)
 
     def get_events(self):
-        event = select.POLLERR
+        event = constants.POLLERR
         if (
             self._state >= constants.GET_STATUS_STATE and
             self._state <= constants.GET_CONTENT_STATE and
             len(self._recvd_data) < self._application_context["max_buffer"]
         ):
-            event |= select.POLLIN
+            event |= constants.POLLIN
 
         if (
             self._state >= constants.SEND_REQUEST_STATE and
             self._state <= constants.SEND_CONTENT_STATE
         ):
-            event |= select.POLLOUT
+            event |= constants.POLLOUT
 
         return event
 

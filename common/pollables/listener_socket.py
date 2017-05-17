@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import errno
-import fcntl
 import logging
 import os
 import select
@@ -12,15 +11,6 @@ import service_socket
 from common.pollables import pollable
 from common.utilities import constants
 from common.utilities import util
-
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
 
 
 class ListenerSocket(pollable.Pollable):
@@ -54,11 +44,7 @@ class ListenerSocket(pollable.Pollable):
         new_socket, address = self._socket.accept()
 
         # set to non blocking
-        fcntl.fcntl(
-            new_socket.fileno(),
-            fcntl.F_SETFL,
-            fcntl.fcntl(new_socket.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK
-        )
+        new_socket.setblocking(0)
 
         # add to database
         new_http_socket = service_socket.ServiceSocket(
@@ -112,14 +98,13 @@ class ListenerSocket(pollable.Pollable):
         self._state = constants.CLOSING_STATE
 
     def get_events(self):
-        event = select.POLLERR
+        event = constants.POLLERR
         if (
             self._state == constants.LISTEN_STATE and
             len(self._pollables) < self._application_context["max_connections"]
         ):
-            event |= select.POLLIN
+            event |= constants.POLLIN
         return event
 
-    #"util"
     def __repr__(self):
         return ("HttpListen Object: %s\t\t\t" % self._fd)

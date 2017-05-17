@@ -87,8 +87,8 @@ def main():
     # parse the config file
     config_sections = config_util.parse_config(args.config_file)
 
-    # check that the disk file and dis info file is ok before running the server
-    # create file if necessary
+    # check that the disk file and dis info file is ok before running the
+    # server create file if necessary
     try:
         disk_fd = os.open(
             config_sections["Server"]["disk_name"],

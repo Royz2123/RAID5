@@ -190,20 +190,20 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             self.on_error(e)
 
     def get_events(self):
-        event = select.POLLERR
+        event = constants.POLLERR
         if (
             self._state >= constants.GET_REQUEST_STATE and
             self._state <= constants.GET_CONTENT_STATE and
             len(self._recvd_data) < self._application_context["max_buffer"]
         ):
-            event |= select.POLLIN
+            event |= constants.POLLIN
 
         if (
             self._state >= constants.SEND_STATUS_STATE and
             self._state <= constants.SEND_CONTENT_STATE or
             self._state == constants.CLOSING_STATE
         ):
-            event |= select.POLLOUT
+            event |= constants.POLLOUT
         return event
 
     def __repr__(self):

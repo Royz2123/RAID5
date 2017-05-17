@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import select
+import time
 
+from common.utilities import constants
 
 class Poller():
     def __init__(self):
@@ -26,29 +28,37 @@ class Select():
     def poll(self, timeout):
         # set the relevant lists to events we wish listened to
         rlist, wlist, xlist = [], [], []
-        for fd, event in self._events.keys():
-            if self._events[fd] & (select.POLLHUP | select.POLLERR):
+        for fd, event in self._events.items():
+            if self._events[fd] & (constants.POLLHUP | constants.POLLERR):
                 xlist.append(fd)
-            if self._events[fd] & select.POLLIN:
+            if self._events[fd] & constants.POLLIN:
                 rlist.append(fd)
-            if self._events[fd] & select.POLLOUT:
+            if self._events[fd] & constants.POLLOUT:
                 wlist.append(fd)
 
         # asynchronously recv which fd's need handling
-        r, w, x = select.select(rlist, wlist, xlist, timeout)
+        # timeout needs to be in seconds for select
+        r, w, x = select.select(rlist, wlist, xlist, float(timeout)/1000)
 
         # arrange format to fit AsyncServer
+        # loop through the set of file descriptors
         poll_dict = {}
-        for ready_obj in r + w + x:
+        for ready_fd in set(r + w + x):
             # start be setting the fileno to no events
-            poll_dict[ready_obj.fileno()] = 0
+            poll_dict[ready_fd] = 0
 
             # update events recvd from select
-            if ready_obj in r:
-                poll_dict[ready_obj.fileno()] |= select.POLLIN
-            if ready_obj in w:
-                poll_dict[ready_obj.fileno()] |= select.POLLOUT
-            if ready_obj in x:
-                poll_dict[ready_obj.fileno()] |= select.POLLERR
+            if ready_fd in r:
+                poll_dict[ready_fd] |= constants.POLLIN
+                print "1"
+            if ready_fd in w:
+                poll_dict[ready_fd] |= constants.POLLOUT
+                print "2"
+            if ready_fd in x:
+                poll_dict[ready_fd] |= constants.POLLERR
+                print '3'
+
+            print ready_fd, poll_dict[ready_fd]
         # returns a list of tuples (fd, events)
+        print poll_dict
         return poll_dict.items()

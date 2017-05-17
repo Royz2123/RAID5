@@ -2,7 +2,6 @@
 import contextlib
 import datetime
 import errno
-import fcntl
 import logging
 import os
 import socket

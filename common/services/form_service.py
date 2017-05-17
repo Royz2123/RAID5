@@ -2,7 +2,6 @@
 import contextlib
 import datetime
 import errno
-import fcntl
 import logging
 import os
 import socket
@@ -29,7 +28,7 @@ class FileFormService(base_service.BaseService):
 
     def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(self, ["Content-Type"])
-        #super(FileFormService, self).__init__(self, ["Content-Type"])
+        # super(FileFormService, self).__init__(self, ["Content-Type"])
         self._content = ""
         self._boundary = None
         self._fields = {}
