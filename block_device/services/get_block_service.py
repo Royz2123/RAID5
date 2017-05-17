@@ -14,7 +14,7 @@ class GetBlockService(base_service.BaseService):
     BLOCK_SIZE = 4096
 
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, [], ["blocknum"], args)
+        base_service.BaseService.__init__(self, [], ["block_num"], args)
         try:
             self._fd = os.open(
                 entry.application_context["disk_name"],
@@ -40,7 +40,7 @@ class GetBlockService(base_service.BaseService):
                 self._fd,
                 (
                     GetBlockService.BLOCK_SIZE *
-                    int(self._args["blocknum"][0])
+                    int(self._args["block_num"][0])
                 ),
                 os.SEEK_SET,
             )

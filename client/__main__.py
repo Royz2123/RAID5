@@ -56,7 +56,7 @@ def main():
     ) as s:
         s.connect((args.dst_address, args.dst_port))
         s.settimeout(1)
-        cmd = "GET /%s?blocknum=%d %s\r\n" % (
+        cmd = "GET /%s?block_num=%d %s\r\n" % (
             args.action,
             args.block,
             constants.HTTP_SIGNATURE

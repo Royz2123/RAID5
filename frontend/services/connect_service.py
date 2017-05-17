@@ -42,7 +42,7 @@ class ConnectService(base_service.BaseService):
         self._disk_built = False
         self._state_machine = None
 
-        self._current_blocknum = ""
+        self._current_block_num = ""
         self._current_data = ""
         self._socket_data = socket_data
 
@@ -121,7 +121,7 @@ class ConnectService(base_service.BaseService):
     # STATE FUNCTIONS:
 
     def before_get_data(self, entry):
-        self._current_blocknum, self._current_data = (
+        self._current_block_num, self._current_data = (
             self._disks[self._disk_UUID]["cache"].next_block()
         )
         if self._current_data is not None:
@@ -134,7 +134,7 @@ class ConnectService(base_service.BaseService):
             request_info = {}
             for disk_UUID in self._disks.keys():
                 if disk_UUID != self._disk_UUID:
-                    request_info[disk_UUID] = self._current_blocknum
+                    request_info[disk_UUID] = self._current_block_num
 
             self._disk_manager = disk_manager.DiskManager(
                 self._disks,
@@ -196,7 +196,7 @@ class ConnectService(base_service.BaseService):
                 self._disks,
                 {
                     self._disk_UUID: {
-                        "blocknum": self._current_blocknum,
+                        "block_num": self._current_block_num,
                         "content": self._current_data
                     }
                 }

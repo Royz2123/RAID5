@@ -38,7 +38,7 @@ class Cache(object):
 
     def __init__(self, mode=DORMANT_MODE):
         self._topology = Cache.INCLUDE_DATA
-        self._blocks = {}           # always a dict; blocknum : block_data
+        self._blocks = {}           # always a dict; block_num : block_data
         self._mode = mode
         self._pointer = 0           # points to which block we are currently
         # rebuilding, relevant for scratch mode
@@ -96,19 +96,19 @@ class Cache(object):
             return False
         return self.size() > constants.MAX_CACHE_SIZE
 
-    def check_if_add(self, blocknum):
+    def check_if_add(self, block_num):
         if (
             self._mode == Cache.DORMANT_MODE or
             (
                 self._mode == Cache.SCRATCH_MODE and
-                blocknum > self._pointer
+                block_num > self._pointer
             )
         ):
             return False
         return True
 
     # return True if added successfully, False otherwise
-    def add_block(self, blocknum, block_data):
+    def add_block(self, block_num, block_data):
         # handle overflow:
         if (
             self._topology == Cache.INCLUDE_DATA and
@@ -119,21 +119,21 @@ class Cache(object):
         # add block depending on topology,
         if self._topology == Cache.EXCLUDE_DATA:
             block_data = None
-        self._blocks[blocknum] = block_data
+        self._blocks[block_num] = block_data
 
     def next_block(self):
         # works for both topoligies, returns the block data if exists
         # and None if not
         if self._mode == Cache.SCRATCH_MODE:
-            blocknum = self._pointer
+            block_num = self._pointer
             block_data = None
             self._pointer += 1
         else:
-            blocknum = sorted(self._blocks.keys())[0]
-            block_data = self._blocks[blocknum]
-            del self._blocks[blocknum]
+            block_num = sorted(self._blocks.keys())[0]
+            block_data = self._blocks[block_num]
+            del self._blocks[block_num]
             self._blocks_handled += 1
-        return blocknum, block_data
+        return block_num, block_data
 
     def __repr__(self):
         s = "CACHE OBJECT:\n"
@@ -142,14 +142,14 @@ class Cache(object):
         if self._mode == Cache.SCRATCH_MODE:
             s += "Current pointer index:\t%s" % self._pointer
         else:
-            for blocknum in self._blocks.keys()[:6]:
+            for block_num in self._blocks.keys()[:6]:
                 if self._topology == Cache.EXCLUDE_DATA:
                     data = "--EXCLUDING DATA--"
                 else:
-                    data = "%s..." % self._blocks[blocknum][:100].replace(
+                    data = "%s..." % self._blocks[block_num][:100].replace(
                         "\n", "")
 
-                s += "%s:\t\t%s\n" % (blocknum, data)
+                s += "%s:\t\t%s\n" % (block_num, data)
         return s
 
     # topology change from including data to excluding data
@@ -157,5 +157,5 @@ class Cache(object):
         self._topology = Cache.EXCLUDE_DATA
 
         # remove all the data for new topology
-        for blocknum, data in self._blocks.items():
-            self._blocks[blocknum] = None
+        for block_num, data in self._blocks.items():
+            self._blocks[block_num] = None

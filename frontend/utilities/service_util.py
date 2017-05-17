@@ -48,12 +48,12 @@ def create_login_contexts(volume):
 
 
 def create_get_block_contexts(disks, request_info):
-    # request_info should be a dict { disk_UUID : blocknum }
+    # request_info should be a dict { disk_UUID : block_num }
     client_contexts = {}
-    for disk_UUID, blocknum in request_info.items():
+    for disk_UUID, block_num in request_info.items():
         client_contexts[disk_UUID] = {
             "headers": {},
-            "args": {"blocknum": blocknum},
+            "args": {"block_num": block_num},
             "disk_UUID": disk_UUID,
             "disk_address": disks[disk_UUID]["address"],
             "method": "GET",
@@ -86,7 +86,7 @@ def create_get_disk_info_contexts(disks, request_info):
 def create_set_block_contexts(disks, request_info):
     # request_info should be a dict {
     #     disk_UUID : {
-    #         "blocknum" : blocknum
+    #         "block_num" : block_num
     #         "content" : content
     #     }
     # }
@@ -95,7 +95,7 @@ def create_set_block_contexts(disks, request_info):
         client_contexts[disk_UUID] = {
             "headers": {},
             "method": "GET",
-            "args": {"blocknum": request_info[disk_UUID]["blocknum"]},
+            "args": {"block_num": request_info[disk_UUID]["block_num"]},
             "disk_UUID": disk_UUID,
             "disk_address": disks[disk_UUID]["address"],
             "service": (

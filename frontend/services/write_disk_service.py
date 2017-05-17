@@ -372,7 +372,7 @@ class WriteToDiskService(
                 # with server
             else:
                 request_info[disk_UUID] = {
-                    "blocknum": self._current_block,
+                    "block_num": self._current_block,
                     "content": content
                 }
         return request_info

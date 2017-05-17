@@ -11,7 +11,6 @@ import traceback
 from common.utilities import constants
 from common.utilities import util
 from frontend.pollables import bds_client_socket
-from frontend.utilities import disk_util
 
 
 # Manages multiple disk requests, and notifies when
@@ -39,7 +38,7 @@ class DiskManager(object):
                 raise util.DiskRefused(disk_UUID)
 
             # try to add the client to pollables
-            disk_util.add_bds_client(
+            self.add_bds_client(
                 parent,
                 self._disk_requests[disk_UUID]["context"],
                 self._disk_requests[disk_UUID]["update"],
@@ -47,6 +46,37 @@ class DiskManager(object):
             )
         # set parent to sleeping state until finished
         self._parent.state = constants.SLEEPING_STATE
+
+    # add a block device server client to the list of pollable
+    def add_bds_client(self, parent, client_context, client_update, pollables):
+        new_socket = socket.socket(
+            family=socket.AF_INET,
+            type=socket.SOCK_STREAM,
+        )
+        try:
+            new_socket.connect((client_context["disk_address"]))
+        except socket.error as e:
+            # connection refused from disk! build disk refused and raise..
+            raise util.DiskRefused(client_context["disk_UUID"])
+
+        # set to non blocking
+        new_socket.setblocking(0)
+
+        # add to database, need to specify block_num
+        new_bds_client = bds_client_socket.BDSClientSocket(
+            new_socket,
+            client_context,
+            client_update,
+            parent
+        )
+        pollables[new_socket.fileno()] = new_bds_client
+        logging.debug(
+            "%s :\t Added a new BDS client, %s"
+            % (
+                parent,
+                new_bds_client
+            )
+        )
 
     # returns a copy dict of { disk_UUID : response }
     def get_responses(self):
