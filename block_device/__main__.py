@@ -11,15 +11,16 @@ from common.utilities import constants
 from common.utilities import poller
 from common.utilities import util
 
-#files
+# files
 NEW_FILE = os.devnull
 NEW_WORKING_DIRECTORY = "/"
 LOG_FILE = "log"
 
 POLL_TYPE = {
-    "poll" : poller.Poller,
-    "select" : poller.Select
+    "poll": poller.Poller,
+    "select": poller.Select
 }
+
 
 def parse_args():
     """Parse program argument."""
@@ -71,22 +72,23 @@ def parse_args():
     args.base = os.path.normpath(os.path.realpath(args.base))
     return args
 
+
 def main():
     args = parse_args()
 
-    #delete the previous log
+    # delete the previous log
     try:
         if args.log_file is not None:
             os.remove(args.log_file)
-    except:
+    except BaseException:
         pass
     logging.basicConfig(filename=args.log_file, level=logging.DEBUG)
 
-    #parse the config file
+    # parse the config file
     config_sections = config_util.parse_config(args.config_file)
 
-    #check that the disk file and dis info file is ok before running the server
-    #create file if necessary
+    # check that the disk file and dis info file is ok before running the server
+    # create file if necessary
     try:
         disk_fd = os.open(
             config_sections["Server"]["disk_name"],
@@ -98,28 +100,26 @@ def main():
         logging.critical("BLOCK DEVICE STARTUP UNSUCCESSFUL:\t %s" % e)
         return
 
-    #if args.daemon:
+    # if args.daemon:
     #    daemonize()
     application_context = {
-        "server_type" : constants.BLOCK_DEVICE_SERVER,
-        "bind_address" : constants.DEFAULT_HTTP_ADDRESS,
-        "bind_port" : args.bind_port,
-        "base" : args.base,
-        "poll_type" : POLL_TYPE[args.poll_type],
-        "poll_timeout" : args.poll_timeout,
-        "max_connections" : args.max_connections,
-        "max_buffer" : args.max_buffer,
-        "disk_name" : config_sections["Server"]["disk_name"],
-        "disk_info_name" : config_sections["Server"]["disk_info_name"],
-        "multicast_group" : config_sections["MulticastGroup"],
-        "authentication" : config_sections["Authentication"],
-        "server_info" : config_sections["Server"],
-        "config_file" : args.config_file,
+        "server_type": constants.BLOCK_DEVICE_SERVER,
+        "bind_address": constants.DEFAULT_HTTP_ADDRESS,
+        "bind_port": args.bind_port,
+        "base": args.base,
+        "poll_type": POLL_TYPE[args.poll_type],
+        "poll_timeout": args.poll_timeout,
+        "max_connections": args.max_connections,
+        "max_buffer": args.max_buffer,
+        "disk_name": config_sections["Server"]["disk_name"],
+        "disk_info_name": config_sections["Server"]["disk_info_name"],
+        "multicast_group": config_sections["MulticastGroup"],
+        "authentication": config_sections["Authentication"],
+        "server_info": config_sections["Server"],
+        "config_file": args.config_file,
     }
     server = async_server.AsyncServer(application_context)
     server.run()
-
-
 
 
 def daemonize():
@@ -128,10 +128,11 @@ def daemonize():
     if child != 0:
         os._exit(0)
 
-    #first close all of parents fds
-    os.closerange(NUMBER_OF_STANDARD_FILES,resource.getrlimit( resource.RLIMIT_NOFILE)[1])
+    # first close all of parents fds
+    os.closerange(NUMBER_OF_STANDARD_FILES,
+                  resource.getrlimit(resource.RLIMIT_NOFILE)[1])
 
-    #redirect standards
+    # redirect standards
     try:
         new_fd = os.open(NEW_FILE, os.O_RDWR)
         for standard_fd in range(NUMBER_OF_STANDARD_FILES + 1):
@@ -141,7 +142,7 @@ def daemonize():
 
     os.chdir(NEW_WORKING_DIRECTORY)
 
-    signal.signal(signal.SIGINT|signal.SIGTERM, exit)
+    signal.signal(signal.SIGINT | signal.SIGTERM, exit)
     signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
 

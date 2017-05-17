@@ -31,6 +31,6 @@ class ManagementService(base_service.BaseService):
         )
 
         self._response_headers = {
-            "Content-Length" : "%s" % len(self._response_content),
+            "Content-Length": "%s" % len(self._response_content),
         }
         return True

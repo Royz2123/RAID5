@@ -26,12 +26,12 @@ class TimeService(base_service.BaseService):
 
     def before_response_headers(self, entry):
         self._response_headers = {
-            "Content-Length" : len(str(datetime.datetime.now())),
+            "Content-Length": len(str(datetime.datetime.now())),
         }
         self._response_content = str(datetime.datetime.now())
         logging.debug(
             "%s :\t sending content: %s"
-             % (
+            % (
                 entry,
                 self._response_content
             )

@@ -17,16 +17,27 @@ except ImportError:
     import urllib.parse
     urlparse = urllib.parse
 
-#generates a multipurpose UUID as a string
+# generates a multipurpose UUID as a string
+
+
 def generate_uuid():
     return str(uuid.uuid4())
 
-#generates a long password for communication with block device server
-def generate_password():
-    return "hello"
+# generates a long password for communication with block device server
 
-#checks the Basic Authentication of an entry, returns if there has been a
+
+def generate_password():
+    return ''.join(
+        [
+            random.choice(string.ascii_letters + string.digits)
+            for n in xrange(constants.LONG_PASSWORD_LENGTH)
+        ]
+    )
+
+# checks the Basic Authentication of an entry, returns if there has been a
 # successful_login
+
+
 def check_login(entry):
     successful_login = False
     if "Authorization" in entry.request_context["headers"].keys():
@@ -37,20 +48,26 @@ def check_login(entry):
             username, password = decode_authorization(auth_content)
             application_auth = entry.application_context["authentication"]
             successful_login = (
-                username == application_auth["common_user"]
-                and password == application_auth["common_password"]
+                username == application_auth["common_user"] and
+                password == application_auth["common_password"]
             )
     return successful_login
 
-#decodes the convention of Basic Authentication using base64
+# decodes the convention of Basic Authentication using base64
+
+
 def decode_authorization(auth_content):
     return tuple(base64.b64decode(auth_content).split(':', 1))
 
-#encodes the convention of Basic Authentication using base64
+# encodes the convention of Basic Authentication using base64
+
+
 def encode_authorization(username, password):
     return base64.b64encode("%s:%s" % (username, password))
 
-#returns a dict of only the initialized volumes
+# returns a dict of only the initialized volumes
+
+
 def initialized_volumes(volumes):
     init_volumes = {}
     for volume_UUID, volume in volumes.items():
@@ -58,13 +75,16 @@ def initialized_volumes(volumes):
             init_volumes[volume_UUID] = volume
     return init_volumes
 
+
 def get_disk_UUID_by_num(disks, disk_num):
     for disk_UUID, disk in disks.items():
         if disk["disk_num"] == disk_num:
             return disk_UUID
     raise RuntimeError("Disk not found by disk num")
 
-#recieves a dict of disks and seperates into two: onlines and offlines
+# recieves a dict of disks and seperates into two: onlines and offlines
+
+
 def sort_disks(disks):
     online_disks, offline_disks = {}, {}
     for disk_UUID, disk in disks.items():
@@ -74,19 +94,23 @@ def sort_disks(disks):
             offline_disks[disk_UUID] = disk
     return online_disks, offline_disks
 
+
 def make_address(add):
     try:
         address, port = add.split(constants.ADDRESS_SEPERATOR)
         return (str(address), int(port))
-    except:
+    except BaseException:
         return False
+
 
 def spliturl(url):
     return urlparse.urlsplit(url)
 
+
 def write(fd, buf):
     while buf:
         buf = buf[os.write(fd, buf):]
+
 
 def read(fd, max_buffer):
     ret = ""
@@ -96,6 +120,7 @@ def read(fd, max_buffer):
             break
         ret += buf
     return ret
+
 
 def parse_header(line):
     SEP = ':'
@@ -107,6 +132,7 @@ def parse_header(line):
 
 def send_all(s, buf):
     write(s.fileno(), buf)
+
 
 def recv_all(s):
     return read(s.fileno(), constants.BLOCK_SIZE)
@@ -134,18 +160,18 @@ def recv_line(
     return buf[:n].decode('utf-8'), buf[n + len(constants.CRLF_BIN):]
 
 
-
-
 class Disconnect(RuntimeError):
-    def __init__(self, desc = "Disconnect"):
+    def __init__(self, desc="Disconnect"):
         super(Disconnect, self).__init__(desc)
 
+
 class InvalidArguments(RuntimeError):
-    def __init__(self, desc = "Bad Arguments"):
+    def __init__(self, desc="Bad Arguments"):
         super(InvalidArguments, self).__init__(desc)
 
+
 class DiskRefused(RuntimeError):
-    def __init__(self, disk_UUID, desc = "Disk Refused to connect"):
+    def __init__(self, disk_UUID, desc="Disk Refused to connect"):
         super(DiskRefused, self).__init__(desc)
         self._disk_UUID = disk_UUID
 

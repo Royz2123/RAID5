@@ -15,6 +15,7 @@ from common.utilities import constants
 from common.utilities import http_util
 from common.utilities import util
 
+
 class BDSClientSocket(pollable.Pollable):
     def __init__(
         self,
@@ -34,21 +35,20 @@ class BDSClientSocket(pollable.Pollable):
         self._state = constants.SEND_REQUEST_STATE
 
         self._request_context = {
-            "headers" : {},
+            "headers": {},
             "status": "uknown",
-            "method" : client_context["method"],
-            "service" : client_context["service"],
-            "args" : client_context["args"]
-        }        #important to request
+            "method": client_context["method"],
+            "service": client_context["service"],
+            "args": client_context["args"]
+        }  # important to request
 
         self._service = client_services.ClientService(self)
         self._service.response_headers = {
-            "Content-Length" : len(client_context["content"])
+            "Content-Length": len(client_context["content"])
         }
         self._service.response_headers.update(client_context["headers"])
         self._service.response_content = client_context["content"]
         self._parent = parent
-
 
     def is_closing(self):
         return self._state == constants.CLOSING_STATE
@@ -131,32 +131,32 @@ class BDSClientSocket(pollable.Pollable):
         self._socket.close()
 
     states = {
-        constants.SEND_REQUEST_STATE : {
-            "function" : http_util.send_request_state,
-            "next" : constants.SEND_HEADERS_STATE,
+        constants.SEND_REQUEST_STATE: {
+            "function": http_util.send_request_state,
+            "next": constants.SEND_HEADERS_STATE,
         },
-        constants.SEND_HEADERS_STATE : {
-            "function" : http_util.send_headers_state,
-            "next" : constants.SEND_CONTENT_STATE,
+        constants.SEND_HEADERS_STATE: {
+            "function": http_util.send_headers_state,
+            "next": constants.SEND_CONTENT_STATE,
         },
-        constants.SEND_CONTENT_STATE : {
-            "function" : http_util.send_content_state,
-            "next" : constants.GET_STATUS_STATE,
+        constants.SEND_CONTENT_STATE: {
+            "function": http_util.send_content_state,
+            "next": constants.GET_STATUS_STATE,
         },
-        constants.GET_STATUS_STATE : {
-            "function" : http_util.get_status_state,
-            "next" : constants.GET_HEADERS_STATE
+        constants.GET_STATUS_STATE: {
+            "function": http_util.get_status_state,
+            "next": constants.GET_HEADERS_STATE
         },
-        constants.GET_HEADERS_STATE : {
-            "function" : http_util.get_headers_state,
-            "next" : constants.GET_CONTENT_STATE
+        constants.GET_HEADERS_STATE: {
+            "function": http_util.get_headers_state,
+            "next": constants.GET_CONTENT_STATE
         },
-        constants.GET_CONTENT_STATE : {
-            "function" : http_util.get_content_state,
-            "next" : constants.CLOSING_STATE
+        constants.GET_CONTENT_STATE: {
+            "function": http_util.get_content_state,
+            "next": constants.CLOSING_STATE
         },
-        constants.CLOSING_STATE : {
-            "next" : constants.CLOSING_STATE,
+        constants.CLOSING_STATE: {
+            "next": constants.CLOSING_STATE,
         }
     }
 
@@ -216,7 +216,6 @@ class BDSClientSocket(pollable.Pollable):
             event |= select.POLLOUT
 
         return event
-
 
     def __repr__(self):
         return (

@@ -58,7 +58,6 @@ class AsyncServer(object):
             self._pollables
         )
 
-
     def add_declarer(self):
         sock = socket.socket(
             socket.AF_INET,
@@ -119,21 +118,21 @@ class AsyncServer(object):
         )
 
     def on_start(self):
-        #Add a listener, for service requests that the server offers
+        # Add a listener, for service requests that the server offers
         self.add_listener()
 
         if (
-            self._application_context["server_type"]
-            == constants.BLOCK_DEVICE_SERVER
+            self._application_context["server_type"] ==
+            constants.BLOCK_DEVICE_SERVER
         ):
-            #need to declare constantly so frontends
-            #recognize and add us:
+            # need to declare constantly so frontends
+            # recognize and add us:
             self.add_declarer()
         elif (
-            self._application_context["server_type"]
-            == constants.frontend
+            self._application_context["server_type"] ==
+            constants.frontend
         ):
-            #need to constantly identify new connections
+            # need to constantly identify new connections
             self.add_identifier()
 
     def handle_events(self, events):
@@ -141,17 +140,17 @@ class AsyncServer(object):
             entry = self._pollables[curr_fd]
 
             try:
-                #pollable has error
+                # pollable has error
                 if event & (select.POLLHUP | select.POLLERR):
                     logging.debug("%s:\tEntry has error" % entry)
                     entry.on_error()
 
-                #pollable has read
+                # pollable has read
                 if event & select.POLLIN:
                     logging.debug("%s:\tEntry has read" % entry)
                     entry.on_read()
 
-                #pollable has write
+                # pollable has write
                 if event & select.POLLOUT:
                     logging.debug("%s:\tEntry has write" % entry)
                     entry.on_write()
@@ -160,9 +159,8 @@ class AsyncServer(object):
                 logging.error("%s:\tSocket disconnected, closing...", entry)
                 entry.on_close()
 
-
     def timeout_event(self):
-        #if poll went off on timeout, call for an "update" on system status
+        # if poll went off on timeout, call for an "update" on system status
         for fd, entry in self._pollables.items():
             try:
                 entry.on_idle()
@@ -181,20 +179,21 @@ class AsyncServer(object):
         logging.debug("STARTED RUNNING..\n")
         self.on_start()
         logging.debug("READY FOR REQUESTS")
-        #start running
+        # start running
         while len(self._pollables):
             try:
                 self.close_needed()
                 poll_obj = self.create_poller()
 
-                #handle events from poller
-                events = poll_obj.poll(self._application_context["poll_timeout"])
+                # handle events from poller
+                events = poll_obj.poll(
+                    self._application_context["poll_timeout"])
 
                 if len(events):
-                    #got some event, check it and let pollable respond
+                    # got some event, check it and let pollable respond
                     self.handle_events(events)
                 else:
-                    #went out on timeout. Call on_idle for all pollables
+                    # went out on timeout. Call on_idle for all pollables
                     self.timeout_event()
 
             except Exception as e:
@@ -227,16 +226,15 @@ class AsyncServer(object):
                 entry.data_to_send == ""
             ):
                 entry.on_close()
-                #if socket still doesn't want to close before terminate
-                #then add it callables list to be closed when wanted
+                # if socket still doesn't want to close before terminate
+                # then add it callables list to be closed when wanted
                 self._callables.append(entry)
                 del self._pollables[fd]
 
         for closed_socket in self._callables:
-            #check if finally ready to terminate
+            # check if finally ready to terminate
             if entry.is_closing():
                 del closed_socket
-
 
     def close_all(self):
         for fd, entry in self._pollables.items()[:]:

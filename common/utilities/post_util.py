@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
 import errno
+import random
 import os
+import string
 import socket
+import time
 
 from common.utilities import constants
 
-#TODO: find how to generate_boundary
+
 def generate_boundary():
-    return "hellooooo"
+    return "MY-BOUNDARY-%s" % ''.join(
+        [
+            random.choice(string.ascii_letters + string.digits)
+            for n in xrange(constants.MY_BOUNDARY_LENGTH)
+        ]
+    )
+
 
 def end_boundary(boundary):
     return "%s--%s--%s" % (
@@ -16,12 +25,14 @@ def end_boundary(boundary):
         constants.CRLF_BIN
     )
 
+
 def mid_boundary(boundary):
     return "%s--%s%s" % (
         constants.CRLF_BIN,
         boundary,
         constants.CRLF_BIN
     )
+
 
 def make_post_content(boundary, content_dict):
     content = mid_boundary(boundary)

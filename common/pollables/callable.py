@@ -2,5 +2,5 @@
 
 class Callable(object):
 
-	def on_finish(self):
-		pass
+    def on_finish(self):
+        pass

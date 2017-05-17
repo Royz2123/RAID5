@@ -9,6 +9,7 @@ from ..common.utilities import util
 
 DATA_TO_SEND = "hello this is a nice data"
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -56,10 +57,10 @@ def main():
         s.connect((args.dst_address, args.dst_port))
         s.settimeout(1)
         cmd = "GET /%s?blocknum=%d %s\r\n" % (
-                args.action,
-                args.block,
-                constants.HTTP_SIGNATURE
-            )
+            args.action,
+            args.block,
+            constants.HTTP_SIGNATURE
+        )
         if args.action == "getblock":
             cmd += "\r\n"
         if args.action == "setblock":
@@ -68,11 +69,12 @@ def main():
         util.send_all(s, cmd)
         util.send_all(s, DATA_TO_SEND)
 
-        #Wait for answer
+        # Wait for answer
         data = s.recv(constants.BLOCK_SIZE)
         while data:
             logging.debug(data)
             data = s.recv(constants.BLOCK_SIZE)
+
 
 if __name__ == "__main__":
     main()

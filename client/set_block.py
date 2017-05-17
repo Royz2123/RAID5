@@ -11,6 +11,7 @@ import tkMessageBox
 from ..common import constants
 from ..common import util
 
+
 def parse_args():
     """Parse program argument."""
 
@@ -38,14 +39,15 @@ def parse_args():
     )
     return parser.parse_args()
 
+
 class StartPage():
     def __init__(self):
         self._main_page = Tkinter.Tk()
 
         B = Tkinter.Button(
             self._main_page,
-            text ="Send",
-            command = lambda: returnAnswer()
+            text="Send",
+            command=lambda: returnAnswer()
         )
         B.pack()
 
@@ -54,6 +56,7 @@ class StartPage():
 
     def returnAnswer(self, response):
         tkMessageBox.showinfo("Server responded", response)
+
 
 def main():
     args = parse_args()

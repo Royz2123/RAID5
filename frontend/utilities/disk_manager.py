@@ -19,45 +19,44 @@ from frontend.utilities import disk_util
 # all disks have requests have gotten a response.
 class DiskManager(object):
     def __init__(self, disks, pollables, parent, client_contexts):
-        #client_contexts : { disk_UUID : context}
+        # client_contexts : { disk_UUID : context}
         self._pollables = pollables
         self._parent = parent
         self._disk_requests = {}
         self._disks = disks
 
         for disk_UUID, context in client_contexts.items():
-            #add to database
+            # add to database
             self._disk_requests[disk_UUID] = {
-                "context" : context,
-                "update" : {
-                    "finished" : False,
-                    "status" : "",
-                    "content" : "",
+                "context": context,
+                "update": {
+                    "finished": False,
+                    "status": "",
+                    "content": "",
                 }
             }
-            #if disk is in offline state, don't even try to connect,
+            # if disk is in offline state, don't even try to connect,
             if self._disks[disk_UUID]["state"] == constants.OFFLINE:
                 raise util.DiskRefused(disk_UUID)
 
-            #try to add the client to pollables
+            # try to add the client to pollables
             disk_util.add_bds_client(
                 parent,
                 self._disk_requests[disk_UUID]["context"],
                 self._disk_requests[disk_UUID]["update"],
                 pollables
             )
-        #set parent to sleeping state until finished
+        # set parent to sleeping state until finished
         self._parent.state = constants.SLEEPING_STATE
 
-    #returns a copy dict of { disk_UUID : response }
+    # returns a copy dict of { disk_UUID : response }
     def get_responses(self):
         ret = {}
         for disk_UUID, request in self._disk_requests.items():
             ret[disk_UUID] = request["update"]
         return ret
 
-
-    #checks if al responses have the recvd status code, useful
+    # checks if al responses have the recvd status code, useful
     def check_common_status_code(self, common_status_code):
         for disk_UUID, response in self._disk_requests.items():
             if response["update"]["status"] != common_status_code:
@@ -67,7 +66,7 @@ class DiskManager(object):
     # simple function that checks if all the disks have gotten a response
     # if so, returns the common_status_code otherwise raises error
     def check_if_finished(self):
-        #check easy case first
+        # check easy case first
         if len(self._disk_requests) == 0:
             return True
 

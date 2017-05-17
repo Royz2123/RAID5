@@ -14,7 +14,9 @@ from common.services import base_service
 from common.utilities import constants
 
 
-class SetDiskInfoService(form_service.FileFormService, base_service.BaseService):
+class SetDiskInfoService(
+        form_service.FileFormService,
+        base_service.BaseService):
     def __init__(self, entry, pollables, args):
         form_service.FileFormService.__init__(self, entry, pollables, args)
         self._save_filename = entry.application_context["disk_info_name"]

@@ -39,11 +39,12 @@ class IdentifierSocket(pollable.Pollable):
         try:
             buf, address = self._socket.recvfrom(constants.BLOCK_SIZE)
             self.update_disk(buf, address)
-        except:
+        except BaseException:
             pass
 
     def update_disconnected(self):
-        for disk_UUID, disk in self._application_context["available_disks"].items():
+        for disk_UUID, disk in self._application_context["available_disks"].items(
+        ):
             if (time.time() - disk["timestamp"]) > constants.DISCONNECT_TIME:
                 disk["state"] = constants.OFFLINE
             if (time.time() - disk["timestamp"]) > constants.TERMINATE_TIME:
@@ -54,17 +55,17 @@ class IdentifierSocket(pollable.Pollable):
             raise RuntimeError(
                 "Invalid Decleration from Block Device: %s" % buf
             )
-        #split the content so we can address it
+        # split the content so we can address it
         content = buf.split(constants.CRLF_BIN)
 
-        #update the disk in available_disks
+        # update the disk in available_disks
         self._application_context["available_disks"][content[0]] = {
-            "disk_UUID" : content[0],
-            "state" : constants.ONLINE,
-            "UDP_address" : address,
-            "TCP_address" : (address[0], int(content[1])),
-            "timestamp" : time.time(),
-            "volume_UUID" : content[2]
+            "disk_UUID": content[0],
+            "state": constants.ONLINE,
+            "UDP_address": address,
+            "TCP_address": (address[0], int(content[1])),
+            "timestamp": time.time(),
+            "volume_UUID": content[2]
         }
 
     def get_events(self):

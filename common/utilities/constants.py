@@ -35,11 +35,11 @@ HTML_MANAGEMENT_HEADER = "Management"
 HTML_DISPLAY_HEADER = "Available disks"
 
 HTML_TOP_BAR_CODE = (
-    '<ul>'
-    +  '<li><a class="active" href="/homepage.html">Home</a></li>'
-    +  '<li><a href="/menu.html">Menu</a></li>'
-    +  '<li><a href="/about.html">About</a></li>'
-    + '</ul>'
+    '<ul>' +
+    '<li><a class="active" href="/homepage.html">Home</a></li>' +
+    '<li><a href="/menu.html">Menu</a></li>' +
+    '<li><a href="/about.html">About</a></li>' +
+    '</ul>'
 )
 
 DEFAULT_REFRESH_TIME = 4
@@ -47,10 +47,13 @@ DEFAULT_STYLE_SHEET = "mystyle.css"
 DEFAULT_CONTENT_SPACE = "table-space"
 
 CACHE_HEADERS = {
-    "Cache-Control" : "no-cache, no-store, must-revalidate",
-    "Pragma" : "no-cache",
-    "Expires" : "0"
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0"
 }
+
+MY_BOUNDARY_LENGTH = 50
+LONG_PASSWORD_LENGTH = 64
 
 ADDRESS_SEPERATOR = ":"
 
@@ -61,17 +64,17 @@ MIME_MAPPING = {
     'css': 'text/css',
 }
 
-#SERVER TYPES
+# SERVER TYPES
 (
     BLOCK_DEVICE_SERVER,
     frontend,
-)=range(2)
+) = range(2)
 
 DEFAULT_BLOCK_POLL_TIMEOUT = 1000
 DEFAULT_FRONTEND_POLL_TIMEOUT = 200
 
 MODULE_DICT = {
-    BLOCK_DEVICE_SERVER : [
+    BLOCK_DEVICE_SERVER: [
         "block_device.services.get_block_service",
         "block_device.services.set_block_service",
         "block_device.services.login_service",
@@ -81,7 +84,7 @@ MODULE_DICT = {
         "common.services.get_file_service",
         "common.services.form_service",
     ],
-    frontend : [
+    frontend: [
         "frontend.services.disconnect_service",
         "frontend.services.connect_service",
         "frontend.services.read_disk_service",
@@ -96,28 +99,28 @@ MODULE_DICT = {
     ],
 }
 
-#DISK STATES
+# DISK STATES
 (
     OFFLINE,
     ONLINE,
     REBUILD,
     STARTUP,
-)=range(4)
+) = range(4)
 
-#VOLUME_STATES
+# VOLUME_STATES
 (
     UNINITIALIZED,
     INITIALIZED,
-)=range(2)
+) = range(2)
 
 DISK_STATES = {
-    OFFLINE : "OFFLINE STATE",
-    ONLINE : "ONLINE STATE",
-    REBUILD : "REBUILD STATE",
-    STARTUP : "STARTUP STATE"
+    OFFLINE: "OFFLINE STATE",
+    ONLINE: "ONLINE STATE",
+    REBUILD: "REBUILD STATE",
+    STARTUP: "STARTUP STATE"
 }
 
-#HTTP STATES:
+# HTTP STATES:
 (
     GET_STATUS_STATE,
     GET_REQUEST_STATE,

@@ -33,11 +33,11 @@ class MulService(base_service.BaseService):
             int(self._args['b'][0])
         )
         self._response_headers = {
-            "Content-Length" : len(self._response_content)
+            "Content-Length": len(self._response_content)
         }
         logging.debug(
             "%s :\t sending content: %s"
-             % (
+            % (
                 entry,
                 self._response_content
             )

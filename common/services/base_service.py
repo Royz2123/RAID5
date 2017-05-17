@@ -2,9 +2,9 @@
 class BaseService(object):
     def __init__(
         self,
-        wanted_headers = [],
-        wanted_args = [],
-        args = {}
+        wanted_headers=[],
+        wanted_args=[],
+        args={}
     ):
         self._wanted_headers = wanted_headers + ["Content-Length"]
         self._wanted_args = wanted_args

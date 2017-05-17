@@ -23,11 +23,12 @@ from frontend.utilities import service_util
 from common.utilities.state_util import state
 from common.utilities.state_util import state_machine
 
+
 class DisconnectService(base_service.BaseService):
     (
         DISCONNECT_STATE,
         FINAL_STATE,
-    )=range(2)
+    ) = range(2)
 
     def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(
@@ -53,33 +54,31 @@ class DisconnectService(base_service.BaseService):
         self._disk_UUID = self._args["disk_UUID"][0]
         self._volume_UUID = self._args["volume_UUID"][0]
 
-        #extract the disks from the wanted volume
+        # extract the disks from the wanted volume
         self._disks = entry.application_context[
             "volumes"
         ][self._volume_UUID]["disks"]
 
-        #check if disk is already disconnected
+        # check if disk is already disconnected
         if self._disks[self._disk_UUID]["state"] != constants.ONLINE:
             return
 
-        #check that all other disks are online (RAID5 requirements)
+        # check that all other disks are online (RAID5 requirements)
         for disk_UUID, disk in self._disks.items():
             if not disk["state"] == constants.ONLINE:
                 raise RuntimeError(
-                    "Can't turn disk %s offline, already have disk %s offline" % (
-                        self._disk_UUID,
-                        disk_UUID
-                    )
-                )
+                    "Can't turn disk %s offline, already have disk %s offline" %
+                    (self._disk_UUID, disk_UUID))
 
-        #already set to offline so that another attempt to disconnect shall be denied
+        # already set to offline so that another attempt to disconnect shall be
+        # denied
         self._disks[self._disk_UUID]["state"] = constants.OFFLINE
         self._disks[self._disk_UUID]["cache"] = cache.Cache(
             mode=cache.Cache.CACHE_MODE
         )
 
-        #now need to increment other disks level
-        #check this isn't the disk we are disconnecting
+        # now need to increment other disks level
+        # check this isn't the disk we are disconnecting
         self._disk_manager = disk_manager.DiskManager(
             self._disks,
             self._pollables,
@@ -87,13 +86,12 @@ class DisconnectService(base_service.BaseService):
             service_util.create_update_level_contexts(
                 self._disks,
                 {
-                    disk_UUID : "1" for disk_UUID in self._disks.keys()
+                    disk_UUID: "1" for disk_UUID in self._disks.keys()
                     if disk_UUID != self._disk_UUID
                 }
             ),
         )
-        return False    #will always need input, not an epsilon_path
-
+        return False  # will always need input, not an epsilon_path
 
     def after_disconnect(self, entry):
         if not self._disk_manager.check_if_finished():
@@ -103,12 +101,12 @@ class DisconnectService(base_service.BaseService):
                 "Got bad status code from BDS"
             )
 
-        #finished smoothly, update levels on frontend disks
+        # finished smoothly, update levels on frontend disks
         for disk_UUID, disk in self._disks.items():
             if disk_UUID != self._disk_UUID:
                 disk["level"] += 1
 
-        #also mark this disk as offline
+        # also mark this disk as offline
         self._disks[self._disk_UUID]["state"] = constants.OFFLINE
 
         entry.state = constants.SEND_HEADERS_STATE
@@ -133,15 +131,15 @@ class DisconnectService(base_service.BaseService):
             DisconnectService.STATES[DisconnectService.DISCONNECT_STATE],
             DisconnectService.STATES[DisconnectService.FINAL_STATE]
         )
-        #pass args to the machine, will use *args to pass them on
+        # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
     def on_finish(self, entry):
-        #pass args to the machine, will use *args to pass them on
+        # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
     def before_response_headers(self, entry):
-        #Re-send the management part. No refresh so user can enter new disk
+        # Re-send the management part. No refresh so user can enter new disk
         self._response_content = html_util.create_html_page(
             "",
             constants.HTML_DISPLAY_HEADER,
@@ -149,6 +147,6 @@ class DisconnectService(base_service.BaseService):
             display_disks_service.DisplayDisksService.get_name(),
         )
         self._response_headers = {
-            "Content-Length" : "%s" % len(self._response_content),
+            "Content-Length": "%s" % len(self._response_content),
         }
         return True

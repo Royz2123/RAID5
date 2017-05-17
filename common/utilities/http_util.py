@@ -25,11 +25,12 @@ except ImportError:
     urlparse = urllib.parse
 
 STATUS_CODES = {
-    200 : "OK",
-    401 : "Unauthorized",
-    404 : "File Not Found",
-    500 : "Internal Error",
+    200: "OK",
+    401: "Unauthorized",
+    404: "File Not Found",
+    500: "Internal Error",
 }
+
 
 def get_status_state(entry):
     index = entry.recvd_data.find(constants.CRLF_BIN)
@@ -44,6 +45,7 @@ def get_status_state(entry):
     entry.recvd_data = rest
     return True
 
+
 def get_request_state(entry):
     index = entry.recvd_data.find(constants.CRLF_BIN)
     if index == -1:
@@ -54,15 +56,16 @@ def get_request_state(entry):
         entry.recvd_data[index + len(constants.CRLF_BIN):]
     )
     entry.handle_request(req)
-    entry.recvd_data = rest            #save the rest for next time
+    entry.recvd_data = rest  # save the rest for next time
     return True
+
 
 def get_headers_state(entry):
     lines = entry.recvd_data.split(constants.CRLF_BIN)
     if "" not in lines:
         return False
 
-    #got all the headers, process them
+    # got all the headers, process them
     entry.request_context["headers"] = {}
     for index in range(len(lines)):
         line = lines[index]
@@ -83,11 +86,12 @@ def get_headers_state(entry):
     entry.service.before_content(entry)
     return True
 
+
 def get_content_state(entry):
     if "Content-Length" not in entry.request_context["headers"].keys():
         return True
 
-    #update content_length
+    # update content_length
     entry.request_context["headers"]["Content-Length"] = (
         int(entry.request_context["headers"]["Content-Length"]) -
         len(entry.recvd_data)
@@ -100,6 +104,7 @@ def get_content_state(entry):
     elif entry.request_context["headers"]["Content-Length"] > 0:
         return False
     return True
+
 
 def send_status_state(entry):
     entry.service.before_response_status(entry)
@@ -114,11 +119,10 @@ def send_status_state(entry):
     )
     return True
 
+
 def send_headers_state(entry):
     entry.service.before_response_headers(entry)
     headers = entry.service.response_headers
-
-    print headers.items()
     for header, content in headers.items():
         entry.data_to_send += (
             (
@@ -130,6 +134,7 @@ def send_headers_state(entry):
         )
     entry.data_to_send += "\r\n"
     return True
+
 
 def send_content_state(entry):
     finished_content = entry.service.before_response_content(entry)
@@ -160,14 +165,14 @@ def send_request_state(entry):
     return True
 
 
-#OTHER UTIL
+# OTHER UTIL
 def send_buf(entry):
     try:
         while entry.data_to_send != "":
             entry.data_to_send = entry.data_to_send[
                 entry.socket.send(entry.data_to_send):
             ]
-    except socket.error, e:
+    except socket.error as e:
         if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
             raise
         logging.debug("%s :\t Haven't finished reading yet" % entry)
@@ -182,7 +187,7 @@ def get_buf(entry):
             )
         entry.recvd_data += t
 
-    except socket.error, e:
+    except socket.error as e:
         traceback.print_exc()
         if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
             raise

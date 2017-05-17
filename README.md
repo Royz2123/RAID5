@@ -11,9 +11,9 @@ These instructions will get you a copy of the project up and running on your loc
 Here are the things you will need to download in order to get this system up and running:
 
 ```
-1) Download and Install Python2.7
+1) Download and install Python2.7
 2) Download this repository on your machine (Windows coming soon)
-3) Download and Install Mozilla Firefox (currently buggy on Chrome)
+3) Download and install any modern browser
 ```
 
 ### Execution
@@ -35,7 +35,7 @@ Running Block Device Server:
 python -m block_device [args]
 ```
 
-Testing the servers can be done from any browser (Firefox currently recommended)
+Testing the servers can be done from any browser. Basic Authentication is required with common_user and common_password specified in frontend/config.ini. Firefox currently disables basic authentication so could be problematical and will need to add this option manually.
 
 ### Arguments
 

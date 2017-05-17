@@ -12,17 +12,8 @@ from common.pollables import pollable
 from common.utilities import constants
 from common.utilities import util
 
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
 
-
-#A simple UDP socket that broadcasts it's "name" when on_idle
+# A simple UDP socket that broadcasts it's "name" when on_idle
 # The "name" is a list of information regarding the block device
 
 class DeclarerSocket(pollable.Pollable):

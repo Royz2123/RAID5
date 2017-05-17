@@ -14,6 +14,7 @@ from common.utilities import constants
 from common.utilities import util
 from frontend.pollables import bds_client_socket
 
+
 class GetFileService(base_service.BaseService):
     def __init__(self, entry, filename):
         base_service.BaseService.__init__(self, [])
@@ -28,8 +29,8 @@ class GetFileService(base_service.BaseService):
         try:
             self._fd = os.open(self._filename, os.O_RDONLY, 0o666)
             self._response_headers = {
-                "Content-Length" : os.fstat(self._fd).st_size,
-                "Content-Type" : constants.MIME_MAPPING.get(
+                "Content-Length": os.fstat(self._fd).st_size,
+                "Content-Type": constants.MIME_MAPPING.get(
                     os.path.splitext(
                         self._filename
                     )[1].lstrip('.'),
@@ -50,7 +51,7 @@ class GetFileService(base_service.BaseService):
     def before_response_content(
         self,
         entry,
-        max_buffer = constants.BLOCK_SIZE
+        max_buffer=constants.BLOCK_SIZE
     ):
         if self._response_status != 200:
             return True

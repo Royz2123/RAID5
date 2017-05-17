@@ -9,6 +9,7 @@ from common.services import base_service
 from common.utilities import constants
 from common.utilities import util
 
+
 class GetBlockService(base_service.BaseService):
     BLOCK_SIZE = 4096
 
@@ -38,8 +39,8 @@ class GetBlockService(base_service.BaseService):
             os.lseek(
                 self._fd,
                 (
-                    GetBlockService.BLOCK_SIZE
-                    * int(self._args["blocknum"][0])
+                    GetBlockService.BLOCK_SIZE *
+                    int(self._args["blocknum"][0])
                 ),
                 os.SEEK_SET,
             )
@@ -48,7 +49,7 @@ class GetBlockService(base_service.BaseService):
                 constants.BLOCK_SIZE
             )
             self._response_headers = {
-                "Content-Length" : len(self._response_content)
+                "Content-Length": len(self._response_content)
             }
 
         except Exception as e:
@@ -57,7 +58,6 @@ class GetBlockService(base_service.BaseService):
             self._response_status = 500
 
         return True
-
 
     def before_terminate(self, entry):
         os.close(self._fd)

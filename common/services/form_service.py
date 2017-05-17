@@ -63,7 +63,7 @@ class FileFormService(base_service.BaseService):
         if "" not in lines:
             return None
 
-        #got all the headers, process them
+        # got all the headers, process them
         headers = {}
         for index in range(len(lines)):
             line = lines[index]
@@ -84,7 +84,7 @@ class FileFormService(base_service.BaseService):
 
         for field in disposition_fields:
             name, info = field.split('=', 1)
-            #the info part is surrounded by parenthesies
+            # the info part is surrounded by parenthesies
             info = info[1:-1]
             if name == "filename":
                 self._filename = info
@@ -99,7 +99,7 @@ class FileFormService(base_service.BaseService):
         return FileFormService.CONTENT_STATE
 
     def after_content(self, entry):
-        #first we must check if there are any more mid - boundaries
+        # first we must check if there are any more mid - boundaries
         if self._content.find(post_util.mid_boundary(self._boundary)) != -1:
             buf = self._content.split(
                 post_util.mid_boundary(self._boundary),
@@ -133,17 +133,17 @@ class FileFormService(base_service.BaseService):
         state.State(
             START_STATE,
             [HEADERS_STATE],
-            after_func = after_start,
+            after_func=after_start,
         ),
         state.State(
             HEADERS_STATE,
             [CONTENT_STATE],
-            after_func = after_headers
+            after_func=after_headers
         ),
         state.State(
             CONTENT_STATE,
             [HEADERS_STATE, FINAL_STATE],
-            after_func = after_content
+            after_func=after_content
         ),
         state.State(
             FINAL_STATE,
@@ -173,7 +173,7 @@ class FileFormService(base_service.BaseService):
 
     def handle_content(self, entry, content):
         self._content += content
-        #pass args to the machine, will use *args to pass them on
+        # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
     def before_response_headers(self, entry):
@@ -182,7 +182,7 @@ class FileFormService(base_service.BaseService):
                 "File was uploaded successfully"
             )
             self._response_headers = {
-                "Content-Length" : len(self._response_content),
+                "Content-Length": len(self._response_content),
             }
             return True
 

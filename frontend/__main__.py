@@ -10,15 +10,16 @@ from common.utilities import config_util
 from common.utilities import poller
 from common.utilities import constants
 
-#files
+# files
 NEW_FILE = os.devnull
 NEW_WORKING_DIRECTORY = "/"
 LOG_FILE = "log"
 
 POLL_TYPE = {
-    "poll" : poller.Poller,
-    "select" : poller.Select
+    "poll": poller.Poller,
+    "select": poller.Select
 }
+
 
 def parse_args():
     """Parse program argument."""
@@ -82,49 +83,49 @@ def parse_args():
 
 
 def main():
-    #parse args
+    # parse args
     args = parse_args()
-    #parse the config file
+    # parse the config file
     config_sections = config_util.parse_config(args.config_file)
 
-    #delete the previous log
+    # delete the previous log
     try:
         os.remove(args.log_file)
-    except:
+    except BaseException:
         pass
     logging.basicConfig(filename=args.log_file, level=logging.DEBUG)
 
-    #create volumes out of volume_UUID's in config_file, might
-    #be recreated
+    # create volumes out of volume_UUID's in config_file, might
+    # be recreated
     volumes = {}
     for section, content in config_sections.items():
         if "volume" in section:
             volumes[content["volume_uuid"]] = {
-                "volume_UUID" : content["volume_uuid"],
-                "volume_state" : constants.UNINITIALIZED,
-                "long_password" : content["long_password"],
-                "disks" : {},
+                "volume_UUID": content["volume_uuid"],
+                "volume_state": constants.UNINITIALIZED,
+                "long_password": content["long_password"],
+                "disks": {},
             }
 
-    #handle daemon state
+    # handle daemon state
     if args.daemon:
         daemonize()
 
-    #create opplication context from config_file and args
+    # create opplication context from config_file and args
     application_context = {
-        "bind_address" : args.bind_address,
-        "bind_port" : args.bind_port,
-        "base" : args.base,
-        "poll_type" : POLL_TYPE[args.poll_type],
-        "poll_timeout" : args.poll_timeout,
-        "max_connections" : args.max_connections,
-        "max_buffer" : args.max_buffer,
-        "server_type" : constants.frontend,
-        "volumes" : volumes,
-        "available_disks" : {},
-        "multicast_group" : config_sections["MulticastGroup"],
-        "authentication" : config_sections["Authentication"],
-        "config_file" : args.config_file,
+        "bind_address": args.bind_address,
+        "bind_port": args.bind_port,
+        "base": args.base,
+        "poll_type": POLL_TYPE[args.poll_type],
+        "poll_timeout": args.poll_timeout,
+        "max_connections": args.max_connections,
+        "max_buffer": args.max_buffer,
+        "server_type": constants.frontend,
+        "volumes": volumes,
+        "available_disks": {},
+        "multicast_group": config_sections["MulticastGroup"],
+        "authentication": config_sections["Authentication"],
+        "config_file": args.config_file,
     }
     server = async_server.AsyncServer(application_context)
     server.run()
@@ -136,13 +137,13 @@ def daemonize():
     if child != 0:
         os._exit(0)
 
-    #first close all of parents fds
+    # first close all of parents fds
     os.closerange(
         NUMBER_OF_STANDARD_FILES,
         resource.getrlimit(resource.RLIMIT_NOFILE)[1]
     )
 
-    #redirect standards
+    # redirect standards
     try:
         new_fd = os.open(NEW_FILE, os.O_RDWR)
         for standard_fd in range(NUMBER_OF_STANDARD_FILES + 1):
@@ -152,7 +153,7 @@ def daemonize():
 
     os.chdir(NEW_WORKING_DIRECTORY)
 
-    signal.signal(signal.SIGINT|signal.SIGTERM, exit)
+    signal.signal(signal.SIGINT | signal.SIGTERM, exit)
     signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
 

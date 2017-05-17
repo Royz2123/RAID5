@@ -5,8 +5,10 @@ import ConfigParser
 from common.utilities import constants
 from common.utilities import util
 
-#creates a config file in filename specified, same for both frontend
+# creates a config file in filename specified, same for both frontend
 # and block_device for now
+
+
 def create_bds_config(filename, index):
     with open(filename, 'w') as config_file:
         parser = ConfigParser.ConfigParser()
@@ -24,30 +26,34 @@ def create_bds_config(filename, index):
         ))
         parser.write(config_file)
 
+
 def create_frontend_config(filename):
-    with open(filename,'w') as config_file:
+    with open(filename, 'w') as config_file:
         parser = ConfigParser.ConfigParser()
         common_config(parser)
         parser.write(config_file)
+
 
 def write_section_config(filename, new_section, new_fields):
     parser = ConfigParser.ConfigParser()
     parser.read(filename)
 
-    #add content to the parser
+    # add content to the parser
     parser.add_section(new_section)
     for field, value in new_fields.items():
         parser.set(new_section, field, value)
 
-    with open(filename,'wb') as config_file:
+    with open(filename, 'wb') as config_file:
         parser.write(config_file)
+
 
 def write_field_config(filename, section, fieldname, value):
     parser = ConfigParser.ConfigParser()
     parser.read(filename)
     parser.set(section, fieldname, value)
-    with open(filename,'wb') as config_file:
+    with open(filename, 'wb') as config_file:
         parser.write(config_file)
+
 
 def common_config(parser):
     parser.add_section("MulticastGroup")
@@ -60,11 +66,11 @@ def common_config(parser):
 
 
 def parse_config(config_file):
-    #Config-file handling
+    # Config-file handling
     Config = ConfigParser.ConfigParser()
     Config.read(config_file)
 
-    #extract data from configfile
+    # extract data from configfile
     sections = {}
     for section in Config.sections():
         sections[section] = create_dict_section(
@@ -72,6 +78,7 @@ def parse_config(config_file):
             section
         )
     return sections
+
 
 def create_dict_section(parser, section):
     dict1 = {}
@@ -81,7 +88,7 @@ def create_dict_section(parser, section):
             dict1[option] = parser.get(section, option)
             if dict1[option] == -1:
                 DebugPrint("skip: %s" % option)
-        except:
+        except BaseException:
             print("exception on %s!" % option)
             dict1[option] = None
     return dict1

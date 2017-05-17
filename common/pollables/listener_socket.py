@@ -49,18 +49,18 @@ class ListenerSocket(pollable.Pollable):
     def state(self, s):
         self._state = s
 
-    #state functions
+    # state functions
     def listen_state(self):
         new_socket, address = self._socket.accept()
 
-        #set to non blocking
+        # set to non blocking
         fcntl.fcntl(
             new_socket.fileno(),
             fcntl.F_SETFL,
             fcntl.fcntl(new_socket.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK
         )
 
-        #add to database
+        # add to database
         new_http_socket = service_socket.ServiceSocket(
             new_socket,
             constants.GET_REQUEST_STATE,
@@ -82,15 +82,15 @@ class ListenerSocket(pollable.Pollable):
     def on_close(self):
         self._socket.close()
 
-    #handlers:
+    # handlers:
     states = {
-        constants.LISTEN_STATE : {
-            "function" : listen_state,
-            "next" : constants.CLOSING_STATE
+        constants.LISTEN_STATE: {
+            "function": listen_state,
+            "next": constants.CLOSING_STATE
         },
-        constants.CLOSING_STATE : {
-            "function" : on_close,
-            "next" : constants.CLOSING_STATE,
+        constants.CLOSING_STATE: {
+            "function": on_close,
+            "next": constants.CLOSING_STATE,
         }
     }
 
@@ -101,11 +101,11 @@ class ListenerSocket(pollable.Pollable):
 
         except Exception as e:
             logging.error("%s :\t %s" %
-                (
-                    self,
-                    traceback.print_exc()
-                )
-            )
+                          (
+                              self,
+                              traceback.print_exc()
+                          )
+                          )
             self.on_error()
 
     def on_error(self):

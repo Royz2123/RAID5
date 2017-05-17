@@ -14,6 +14,7 @@ from common.utilities import constants
 from common.utilities import html_util
 from common.utilities import util
 
+
 class DisplayDisksService(base_service.BaseService):
     def __init__(self, entry, pollables, args):
         base_service.BaseService.__init__(self, ["Authorization"])
@@ -24,7 +25,7 @@ class DisplayDisksService(base_service.BaseService):
 
     def before_response_status(self, entry):
         if not util.check_login(entry):
-            #login was unsucsessful, notify the user agent
+            # login was unsucsessful, notify the user agent
             self._response_status = 401
 
     def before_response_headers(self, entry):
@@ -38,11 +39,11 @@ class DisplayDisksService(base_service.BaseService):
                 constants.DEFAULT_REFRESH_TIME,
             )
             self._response_headers = {
-                "Content-Length" : "%s" % len(self._response_content),
+                "Content-Length": "%s" % len(self._response_content),
             }
         else:
             self._response_headers = {
-                "Content-Length" : 0,
+                "Content-Length": 0,
                 "WWW-Authenticate": "Basic realm='myRealm'",
             }
         return True

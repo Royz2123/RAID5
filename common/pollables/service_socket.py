@@ -35,10 +35,10 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
 
         self._state = state
         self._request_context = {
-            "headers" : {},
+            "headers": {},
             "method": "uknown",
             "uri": "uknown"
-        }        #important stuff from request
+        }  # important stuff from request
         self._service = base_service.BaseService()
         self._pollables = pollables
 
@@ -110,33 +110,33 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
         return self._state == constants.CLOSING_STATE
 
     states = {
-        constants.GET_REQUEST_STATE : {
-            "function" : http_util.get_request_state,
-            "next" : constants.GET_HEADERS_STATE
+        constants.GET_REQUEST_STATE: {
+            "function": http_util.get_request_state,
+            "next": constants.GET_HEADERS_STATE
         },
-        constants.GET_HEADERS_STATE : {
-            "function" : http_util.get_headers_state,
-            "next" : constants.GET_CONTENT_STATE
+        constants.GET_HEADERS_STATE: {
+            "function": http_util.get_headers_state,
+            "next": constants.GET_CONTENT_STATE
         },
-        constants.GET_CONTENT_STATE : {
-            "function" : http_util.get_content_state,
-            "next" : constants.SEND_STATUS_STATE
+        constants.GET_CONTENT_STATE: {
+            "function": http_util.get_content_state,
+            "next": constants.SEND_STATUS_STATE
         },
-        constants.SEND_STATUS_STATE : {
-            "function" : http_util.send_status_state,
-            "next" : constants.SEND_HEADERS_STATE,
+        constants.SEND_STATUS_STATE: {
+            "function": http_util.send_status_state,
+            "next": constants.SEND_HEADERS_STATE,
         },
-        constants.SEND_HEADERS_STATE : {
-            "function" : http_util.send_headers_state,
-            "next" : constants.SEND_CONTENT_STATE,
+        constants.SEND_HEADERS_STATE: {
+            "function": http_util.send_headers_state,
+            "next": constants.SEND_CONTENT_STATE,
         },
-        constants.SEND_CONTENT_STATE : {
-            "function" : http_util.send_content_state,
-            "next" : constants.CLOSING_STATE,
+        constants.SEND_CONTENT_STATE: {
+            "function": http_util.send_content_state,
+            "next": constants.CLOSING_STATE,
         },
-        constants.CLOSING_STATE : {
-            "function" : on_error,          #should change to more appropriate name
-            "next" : constants.CLOSING_STATE,
+        constants.CLOSING_STATE: {
+            "function": on_error,  # should change to more appropriate name
+            "next": constants.CLOSING_STATE,
         }
     }
 
@@ -189,7 +189,6 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             logging.error("%s :\t Closing socket, got : %s " % (self, e))
             self.on_error(e)
 
-
     def get_events(self):
         event = select.POLLERR
         if (
@@ -207,7 +206,6 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             event |= select.POLLOUT
         return event
 
-
     def __repr__(self):
         if self._service is None:
             return "ServiceSocket Object: %s" % self._fd
@@ -218,11 +216,10 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             self._service.__class__.__name__,
         )
 
-
     def handle_request(self, request):
         req_comps = request.split(' ', 2)
 
-        #check validity
+        # check validity
         if req_comps[2] != constants.HTTP_SIGNATURE:
             raise RuntimeError('Not HTTP protocol')
         if len(req_comps) != 3:
@@ -237,11 +234,11 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
         if not uri or uri[0] != '/' or '\\' in uri:
             raise RuntimeError("Invalid URI")
 
-        #update request
+        # update request
         self._request_context["method"] = method
         self._request_context["uri"] = uri
 
-        #choose service
+        # choose service
         parse = urlparse.urlparse(self._request_context["uri"])
         self._request_context["args"] = urlparse.parse_qs(parse.query)
 
@@ -268,7 +265,7 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
                     self._request_context["uri"],
                 )
             )
-            #if file_name[:len(base)+1] != base + '\\':
+            # if file_name[:len(base)+1] != base + '\\':
             #    raise RuntimeError("Malicious URI %s" % self._request[1])
             self._service = services["/get_file"](self, file_name)
 

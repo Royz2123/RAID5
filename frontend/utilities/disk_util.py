@@ -23,18 +23,17 @@ def add_bds_client(parent, client_context, client_update, pollables):
     try:
         new_socket.connect((client_context["disk_address"]))
     except socket.error as e:
-        #connection refused from disk! build disk refused and raise..
+        # connection refused from disk! build disk refused and raise..
         raise util.DiskRefused(client_context["disk_UUID"])
 
-
-    #set to non blocking
+    # set to non blocking
     fcntl.fcntl(
         new_socket.fileno(),
         fcntl.F_SETFL,
         fcntl.fcntl(new_socket.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK
     )
 
-    #add to database, need to specify blocknum
+    # add to database, need to specify blocknum
     new_bds_client = bds_client_socket.BDSClientSocket(
         new_socket,
         client_context,
@@ -50,20 +49,23 @@ def add_bds_client(parent, client_context, client_update, pollables):
         )
     )
 
+
 def all_empty(blocks):
     for block in blocks:
         if len(block):
             return False
     return True
 
+
 def compute_missing_block(blocks):
-    #compute the missing block using parity and XOR
+    # compute the missing block using parity and XOR
     if blocks == []:
         return None
     new_block = blocks[0]
     for block in blocks[1:]:
         new_block = xor_blocks(new_block, block)
     return new_block
+
 
 def xor_blocks(block1, block2):
     for block in (block1, block2):
@@ -76,6 +78,7 @@ def xor_blocks(block1, block2):
         ans.append(chr(l1[i] ^ l2[i]))
     return "".join(ans)
 
+
 def get_physical_disk_UUID(disks, logic_disk_UUID, blocknum):
     logic_disk_num = disks[logic_disk_UUID]["disk_num"]
 
@@ -86,15 +89,17 @@ def get_physical_disk_UUID(disks, logic_disk_UUID, blocknum):
 
     return util.get_disk_UUID_by_num(disks, phy_disk_num)
 
+
 def get_parity_disk_UUID(disks, blocknum):
     return util.get_disk_UUID_by_num(
         disks,
         get_parity_disk_num(disks, blocknum)
     )
 
+
 def get_parity_disk_num(disks, blocknum):
-    #The parity block (marked as pi) will be in cascading order,
-    #for example, if len(disks) = 4 we will get the following division:
+    # The parity block (marked as pi) will be in cascading order,
+    # for example, if len(disks) = 4 we will get the following division:
     #   |   a1  |   b1  |   c1  |   p1  |
     #   |   a2  |   b2  |   p2  |   c2  |
     #   |   a3  |   p3  |   b3  |   c3  |

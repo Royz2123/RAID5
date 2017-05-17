@@ -27,6 +27,7 @@ from common.utilities.state_util import state_machine
 # Rebuilding of the disk is done after terminate, since it has to be done in the
 # background
 
+
 class ConnectService(base_service.BaseService):
     def __init__(self, entry, socket_data, args):
         base_service.BaseService.__init__(
@@ -52,15 +53,16 @@ class ConnectService(base_service.BaseService):
     def get_name():
         return "/connect"
 
-    #checks if and how the disk needs to be rebuilt, returns False if not
+    # checks if and how the disk needs to be rebuilt, returns False if not
     def initial_setup(self, entry):
         self._disk_UUID = self._args["disk_UUID"][0]
         self._volume_UUID = self._args["volume_UUID"][0]
 
-        #first check validity of volume
+        # first check validity of volume
         if (
-            self._volume_UUID not in entry.application_context["volumes"].keys()
-            or (
+            self._volume_UUID not in entry.application_context["volumes"].keys(
+            ) or
+            (
                 entry.application_context["volumes"][self._volume_UUID][
                     "volume_state"
                 ] != constants.INITIALIZED
@@ -74,31 +76,30 @@ class ConnectService(base_service.BaseService):
             self._volume_UUID
         ]["disks"]
 
-        #now check validity of disk_UUID
+        # now check validity of disk_UUID
         if self._disk_UUID not in self._disks.keys():
             raise RuntimeError("%s:\t Disk not part of volume" % (
                 entry,
             ))
 
-        #sanity check that this level is one less than all the others:
+        # sanity check that this level is one less than all the others:
         for disk_UUID, disk in self._disks.items():
             if (
-                disk_UUID != self._disk_UUID
-                and (
-                    disk["level"]
-                    <= self._disks[self._disk_UUID]["level"]
+                disk_UUID != self._disk_UUID and
+                (
+                    disk["level"] <=
+                    self._disks[self._disk_UUID]["level"]
                 )
             ):
                 raise RuntimeError("Error in levels")
 
         self._disks[self._disk_UUID]["state"] = constants.REBUILD
 
-
     def before_response_status(self, entry):
-        #initial_setup, also check if we need to add thid disk out of no-where
+        # initial_setup, also check if we need to add thid disk out of no-where
         self.initial_setup(entry)
 
-        #Re-send the management part
+        # Re-send the management part
         self._response_content = html_util.create_html_page(
             "",
             constants.HTML_DISPLAY_HEADER,
@@ -106,31 +107,31 @@ class ConnectService(base_service.BaseService):
             display_disks_service.DisplayDisksService.get_name(),
         )
         self._response_headers = {
-            "Content-Length" : "%s" % len(self._response_content),
+            "Content-Length": "%s" % len(self._response_content),
         }
         return True
 
-    #REBULD PART, DONE BEFORE TERMINATE (AFTER CLOSE)
+    # REBULD PART, DONE BEFORE TERMINATE (AFTER CLOSE)
     (
         GET_DATA_STATE,
         SET_DATA_STATE,
         UPDATE_LEVEL_STATE,
         FINAL_STATE
-    )=range(4)
+    ) = range(4)
 
-    #STATE FUNCTIONS:
+    # STATE FUNCTIONS:
 
     def before_get_data(self, entry):
         self._current_blocknum, self._current_data = (
             self._disks[self._disk_UUID]["cache"].next_block()
         )
         if self._current_data is not None:
-            #got data stored in cache, no need for hard rebuild
+            # got data stored in cache, no need for hard rebuild
             # ==> This is an epsilon_path
             return True
         else:
-            #need to retreive data from XOR of all the disks besides the current
-            #in order to rebuild it
+            # need to retreive data from XOR of all the disks besides the current
+            # in order to rebuild it
             request_info = {}
             for disk_UUID in self._disks.keys():
                 if disk_UUID != self._disk_UUID:
@@ -146,7 +147,7 @@ class ConnectService(base_service.BaseService):
                 )
             )
             entry.state = constants.SLEEPING_STATE
-            return False     #need input, not an epsilon path
+            return False  # need input, not an epsilon path
 
     def after_get_data(self, entry):
         # first check if the data has come from the cache
@@ -162,24 +163,24 @@ class ConnectService(base_service.BaseService):
                 "Block Device Server sent a bad status code"
             )
 
-        #data not saved in cache, need to xor all the blocks
+        # data not saved in cache, need to xor all the blocks
         blocks = []
         for disk_num, response in self._disk_manager.get_responses().items():
             blocks.append(response["content"])
 
-        #check if finished scratch mode for cache
+        # check if finished scratch mode for cache
         if (
             (
-                self._disks[self._disk_UUID]["cache"].mode
-                == cache.Cache.SCRATCH_MODE
+                self._disks[self._disk_UUID]["cache"].mode ==
+                cache.Cache.SCRATCH_MODE
             ) and disk_util.all_empty(blocks)
         ):
-            #all the blocks we got are empty, change to cache mode
+            # all the blocks we got are empty, change to cache mode
             self._disks[self._disk_UUID]["cache"].mode = (
                 cache.Cache.CACHE_MODE
             )
-            #nothing to set now, we stay in GET_DATA_STATE and start working
-            #from cache
+            # nothing to set now, we stay in GET_DATA_STATE and start working
+            # from cache
             return ConnectService.GET_DATA_STATE
         else:
             self._current_data = disk_util.compute_missing_block(
@@ -195,15 +196,15 @@ class ConnectService(base_service.BaseService):
             service_util.create_set_block_contexts(
                 self._disks,
                 {
-                    self._disk_UUID : {
-                        "blocknum" : self._current_blocknum,
-                        "content" : self._current_data
+                    self._disk_UUID: {
+                        "blocknum": self._current_blocknum,
+                        "content": self._current_data
                     }
                 }
             )
         )
         entry.state = constants.SLEEPING_STATE
-        return False     #need input, not an epsilon path
+        return False  # need input, not an epsilon path
 
     def after_set_data(self, entry):
         if not self._disk_manager.check_if_finished():
@@ -217,7 +218,6 @@ class ConnectService(base_service.BaseService):
             return ConnectService.UPDATE_LEVEL_STATE
         return ConnectService.GET_DATA_STATE
 
-
     def before_update_level(self, entry):
         self._disk_manager = disk_manager.DiskManager(
             self._disks,
@@ -225,11 +225,11 @@ class ConnectService(base_service.BaseService):
             entry,
             service_util.create_update_level_contexts(
                 self._disks,
-                { self._disk_UUID : "1"}
+                {self._disk_UUID: "1"}
             )
         )
         entry.state = constants.SLEEPING_STATE
-        return False     #need input, not an epsilon path
+        return False  # need input, not an epsilon path
 
     def after_update_level(self, entry):
         if not self._disk_manager.check_if_finished():
@@ -270,32 +270,32 @@ class ConnectService(base_service.BaseService):
     ]
 
     def before_terminate(self, entry):
-        #create the state machine for rebuilding disk
+        # create the state machine for rebuilding disk
         first_state_index = ConnectService.GET_DATA_STATE
         if self._new_disk_mode:
             first_state_index = ConnectService.NEW_DISK_SETUP_STATE
         elif self.check_if_built():
             first_state_index = ConnectService.UPDATE_LEVEL_STATE
 
-        #create rebuild state machine
+        # create rebuild state machine
         self._state_machine = state_machine.StateMachine(
             ConnectService.STATES,
             ConnectService.STATES[first_state_index],
             ConnectService.STATES[ConnectService.FINAL_STATE]
         )
-        #pass args to the machine, will use *args to pass them on
+        # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
     def on_finish(self, entry):
-        #pass args to the machine, will use *args to pass them on
+        # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
-    #checks if self._disk_UUID is built
+    # checks if self._disk_UUID is built
     def check_if_built(self):
-        #check if already connected, no need to rebuild, or cache is empty
+        # check if already connected, no need to rebuild, or cache is empty
         if (
-            self._disks[self._disk_UUID]["state"] == constants.REBUILD
-            and not self._disks[self._disk_UUID]["cache"].is_empty()
+            self._disks[self._disk_UUID]["state"] == constants.REBUILD and
+            not self._disks[self._disk_UUID]["cache"].is_empty()
         ):
             return False
         return True
