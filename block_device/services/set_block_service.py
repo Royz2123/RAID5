@@ -9,14 +9,22 @@ from common.services import base_service
 from common.utilities import constants
 from common.utilities import util
 
-
+## A Block Device Service that allows the Frontend Server to set a block
+#
 class SetBlockService(base_service.BaseService):
-    BLOCK_SIZE = 4096
 
+    ## Constructor for GetBlockService
+    # @param entry (pollable) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param pollables (dict) All the pollables currently in the server
+    # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, [], ["block_num"], args)
+        super(SetBlockService, self).__init__(self, [], ["block_num"], args)
+
+        ## Content of block recieved
         self._content = ""
         try:
+            ## File descriptor os disk file
             self._fd = os.open(
                 entry.application_context["disk_name"],
                 os.O_RDWR,
@@ -26,10 +34,19 @@ class SetBlockService(base_service.BaseService):
             self._fd = None
             raise e
 
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/setblock"
 
+
+    ## What the service does before recieving the content
+    # function prepares the file descriptor for writing in correct place
+    # @param entry (pollable) the entry that the service is assigned to
+    # @returns (bool) if finished and ready to move on
     def before_content(self, entry):
         if self._fd is None:
             return True
@@ -56,6 +73,10 @@ class SetBlockService(base_service.BaseService):
             self._response_status = 500
         return True
 
+    ## Handle the content that entry socket has recieved
+    # write to disk file with file desciptor
+    # @param entry (pollable) the entry that the service is assigned to
+    # @param content (str) content recieved from the frontend
     def handle_content(self, entry, content):
         self._content += content
         try:
@@ -68,5 +89,7 @@ class SetBlockService(base_service.BaseService):
             self._response_status = 500
         return True
 
+    ## What the service needs to do before terminating
+    # closes the disk file descriptor
     def before_terminate(self, entry):
         os.close(self._fd)

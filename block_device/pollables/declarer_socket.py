@@ -60,12 +60,12 @@ class DeclarerSocket(pollable.Pollable):
         )
 
     ## Specifies what events the socket listens to
-    # required from @ref common.pollables.pollable
+    # required by @ref common.pollables.pollable.Pollable
     def get_events(self):
         return constants.POLLERR
 
     ## When DeclarerSocket is terminating
-    # required from @ref common.pollables.pollable
+    # required by @ref common.pollables.pollable.Pollable
     # will not terminate as long as server is running
     def is_terminating(self):
         return False

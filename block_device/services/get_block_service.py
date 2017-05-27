@@ -9,13 +9,19 @@ from common.services import base_service
 from common.utilities import constants
 from common.utilities import util
 
-
+## A Block Device Service that allows the Frontend Server to request a block
+#
 class GetBlockService(base_service.BaseService):
-    BLOCK_SIZE = 4096
 
+    ## Constructor for GetBlockService
+    # @param entry (pollable) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param pollables (dict) All the pollables currently in the server
+    # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, [], ["block_num"], args)
+        super(GetBlockService, self).__init__(self, [], ["block_num"], args)
         try:
+            ## File descriptor of disk file
             self._fd = os.open(
                 entry.application_context["disk_name"],
                 os.O_RDWR,
@@ -25,10 +31,20 @@ class GetBlockService(base_service.BaseService):
             self._fd = None
             raise e
 
+
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/getblock"
 
+    ## What the service does before sending a response status
+    # see @ref common.services.base_service.BaseService
+    # function reads the block requested from the disk file
+    # @param entry (pollable) the entry that the service is assigned to
+    # @returns (bool) if finished and ready to move on
     def before_response_status(self, entry):
         try:
             if not self.check_args():
@@ -57,5 +73,8 @@ class GetBlockService(base_service.BaseService):
 
         return True
 
+    ## What the service needs to do before terminating
+    # see @ref common.services.base_service.BaseService
+    # closes the disk file descriptor
     def before_terminate(self, entry):
         os.close(self._fd)

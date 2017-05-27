@@ -10,16 +10,34 @@ from common.utilities import config_util
 from common.utilities import constants
 from common.utilities import util
 
-
+## A Block Device Service that allows the Frontend to supply it with a
+## long_password for later communication
 class LoginService(base_service.BaseService):
+
+    ## Constructor for LoginService
+    # @param entry (entry) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param pollables (dict) All the pollables currently in the server
+    # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, [], ["add"], args)
+        super(LoginService, self).__init__(self, [], ["add"], args)
+
+        ## the password recieved from the frontend
         self._password_content = ""
 
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/login"
 
+
+    ## Handle the content that entry socket has recieved
+    # extract the password and volume_UUID from frontend request
+    # @param entry (pollable) the entry that the service is assigned to
+    # @param content (str) content recieved from the frontend
     def handle_content(self, entry, content):
         self._password_content += content
 
@@ -56,9 +74,13 @@ class LoginService(base_service.BaseService):
         entry.application_context["server_info"]["volume_UUID"] = (
             volume_UUID
         )
-        print entry.application_context["authentication"]["long_password"]
 
+    ## What the service does before sending a response status
+    # function reads the block requested from the disk file
+    # @param entry (pollable) the entry that the service is assigned to
+    # @returns (bool) if finished and ready to move on
     def before_response_status(self, entry):
         self._response_headers = {
             "Content-Length": 0
         }
+        return True
