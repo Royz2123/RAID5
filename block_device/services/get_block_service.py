@@ -32,8 +32,6 @@ class GetBlockService(base_service.BaseService):
     def before_response_status(self, entry):
         try:
             if not self.check_args():
-                print "ARGS:" + str(self._args)
-                print "WANTED ARGS:" + str(self._wanted_args)
                 raise RuntimeError("Invalid args")
 
             os.lseek(

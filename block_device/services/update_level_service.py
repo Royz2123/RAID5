@@ -28,6 +28,12 @@ class UpdateLevelService(base_service.BaseService):
         return "/increment"
 
     def before_response_status(self, entry):
+        #if not util.check_login(entry):
+        #    # login was unsucsessful, notify the user agent
+        #    self._response_status = 401
+        #    return
+
+        # Authorization was successful
         # read entire disk info
         disk_info = util.read(self._fd, constants.MAX_INFO_SIZE).split(
             constants.CRLF_BIN

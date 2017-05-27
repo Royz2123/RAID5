@@ -213,10 +213,7 @@ class AsyncServer(object):
 
     def close_needed(self):
         for fd, entry in self._pollables.items()[:]:
-            if (
-                entry.is_closing() and
-                entry.data_to_send == ""
-            ):
+            if entry.is_terminating():
                 entry.on_close()
                 # if socket still doesn't want to close before terminate
                 # then add it callables list to be closed when wanted
@@ -225,7 +222,7 @@ class AsyncServer(object):
 
         for closed_socket in self._callables:
             # check if finally ready to terminate
-            if entry.is_closing():
+            if entry.is_terminating():
                 del closed_socket
 
     def close_all(self):

@@ -20,7 +20,6 @@ POLL_TYPE = {
     "select": poller.Select
 }
 
-
 def parse_args():
     """Parse program argument."""
 

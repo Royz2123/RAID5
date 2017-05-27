@@ -13,28 +13,40 @@ from common.utilities import constants
 from common.utilities import util
 
 
-# A simple UDP socket that broadcasts it's "name" when on_idle
-# The "name" is a list of information regarding the block device
-
+## A Block Device Socket that declares the server using UDP Multicast to other
+## Frontend Servers to recognize
+#
 class DeclarerSocket(pollable.Pollable):
-    def __init__(self, socket, application_context):
-        self._application_context = application_context
-        self._socket = socket
-        self._fd = socket.fileno()
-        self._recvd_data = ""
-        self._data_to_send = ""
 
+    ## Constructor for DeclareSocket
+    # @param socket (socket) async socket we work with
+    # @param application_context (dict) the application_context for the block device
+    #
+    def __init__(self, socket, application_context):
+        ## Application_context
+        self._application_context = application_context
+
+        ## Socket to work with
+        self._socket = socket
+
+        ## File descriptor of socket
+        self._fd = socket.fileno()
+
+        ## Mulricast group address
         self._group_address = (
             str(self._application_context["multicast_group"]["address"]),
             int(self._application_context["multicast_group"]["port"])
         )
 
+    ## Function that specifies what socket is to do when system is on_idle
+    # declares itself using multicast
     def on_idle(self):
         self._socket.sendto(
             self.create_content(),
             self._group_address,
         )
 
+    ## Creates the decleration content
     def create_content(self):
         return (
             "%s%s%s%s%s%s" % (
@@ -47,49 +59,34 @@ class DeclarerSocket(pollable.Pollable):
             )
         )
 
+    ## Specifies what events the socket listens to
+    # required from @ref common.pollables.pollable
     def get_events(self):
         return constants.POLLERR
 
-    def is_closing(self):
+    ## When DeclarerSocket is terminating
+    # required from @ref common.pollables.pollable
+    # will not terminate as long as server is running
+    def is_terminating(self):
         return False
 
-    @property
-    def application_context(self):
-        return self._application_context
+    ## What DeclarerSocket does on close
+    # required from @ref common.pollables.pollable
+    # will not close as long as server is running
+    def on_close(self):
+        self._socket.close()
 
-    @application_context.setter
-    def application_context(self, a):
-        self._application_context = a
-
-    @property
-    def recvd_data(self):
-        return self._recvd_data
-
-    @recvd_data.setter
-    def recvd_data(self, r):
-        self._recvd_data = r
-
-    @property
-    def data_to_send(self):
-        return self._data_to_send
-
-    @data_to_send.setter
-    def data_to_send(self, d):
-        self._data_to_send = d
-
+    ## Socket property
     @property
     def socket(self):
         return self._socket
 
+    ## File descriptor property
     @property
     def fd(self):
         return self._fd
 
-    def on_error(self, e):
-        self._state = constants.CLOSING_STATE
-
-    def on_close(self):
-        self._socket.close()
-
+    ## representatin of DeclarerSocket Object
+    # @returns (str) representation
     def __repr__(self):
         return ("DeclarerSocket Object: %s\t\t\t" % self._fd)

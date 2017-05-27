@@ -1,0 +1,85 @@
+A final project for the Gvahim program. This project offers a system that can store your data on multiple servers, and back them up based on the R\+A\+I\+D5 protocol (Redundant Array of Independent Disks). The system lets you manage your servers, and works perfectly even with one faulty block device.
+
+\subsection*{Getting Started}
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
+\subsubsection*{Prerequisites}
+
+Here are the things you will need to download in order to get this system up and running\+:
+
+
+\begin{DoxyCode}
+1) Download and install Python2.7
+2) Download this repository on your machine (Windows coming soon)
+3) Download and install any modern browser
+\end{DoxyCode}
+
+
+\paragraph*{Browser Issues}
+
+Chrome\+: By default, chrome doesn\textquotesingle{}t save form data upon refresh. Therefore on \char`\"{}\+Manage Disks\char`\"{}, the refresh time might not be sufficient for user purposes. Looking into solutions.
+
+Firefox\+: Firefox currently disables basic authentication so could be problematical and will need to add this option manually. This can be done in the about\+:config section of firefox. Looking into better solutions
+
+\subsubsection*{Execution}
+
+Running the servers can be done as follows\+:
+
+W\+I\+N\+D\+O\+WS \& L\+I\+N\+UX A\+L\+I\+KE\+:
+
+Reach parent directory (R\+A\+I\+D5) 
+\begin{DoxyCode}
+cd [location of RAID5]
+\end{DoxyCode}
+ Running Frontend Server\+: 
+\begin{DoxyCode}
+python -m frontend [args]
+\end{DoxyCode}
+ Running Block Device Server\+: 
+\begin{DoxyCode}
+python -m block\_device [args]
+\end{DoxyCode}
+
+
+Testing the servers can be done from any browser. Basic Authentication is required with common\+\_\+user and common\+\_\+password specified in frontend/config.\+ini.
+
+\subsubsection*{Arguments}
+
+In both the Frontend and the Block Devices, the configuration file needs to be specified as args. The Block Devices also require a bind port as shown below\+: 
+\begin{DoxyCode}
+python -m frontend --config-file frontend/config.ini
+python -m block\_device --config-file block\_device/disks/config0.ini --bind-port 8090
+python -m block\_device --config-file block\_device/disks/config1.ini --bind-port 8091
+\end{DoxyCode}
+ Note\+: All other Arguments are optional, see --help for help
+
+Note\+: Default configuration files are provided in this repository. The configuration files can be created from scratch (new U\+U\+I\+Ds and such) by a python script from the parent directory (R\+A\+I\+D5)\+: 
+\begin{DoxyCode}
+python config\_disks.py <NUM\_OF\_BLOCK\_DEVICES>
+\end{DoxyCode}
+ Note\+: U\+U\+ID\textquotesingle{}s can be changed manually from the configuration files
+
+\subsubsection*{Testing}
+
+Another python test script from the parent directory (R\+A\+I\+D5), has also been provided, that writes to the first disk (disk0) a long sequence of numbers, for testing purposes\+: 
+\begin{DoxyCode}
+python test.py
+\end{DoxyCode}
+
+
+\subsection*{Authors}
+
+
+\begin{DoxyItemize}
+\item {\bfseries Roy Zohar} -\/ {\itshape Initial work} -\/ \href{https://github.com/Royz2123}{\tt My Profile}
+\end{DoxyItemize}
+
+See also the list of \href{https://github.com/Royz2123/RAID5/contributors}{\tt contributors} who participated in this project.
+
+\subsection*{Acknowledgments}
+
+
+\begin{DoxyItemize}
+\item A huge thanks to Alon and Sarit for all the support 
+\end{DoxyItemize}

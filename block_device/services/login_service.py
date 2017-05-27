@@ -56,6 +56,7 @@ class LoginService(base_service.BaseService):
         entry.application_context["server_info"]["volume_UUID"] = (
             volume_UUID
         )
+        print entry.application_context["authentication"]["long_password"]
 
     def before_response_status(self, entry):
         self._response_headers = {

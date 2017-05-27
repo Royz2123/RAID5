@@ -2,7 +2,9 @@
 import base64
 import errno
 import os
+import random
 import socket
+import string
 import time
 import uuid
 
@@ -18,14 +20,10 @@ except ImportError:
     urlparse = urllib.parse
 
 # generates a multipurpose UUID as a string
-
-
 def generate_uuid():
     return str(uuid.uuid4())
 
 # generates a long password for communication with block device server
-
-
 def generate_password():
     return ''.join(
         [
@@ -36,8 +34,6 @@ def generate_password():
 
 # checks the Basic Authentication of an entry, returns if there has been a
 # successful_login
-
-
 def check_login(entry):
     successful_login = False
     if "Authorization" in entry.request_context["headers"].keys():
@@ -54,27 +50,20 @@ def check_login(entry):
     return successful_login
 
 # decodes the convention of Basic Authentication using base64
-
-
 def decode_authorization(auth_content):
     return tuple(base64.b64decode(auth_content).split(':', 1))
 
 # encodes the convention of Basic Authentication using base64
-
-
 def encode_authorization(username, password):
     return base64.b64encode("%s:%s" % (username, password))
 
 # returns a dict of only the initialized volumes
-
-
 def initialized_volumes(volumes):
     init_volumes = {}
     for volume_UUID, volume in volumes.items():
         if volume["volume_state"] == constants.INITIALIZED:
             init_volumes[volume_UUID] = volume
     return init_volumes
-
 
 def get_disk_UUID_by_num(disks, disk_num):
     for disk_UUID, disk in disks.items():
@@ -83,8 +72,6 @@ def get_disk_UUID_by_num(disks, disk_num):
     raise RuntimeError("Disk not found by disk num")
 
 # recieves a dict of disks and seperates into two: onlines and offlines
-
-
 def sort_disks(disks):
     online_disks, offline_disks = {}, {}
     for disk_UUID, disk in disks.items():

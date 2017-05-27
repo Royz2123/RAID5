@@ -37,28 +37,25 @@ class Select():
                 wlist.append(fd)
 
         # asynchronously recv which fd's need handling
-        # timeout needs to be in seconds for select
+        # As opposed to poll timeout, select timeout needs to be in seconds
         r, w, x = select.select(rlist, wlist, xlist, float(timeout)/1000)
 
         # arrange format to fit AsyncServer
         # loop through the set of file descriptors
-        poll_dict = {}
+        event_lst = []
         for ready_fd in set(r + w + x):
             # start be setting the fileno to no events
-            poll_dict[ready_fd] = 0
+            event = 0
 
             # update events recvd from select
             if ready_fd in r:
-                poll_dict[ready_fd] |= constants.POLLIN
-                print "1"
+                event |= constants.POLLIN
             if ready_fd in w:
-                poll_dict[ready_fd] |= constants.POLLOUT
-                print "2"
+                event |= constants.POLLOUT
             if ready_fd in x:
-                poll_dict[ready_fd] |= constants.POLLERR
-                print '3'
+                event |= constants.POLLERR
 
-            print ready_fd, poll_dict[ready_fd]
+            event_lst.append((ready_fd, event))
         # returns a list of tuples (fd, events)
-        print poll_dict
-        return poll_dict.items()
+        print event_lst
+        return event_lst

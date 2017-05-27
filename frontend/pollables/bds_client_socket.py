@@ -49,8 +49,11 @@ class BDSClientSocket(pollable.Pollable):
         self._service.response_content = client_context["content"]
         self._parent = parent
 
-    def is_closing(self):
-        return self._state == constants.CLOSING_STATE
+    def is_terminating(self):
+        return (
+            self._state == constants.CLOSING_STATE
+            and self._data_to_send == ""
+        )
 
     @property
     def state(self):

@@ -35,6 +35,10 @@ class ListenerSocket(pollable.Pollable):
     def state(self):
         return self._state
 
+    @property
+    def data_to_send(self):
+        return self._data_to_send
+
     @state.setter
     def state(self, s):
         self._state = s
@@ -61,8 +65,9 @@ class ListenerSocket(pollable.Pollable):
                 new_http_socket
             )
         )
+        print "ADDING SOCKET: " + str(new_socket.fileno())
 
-    def is_closing(self):
+    def is_terminating(self):
         return self._state == constants.CLOSING_STATE
 
     def on_close(self):

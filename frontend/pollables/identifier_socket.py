@@ -71,7 +71,7 @@ class IdentifierSocket(pollable.Pollable):
     def get_events(self):
         return constants.POLLERR | constants.POLLIN
 
-    def is_closing(self):
+    def is_terminating(self):
         return False
 
     @property

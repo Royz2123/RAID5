@@ -16,5 +16,5 @@ class Pollable(object):
     def get_events(self):
         pass
 
-    def is_closing(self):
+    def is_terminating(self):
         return False

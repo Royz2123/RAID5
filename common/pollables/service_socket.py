@@ -106,8 +106,12 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
         self._service.before_terminate(self)
         self._socket.close()
 
-    def is_closing(self):
-        return self._state == constants.CLOSING_STATE
+    def is_terminating(self):
+        # check if ready to terminate
+        return (
+            self._state == constants.CLOSING_STATE
+            and self._data_to_send == ""
+        )
 
     states = {
         constants.GET_REQUEST_STATE: {

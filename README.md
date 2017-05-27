@@ -55,7 +55,7 @@ python -m block_device --config-file block_device/disks/config1.ini --bind-port 
 ```
 Note: All other Arguments are optional, see --help for help
 
-Note: The configuration files can be created from scratch by a python script from the parent directory (RAID5):
+Note: Default configuration files are provided in this repository. The configuration files can be created from scratch (new UUIDs and such) by a python script from the parent directory (RAID5):
 ```
 python config_disks.py <NUM_OF_BLOCK_DEVICES>
 ```
