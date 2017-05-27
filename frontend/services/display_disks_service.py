@@ -23,7 +23,7 @@ class DisplayDisksService(base_service.BaseService):
         return "/display_disks"
 
     def before_response_status(self, entry):
-        if not util.check_login(entry):
+        if not util.check_user_login(entry):
             # login was unsucsessful, notify the user agent
             self._response_status = 401
 

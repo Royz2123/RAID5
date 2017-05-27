@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['on_5fclose',['on_close',['../class_r_a_i_d5_1_1block__device_1_1pollables_1_1declarer__socket_1_1_declarer_socket.html#ade8b017d1d5495b3389205af00303067',1,'RAID5::block_device::pollables::declarer_socket::DeclarerSocket']]],
-  ['on_5fidle',['on_idle',['../class_r_a_i_d5_1_1block__device_1_1pollables_1_1declarer__socket_1_1_declarer_socket.html#a379743c1568dc3f74d2b449ddabfbf58',1,'RAID5::block_device::pollables::declarer_socket::DeclarerSocket']]]
+  ['handle_5fcontent',['handle_content',['../class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service.html#a0dbcb210b5b1bbd67a0321b86c21824f',1,'RAID5.block_device.services.login_service.LoginService.handle_content()'],['../class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service.html#ac79d1b55a4e34943fa1e4f9514d9891d',1,'RAID5.block_device.services.set_block_service.SetBlockService.handle_content()']]]
 ];

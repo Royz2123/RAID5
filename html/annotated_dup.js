@@ -1,10 +1,5 @@
 var annotated_dup =
 [
-    [ "client", null, [
-      [ "set_block", null, [
-        [ "StartPage", "classclient_1_1set__block_1_1_start_page.html", "classclient_1_1set__block_1_1_start_page" ]
-      ] ]
-    ] ],
     [ "RAID5", null, [
       [ "block_device", null, [
         [ "pollables", null, [

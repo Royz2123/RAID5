@@ -122,7 +122,7 @@ class AsyncServer(object):
             self.add_declarer()
         elif (
             self._application_context["server_type"] ==
-            constants.frontend
+            constants.FRONTEND_SERVER
         ):
             # need to constantly identify new connections
             self.add_identifier()

@@ -23,7 +23,12 @@ class UpdateLevelService(base_service.BaseService):
     # @param pollables (dict) All the pollables currently in the server
     # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        super(UpdateLevelService, self).__init__(self, [], ["add"], args)
+        super(UpdateLevelService, self).__init__(
+            ["Authorization"],
+            ["add"],
+            args
+        )
+
         try:
             # File desciptore of the disk_info file
             self._fd = os.open(
@@ -49,10 +54,14 @@ class UpdateLevelService(base_service.BaseService):
     # @param entry (pollable) the entry that the service is assigned to
     # @returns (bool) if finished and ready to move on
     def before_response_status(self, entry):
-        #if not util.check_login(entry):
-        #    # login was unsucsessful, notify the user agent
-        #    self._response_status = 401
-        #    return
+        if not util.check_frontend_login(entry):
+            #login was unsucsessful, notify the user agent
+            self._response_status = 401
+            logging.debug("%s:\tIncorrect Long password (%s)" % (
+                entry,
+                self._response_status
+            ))
+            return
 
         # Authorization was successful
         # read entire disk info

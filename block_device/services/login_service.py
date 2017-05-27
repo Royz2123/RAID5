@@ -20,7 +20,7 @@ class LoginService(base_service.BaseService):
     # @param pollables (dict) All the pollables currently in the server
     # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        super(LoginService, self).__init__(self, [], ["add"], args)
+        super(LoginService, self).__init__([], ["add"], args)
 
         ## the password recieved from the frontend
         self._password_content = ""

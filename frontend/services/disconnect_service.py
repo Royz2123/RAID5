@@ -39,6 +39,7 @@ class DisconnectService(base_service.BaseService):
         self._disk_UUID = None
         self._volume_UUID = None
         self._disks = None
+        self._volume = None
 
         self._pollables = pollables
 
@@ -54,9 +55,8 @@ class DisconnectService(base_service.BaseService):
         self._volume_UUID = self._args["volume_UUID"][0]
 
         # extract the disks from the wanted volume
-        self._disks = entry.application_context[
-            "volumes"
-        ][self._volume_UUID]["disks"]
+        self._volume = entry.application_context["volumes"][self._volume_UUID]
+        self._disks = self._volume["disks"]
 
         # check if disk is already disconnected
         if self._disks[self._disk_UUID]["state"] != constants.ONLINE:
@@ -85,7 +85,11 @@ class DisconnectService(base_service.BaseService):
             service_util.create_update_level_contexts(
                 self._disks,
                 {
-                    disk_UUID: "1" for disk_UUID in self._disks.keys()
+                    disk_UUID: {
+                        "addition" : "1",
+                        "password" : self._volume["long_password"]
+                    }
+                    for disk_UUID in self._disks.keys()
                     if disk_UUID != self._disk_UUID
                 }
             ),

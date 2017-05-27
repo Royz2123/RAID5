@@ -53,6 +53,7 @@ class WriteToDiskService(
         self._current_phy_UUID = None
         self._current_phy_parity_UUID = None
         self._faulty_disk_UUID = None
+        self._volume = None
         self._disks = None
 
         self._disk_manager = None
@@ -63,7 +64,7 @@ class WriteToDiskService(
 
     def before_content(self, entry):
         # first check login
-        if not util.check_login(entry):
+        if not util.check_user_login(entry):
             # login was unsucsessful, notify the user agent
             self._response_status = 401
             self._response_headers["WWW-Authenticate"] = "Basic realm='myRealm'"
@@ -95,11 +96,12 @@ class WriteToDiskService(
                 raise RuntimeError("%s:\t Need to initialize volume" % (
                     entry,
                 ))
-            else:
-                # if got volume_UUID well, save volume
-                self._disks = self._entry.application_context["volumes"][
-                    self._volume_UUID
-                ]["disks"]
+
+            # if got volume_UUID well, save volume
+            self._volume = entry.application_context["volumes"][
+                self._volume_UUID
+            ]
+            self._disks = self._volume["disks"]
 
         # check validity of disk_UUID (if finished getting)
         if next_state and self._arg_name == "disk_UUID":
@@ -251,18 +253,25 @@ class WriteToDiskService(
         return service_util.create_get_block_contexts(
             self._disks,
             {
-                disk_UUID: self._current_block
+                disk_UUID: {
+                    "block_num" : self._current_block,
+                    "password" : self._volume["long_password"],
+                }
                 for disk_UUID in self._disks.keys()
                 if disk_UUID != self._faulty_disk_UUID
             }
         )
 
     def contexts_for_regular_get_block(self):
+        context = {
+            "block_num" : self._current_block,
+            "password" : self._volume["long_password"]
+        }
         return service_util.create_get_block_contexts(
             self._disks,
             {
-                self._current_phy_UUID: self._current_block,
-                self._current_phy_parity_UUID: self._current_block
+                self._current_phy_UUID: context,
+                self._current_phy_parity_UUID: context
             }
         )
 
@@ -373,6 +382,7 @@ class WriteToDiskService(
             else:
                 request_info[disk_UUID] = {
                     "block_num": self._current_block,
+                    "password": self._volume["long_password"],
                     "content": content
                 }
         return request_info

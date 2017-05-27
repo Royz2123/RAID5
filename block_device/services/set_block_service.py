@@ -19,7 +19,11 @@ class SetBlockService(base_service.BaseService):
     # @param pollables (dict) All the pollables currently in the server
     # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        super(SetBlockService, self).__init__(self, [], ["block_num"], args)
+        super(SetBlockService, self).__init__(
+            ["Authorization"],
+            ["block_num"],
+            args
+        )
 
         ## Content of block recieved
         self._content = ""
@@ -48,6 +52,16 @@ class SetBlockService(base_service.BaseService):
     # @param entry (pollable) the entry that the service is assigned to
     # @returns (bool) if finished and ready to move on
     def before_content(self, entry):
+        if not util.check_frontend_login(entry):
+            # login was unsucsessful, notify the user agent
+            self._response_status = 401
+            logging.debug("%s:\tIncorrect Long password (%s)" % (
+                entry,
+                self._response_status
+            ))
+            return True
+
+        # login was successful
         if self._fd is None:
             return True
 
@@ -78,15 +92,16 @@ class SetBlockService(base_service.BaseService):
     # @param entry (pollable) the entry that the service is assigned to
     # @param content (str) content recieved from the frontend
     def handle_content(self, entry, content):
-        self._content += content
-        try:
-            while self._content:
-                self._content = self._content[
-                    os.write(self._fd, self._content):
-                ]
-        except Exception as e:
-            logging.error("%s :\t %s " % (entry, e))
-            self._response_status = 500
+        if self._response_status == 200:
+            self._content += content
+            try:
+                while self._content:
+                    self._content = self._content[
+                        os.write(self._fd, self._content):
+                    ]
+            except Exception as e:
+                logging.error("%s :\t %s " % (entry, e))
+                self._response_status = 500
         return True
 
     ## What the service needs to do before terminating

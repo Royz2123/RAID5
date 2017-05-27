@@ -40,7 +40,6 @@ class StateMachine(object):
     # we assume that all the functions called by the machine will use the same
     # args, in order to reduce compexity
     def run_machine(self, args):
-        print "yo"
         while True:
             # returns True if the machine has finished running
             if self._current_state == self._final_state:

@@ -19,7 +19,11 @@ class GetBlockService(base_service.BaseService):
     # @param pollables (dict) All the pollables currently in the server
     # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        super(GetBlockService, self).__init__(self, [], ["block_num"], args)
+        super(GetBlockService, self).__init__(
+            ["Authorization"],
+            ["block_num"],
+            args
+        )
         try:
             ## File descriptor of disk file
             self._fd = os.open(
@@ -46,6 +50,16 @@ class GetBlockService(base_service.BaseService):
     # @param entry (pollable) the entry that the service is assigned to
     # @returns (bool) if finished and ready to move on
     def before_response_status(self, entry):
+        if not util.check_frontend_login(entry):
+            #login was unsucsessful, notify the user agent
+            self._response_status = 401
+            logging.debug("%s:\tIncorrect Long password (%s)" % (
+                entry,
+                self._response_status
+            ))
+            return
+
+        # login was successful
         try:
             if not self.check_args():
                 raise RuntimeError("Invalid args")
@@ -53,7 +67,7 @@ class GetBlockService(base_service.BaseService):
             os.lseek(
                 self._fd,
                 (
-                    GetBlockService.BLOCK_SIZE *
+                    constants.BLOCK_SIZE *
                     int(self._args["block_num"][0])
                 ),
                 os.SEEK_SET,

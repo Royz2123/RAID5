@@ -82,12 +82,14 @@ $(document).ready(function(){initNavTree('class_r_a_i_d5_1_1block__device_1_1ser
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">RAID5.block_device.services.set_block_service.SetBlockService Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A Block Device Service that allows the Frontend Server to set a block.  
+ <a href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for RAID5.block_device.services.set_block_service.SetBlockService:</div>
 <div class="dyncontent">
@@ -99,31 +101,188 @@ Inheritance diagram for RAID5.block_device.services.set_block_service.SetBlockSe
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a591d47df0e924696ac23450906f5ddf2"><td class="memItemLeft" align="right" valign="top"><a id="a591d47df0e924696ac23450906f5ddf2"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self, entry, pollables, args)</td></tr>
+<tr class="memitem:a591d47df0e924696ac23450906f5ddf2"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service.html#a591d47df0e924696ac23450906f5ddf2">__init__</a> (self, entry, pollables, args)</td></tr>
+<tr class="memdesc:a591d47df0e924696ac23450906f5ddf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for GetBlockService.  <a href="#a591d47df0e924696ac23450906f5ddf2">More...</a><br /></td></tr>
 <tr class="separator:a591d47df0e924696ac23450906f5ddf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00766fb59a3f4118444ab9265cb9e9d2"><td class="memItemLeft" align="right" valign="top"><a id="a00766fb59a3f4118444ab9265cb9e9d2"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>before_content</b> (self, entry)</td></tr>
+<tr class="memitem:a00766fb59a3f4118444ab9265cb9e9d2"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service.html#a00766fb59a3f4118444ab9265cb9e9d2">before_content</a> (self, entry)</td></tr>
+<tr class="memdesc:a00766fb59a3f4118444ab9265cb9e9d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the service does before recieving the content function prepares the file descriptor for writing in correct place.  <a href="#a00766fb59a3f4118444ab9265cb9e9d2">More...</a><br /></td></tr>
 <tr class="separator:a00766fb59a3f4118444ab9265cb9e9d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac79d1b55a4e34943fa1e4f9514d9891d"><td class="memItemLeft" align="right" valign="top"><a id="ac79d1b55a4e34943fa1e4f9514d9891d"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>handle_content</b> (self, entry, content)</td></tr>
+<tr class="memitem:ac79d1b55a4e34943fa1e4f9514d9891d"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service.html#ac79d1b55a4e34943fa1e4f9514d9891d">handle_content</a> (self, entry, content)</td></tr>
+<tr class="memdesc:ac79d1b55a4e34943fa1e4f9514d9891d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the content that entry socket has recieved write to disk file with file desciptor.  <a href="#ac79d1b55a4e34943fa1e4f9514d9891d">More...</a><br /></td></tr>
 <tr class="separator:ac79d1b55a4e34943fa1e4f9514d9891d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af727ae5baf474b50749faaff9f6f7811"><td class="memItemLeft" align="right" valign="top"><a id="af727ae5baf474b50749faaff9f6f7811"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>before_terminate</b> (self, entry)</td></tr>
+def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service.html#af727ae5baf474b50749faaff9f6f7811">before_terminate</a> (self, entry)</td></tr>
+<tr class="memdesc:af727ae5baf474b50749faaff9f6f7811"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the service needs to do before terminating closes the disk file descriptor. <br /></td></tr>
 <tr class="separator:af727ae5baf474b50749faaff9f6f7811"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a8278d215309ac794164fa430a9727cc2"><td class="memItemLeft" align="right" valign="top"><a id="a8278d215309ac794164fa430a9727cc2"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>get_name</b> ()</td></tr>
+<tr class="memitem:a8278d215309ac794164fa430a9727cc2"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__block__service_1_1_set_block_service.html#a8278d215309ac794164fa430a9727cc2">get_name</a> ()</td></tr>
+<tr class="memdesc:a8278d215309ac794164fa430a9727cc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the service needed for Frontend purposes, creating clients required by <a class="el" href="class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service.html">common.services.base_service.BaseService</a>.  <a href="#a8278d215309ac794164fa430a9727cc2">More...</a><br /></td></tr>
 <tr class="separator:a8278d215309ac794164fa430a9727cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:a76542b83dd89294eb6bebd5b56b4eb91"><td class="memItemLeft" align="right" valign="top"><a id="a76542b83dd89294eb6bebd5b56b4eb91"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>BLOCK_SIZE</b> = 4096</td></tr>
-<tr class="separator:a76542b83dd89294eb6bebd5b56b4eb91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A Block Device Service that allows the Frontend Server to set a block. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a591d47df0e924696ac23450906f5ddf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a591d47df0e924696ac23450906f5ddf2">&#9670;&nbsp;</a></span>__init__()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def RAID5.block_device.services.set_block_service.SetBlockService.__init__ </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>pollables</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for GetBlockService. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entry</td><td>(pollable) the entry (probably common.pollables.service_socket) using the service </td></tr>
+    <tr><td class="paramname">pollables</td><td>(dict) All the pollables currently in the server </td></tr>
+    <tr><td class="paramname">args</td><td>(dict) Arguments for this service </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a00766fb59a3f4118444ab9265cb9e9d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00766fb59a3f4118444ab9265cb9e9d2">&#9670;&nbsp;</a></span>before_content()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def RAID5.block_device.services.set_block_service.SetBlockService.before_content </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>What the service does before recieving the content function prepares the file descriptor for writing in correct place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entry</td><td>(pollable) the entry that the service is assigned to </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>(bool) if finished and ready to move on </dd></dl>
+
+</div>
+</div>
+<a id="a8278d215309ac794164fa430a9727cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8278d215309ac794164fa430a9727cc2">&#9670;&nbsp;</a></span>get_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">def RAID5.block_device.services.set_block_service.SetBlockService.get_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the service needed for Frontend purposes, creating clients required by <a class="el" href="class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service.html">common.services.base_service.BaseService</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>(str) service name </dd></dl>
+
+</div>
+</div>
+<a id="ac79d1b55a4e34943fa1e4f9514d9891d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac79d1b55a4e34943fa1e4f9514d9891d">&#9670;&nbsp;</a></span>handle_content()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def RAID5.block_device.services.set_block_service.SetBlockService.handle_content </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>content</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle the content that entry socket has recieved write to disk file with file desciptor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entry</td><td>(pollable) the entry that the service is assigned to </td></tr>
+    <tr><td class="paramname">content</td><td>(str) content recieved from the frontend </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>C:/cygwin64/tmp/RAID5/block_device/services/set_block_service.py</li>
 </ul>

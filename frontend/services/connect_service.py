@@ -35,6 +35,7 @@ class ConnectService(base_service.BaseService):
             ["disk_UUID", "volume_UUID"],
             args
         )
+        self._volume = None
         self._disks = None
         self._disk_UUID = None
         self._new_disk_mode = False
@@ -71,9 +72,8 @@ class ConnectService(base_service.BaseService):
                 entry,
             ))
 
-        self._disks = entry.application_context["volumes"][
-            self._volume_UUID
-        ]["disks"]
+        self._volume = entry.application_context["volumes"][self._volume_UUID]
+        self._disks = self._volume["disks"]
 
         # now check validity of disk_UUID
         if self._disk_UUID not in self._disks.keys():
@@ -134,7 +134,10 @@ class ConnectService(base_service.BaseService):
             request_info = {}
             for disk_UUID in self._disks.keys():
                 if disk_UUID != self._disk_UUID:
-                    request_info[disk_UUID] = self._current_block_num
+                    request_info[disk_UUID] = {
+                        "block_num" : self._current_block_num,
+                        "password" : self._volume["long_password"]
+                    }
 
             self._disk_manager = disk_manager.DiskManager(
                 self._disks,
@@ -197,7 +200,8 @@ class ConnectService(base_service.BaseService):
                 {
                     self._disk_UUID: {
                         "block_num": self._current_block_num,
-                        "content": self._current_data
+                        "content": self._current_data,
+                        "password" : self._volume["long_password"]
                     }
                 }
             )
@@ -224,7 +228,12 @@ class ConnectService(base_service.BaseService):
             entry,
             service_util.create_update_level_contexts(
                 self._disks,
-                {self._disk_UUID: "1"}
+                {
+                    self._disk_UUID: {
+                        "addition" : "1",
+                        "password" : self._volume["long_password"]
+                    }
+                }
             )
         )
         entry.state = constants.SLEEPING_STATE

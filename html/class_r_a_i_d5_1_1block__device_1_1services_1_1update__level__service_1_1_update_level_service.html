@@ -87,6 +87,9 @@ $(document).ready(function(){initNavTree('class_r_a_i_d5_1_1block__device_1_1ser
 <div class="title">RAID5.block_device.services.update_level_service.UpdateLevelService Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A Block Device Service that updates the level of the disk_info file Also known as generation id Created in order to simplify the handling of the disk info file, and to save unnecessary calls the block device services: <a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1get__disk__info__service_1_1_get_disk_info_service.html">block_device.services.get_disk_info_service.GetDiskInfoService</a> and <a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__disk__info__service_1_1_set_disk_info_service.html">block_device.services.set_disk_info_service.SetDiskInfoService</a>.  
+ <a href="class_r_a_i_d5_1_1block__device_1_1services_1_1update__level__service_1_1_update_level_service.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for RAID5.block_device.services.update_level_service.UpdateLevelService:</div>
 <div class="dyncontent">
@@ -98,22 +101,142 @@ Inheritance diagram for RAID5.block_device.services.update_level_service.UpdateL
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a09441a50f9cb4c0f0c84918430f60aec"><td class="memItemLeft" align="right" valign="top"><a id="a09441a50f9cb4c0f0c84918430f60aec"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self, entry, pollables, args)</td></tr>
+<tr class="memitem:a09441a50f9cb4c0f0c84918430f60aec"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1update__level__service_1_1_update_level_service.html#a09441a50f9cb4c0f0c84918430f60aec">__init__</a> (self, entry, pollables, args)</td></tr>
+<tr class="memdesc:a09441a50f9cb4c0f0c84918430f60aec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1update__level__service_1_1_update_level_service.html" title="A Block Device Service that updates the level of the disk_info file Also known as generation id Creat...">UpdateLevelService</a>.  <a href="#a09441a50f9cb4c0f0c84918430f60aec">More...</a><br /></td></tr>
 <tr class="separator:a09441a50f9cb4c0f0c84918430f60aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ce7ce675536e8bb3af37cc1755806a0"><td class="memItemLeft" align="right" valign="top"><a id="a6ce7ce675536e8bb3af37cc1755806a0"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>before_response_status</b> (self, entry)</td></tr>
+<tr class="memitem:a6ce7ce675536e8bb3af37cc1755806a0"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1update__level__service_1_1_update_level_service.html#a6ce7ce675536e8bb3af37cc1755806a0">before_response_status</a> (self, entry)</td></tr>
+<tr class="memdesc:a6ce7ce675536e8bb3af37cc1755806a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the service does before sending a response status see <a class="el" href="class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service.html">common.services.base_service.BaseService</a> function increments the level by the add arg specified.  <a href="#a6ce7ce675536e8bb3af37cc1755806a0">More...</a><br /></td></tr>
 <tr class="separator:a6ce7ce675536e8bb3af37cc1755806a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95df2438df37413be715f3b846e2a0ec"><td class="memItemLeft" align="right" valign="top"><a id="a95df2438df37413be715f3b846e2a0ec"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>before_terminate</b> (self, entry)</td></tr>
+def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1update__level__service_1_1_update_level_service.html#a95df2438df37413be715f3b846e2a0ec">before_terminate</a> (self, entry)</td></tr>
+<tr class="memdesc:a95df2438df37413be715f3b846e2a0ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the service needs to do before terminating see <a class="el" href="class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service.html">common.services.base_service.BaseService</a> closes the disk file descriptor. <br /></td></tr>
 <tr class="separator:a95df2438df37413be715f3b846e2a0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a3b15a64a007c7091c62be54243ddf44a"><td class="memItemLeft" align="right" valign="top"><a id="a3b15a64a007c7091c62be54243ddf44a"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>get_name</b> ()</td></tr>
+<tr class="memitem:a3b15a64a007c7091c62be54243ddf44a"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1update__level__service_1_1_update_level_service.html#a3b15a64a007c7091c62be54243ddf44a">get_name</a> ()</td></tr>
+<tr class="memdesc:a3b15a64a007c7091c62be54243ddf44a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the service needed for Frontend purposes, creating clients required by <a class="el" href="class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service.html">common.services.base_service.BaseService</a>.  <a href="#a3b15a64a007c7091c62be54243ddf44a">More...</a><br /></td></tr>
 <tr class="separator:a3b15a64a007c7091c62be54243ddf44a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A Block Device Service that updates the level of the disk_info file Also known as generation id Created in order to simplify the handling of the disk info file, and to save unnecessary calls the block device services: <a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1get__disk__info__service_1_1_get_disk_info_service.html">block_device.services.get_disk_info_service.GetDiskInfoService</a> and <a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1set__disk__info__service_1_1_set_disk_info_service.html">block_device.services.set_disk_info_service.SetDiskInfoService</a>. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a09441a50f9cb4c0f0c84918430f60aec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09441a50f9cb4c0f0c84918430f60aec">&#9670;&nbsp;</a></span>__init__()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def RAID5.block_device.services.update_level_service.UpdateLevelService.__init__ </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>pollables</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for <a class="el" href="class_r_a_i_d5_1_1block__device_1_1services_1_1update__level__service_1_1_update_level_service.html" title="A Block Device Service that updates the level of the disk_info file Also known as generation id Creat...">UpdateLevelService</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entry</td><td>(pollable) the entry (probably common.pollables.service_socket) using the service </td></tr>
+    <tr><td class="paramname">pollables</td><td>(dict) All the pollables currently in the server </td></tr>
+    <tr><td class="paramname">args</td><td>(dict) Arguments for this service </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6ce7ce675536e8bb3af37cc1755806a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ce7ce675536e8bb3af37cc1755806a0">&#9670;&nbsp;</a></span>before_response_status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def RAID5.block_device.services.update_level_service.UpdateLevelService.before_response_status </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>What the service does before sending a response status see <a class="el" href="class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service.html">common.services.base_service.BaseService</a> function increments the level by the add arg specified. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entry</td><td>(pollable) the entry that the service is assigned to </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>(bool) if finished and ready to move on </dd></dl>
+
+</div>
+</div>
+<a id="a3b15a64a007c7091c62be54243ddf44a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b15a64a007c7091c62be54243ddf44a">&#9670;&nbsp;</a></span>get_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">def RAID5.block_device.services.update_level_service.UpdateLevelService.get_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the service needed for Frontend purposes, creating clients required by <a class="el" href="class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service.html">common.services.base_service.BaseService</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>(str) service name </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>C:/cygwin64/tmp/RAID5/block_device/services/update_level_service.py</li>
 </ul>

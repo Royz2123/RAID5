@@ -98,7 +98,6 @@ class InitService(base_service.BaseService):
             volume_UUID = util.generate_uuid()
             long_password = util.generate_password()
 
-            print long_password
             # add volume to list of all volumes
             entry.application_context["volumes"][volume_UUID] = {
                 "volume_UUID": volume_UUID,

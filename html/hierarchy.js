@@ -56,6 +56,5 @@ var hierarchy =
       [ "RAID5.common.utilities.util.DiskRefused", "class_r_a_i_d5_1_1common_1_1utilities_1_1util_1_1_disk_refused.html", null ],
       [ "RAID5.common.utilities.util.InvalidArguments", "class_r_a_i_d5_1_1common_1_1utilities_1_1util_1_1_invalid_arguments.html", null ]
     ] ],
-    [ "RAID5.common.utilities.poller.Select", "class_r_a_i_d5_1_1common_1_1utilities_1_1poller_1_1_select.html", null ],
-    [ "client.set_block.StartPage", "classclient_1_1set__block_1_1_start_page.html", null ]
+    [ "RAID5.common.utilities.poller.Select", "class_r_a_i_d5_1_1common_1_1utilities_1_1poller_1_1_select.html", null ]
 ];

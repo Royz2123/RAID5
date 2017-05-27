@@ -45,6 +45,7 @@ class ReadFromDiskService(base_service.BaseService):
         self._current_phy_UUID = None
         self._disk_UUID = None
         self._volume_UUID = None
+        self._volume = None
         self._disks = None
 
         self._disk_manager = None
@@ -68,7 +69,12 @@ class ReadFromDiskService(base_service.BaseService):
                 entry,
                 service_util.create_get_block_contexts(
                     self._disks,
-                    {self._current_phy_UUID: self._current_block}
+                    {
+                        self._current_phy_UUID: {
+                            "block_num" : self._current_block,
+                            "password" : self._volume["long_password"]
+                        }
+                    }
                 ),
             )
         except util.DiskRefused as e:
@@ -90,7 +96,10 @@ class ReadFromDiskService(base_service.BaseService):
                 request_info = {}
                 for disk_UUID in self._disks.keys():
                     if disk_UUID != self._current_phy_UUID:
-                        request_info[disk_UUID] = self._current_block
+                        request_info[disk_UUID] = {
+                            "block_num" : self._current_block,
+                            "password" : self._volume["long_password"]
+                        }
 
                 self._disk_manager = disk_manager.DiskManager(
                     self._disks,
@@ -176,7 +185,7 @@ class ReadFromDiskService(base_service.BaseService):
 
     def before_response_status(self, entry):
         # first check login
-        if not util.check_login(entry):
+        if not util.check_user_login(entry):
             # login was unsucsessful, notify the user agent
             self._response_status = 401
             self._response_headers["WWW-Authenticate"] = "Basic realm='myRealm'"
@@ -200,9 +209,8 @@ class ReadFromDiskService(base_service.BaseService):
                 entry,
             ))
 
-        self._disks = entry.application_context["volumes"][
-            self._volume_UUID
-        ]["disks"]
+        self._volume = entry.application_context["volumes"][self._volume_UUID]
+        self._disks = self._volume["disks"]
 
         # now check validity of disk_UUID
         if self._disk_UUID not in self._disks.keys():

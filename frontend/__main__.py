@@ -119,7 +119,7 @@ def main():
         "poll_timeout": args.poll_timeout,
         "max_connections": args.max_connections,
         "max_buffer": args.max_buffer,
-        "server_type": constants.frontend,
+        "server_type": constants.FRONTEND_SERVER,
         "volumes": volumes,
         "available_disks": {},
         "multicast_group": config_sections["MulticastGroup"],

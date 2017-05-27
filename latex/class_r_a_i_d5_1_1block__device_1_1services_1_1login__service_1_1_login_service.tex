@@ -1,5 +1,10 @@
 \hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service}{}\section{R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service Class Reference}
 \label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service}\index{R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service@{R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service}}
+
+
+A Block Device Service that allows the Frontend to supply it with a long\+\_\+password for later communication.  
+
+
 Inheritance diagram for R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -9,21 +14,93 @@ Inheritance diagram for R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a3e9d974a2333ef0cb54874b65842ca53}\label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a3e9d974a2333ef0cb54874b65842ca53}} 
-def {\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, entry, pollables, args)
-\item 
-\mbox{\Hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a0dbcb210b5b1bbd67a0321b86c21824f}\label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a0dbcb210b5b1bbd67a0321b86c21824f}} 
-def {\bfseries handle\+\_\+content} (self, entry, content)
-\item 
-\mbox{\Hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_ad6279990022af1400907394ad4fb2fb4}\label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_ad6279990022af1400907394ad4fb2fb4}} 
-def {\bfseries before\+\_\+response\+\_\+status} (self, entry)
-\end{DoxyCompactItemize}
+def \hyperlink{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a3e9d974a2333ef0cb54874b65842ca53}{\+\_\+\+\_\+init\+\_\+\+\_\+} (self, entry, pollables, args)
+\begin{DoxyCompactList}\small\item\em Constructor for \hyperlink{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service}{Login\+Service}. \end{DoxyCompactList}\item 
+def \hyperlink{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a0dbcb210b5b1bbd67a0321b86c21824f}{handle\+\_\+content} (self, entry, content)
+\begin{DoxyCompactList}\small\item\em Handle the content that entry socket has recieved extract the password and volume\+\_\+\+U\+U\+ID from frontend request. \end{DoxyCompactList}\item 
+def \hyperlink{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_ad6279990022af1400907394ad4fb2fb4}{before\+\_\+response\+\_\+status} (self, entry)
+\begin{DoxyCompactList}\small\item\em What the service does before sending a response status function reads the block requested from the disk file. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Static Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
+def \hyperlink{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a8501e68a944ed20a107108801926b1be}{get\+\_\+name} ()
+\begin{DoxyCompactList}\small\item\em Name of the service needed for Frontend purposes, creating clients required by \hyperlink{class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service}{common.\+services.\+base\+\_\+service.\+Base\+Service}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A Block Device Service that allows the Frontend to supply it with a long\+\_\+password for later communication. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a3e9d974a2333ef0cb54874b65842ca53}\label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a3e9d974a2333ef0cb54874b65842ca53}} 
+\index{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}!\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}!R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}}
+\subsubsection{\texorpdfstring{\+\_\+\+\_\+init\+\_\+\+\_\+()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{entry,  }\item[{}]{pollables,  }\item[{}]{args }\end{DoxyParamCaption})}
+
+
+
+Constructor for \hyperlink{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service}{Login\+Service}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & (entry) the entry (probably common.\+pollables.\+service\+\_\+socket) using the service \\
+\hline
+{\em pollables} & (dict) All the pollables currently in the server \\
+\hline
+{\em args} & (dict) Arguments for this service \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_ad6279990022af1400907394ad4fb2fb4}\label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_ad6279990022af1400907394ad4fb2fb4}} 
+\index{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}!before\+\_\+response\+\_\+status@{before\+\_\+response\+\_\+status}}
+\index{before\+\_\+response\+\_\+status@{before\+\_\+response\+\_\+status}!R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}}
+\subsubsection{\texorpdfstring{before\+\_\+response\+\_\+status()}{before\_response\_status()}}
+{\footnotesize\ttfamily def R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service.\+before\+\_\+response\+\_\+status (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{entry }\end{DoxyParamCaption})}
+
+
+
+What the service does before sending a response status function reads the block requested from the disk file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & (pollable) the entry that the service is assigned to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(bool) if finished and ready to move on 
+\end{DoxyReturn}
 \mbox{\Hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a8501e68a944ed20a107108801926b1be}\label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a8501e68a944ed20a107108801926b1be}} 
-def {\bfseries get\+\_\+name} ()
-\end{DoxyCompactItemize}
+\index{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}!get\+\_\+name@{get\+\_\+name}}
+\index{get\+\_\+name@{get\+\_\+name}!R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}}
+\subsubsection{\texorpdfstring{get\+\_\+name()}{get\_name()}}
+{\footnotesize\ttfamily def R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service.\+get\+\_\+name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Name of the service needed for Frontend purposes, creating clients required by \hyperlink{class_r_a_i_d5_1_1common_1_1services_1_1base__service_1_1_base_service}{common.\+services.\+base\+\_\+service.\+Base\+Service}. 
+
+\begin{DoxyReturn}{Returns}
+(str) service name 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a0dbcb210b5b1bbd67a0321b86c21824f}\label{class_r_a_i_d5_1_1block__device_1_1services_1_1login__service_1_1_login_service_a0dbcb210b5b1bbd67a0321b86c21824f}} 
+\index{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}!handle\+\_\+content@{handle\+\_\+content}}
+\index{handle\+\_\+content@{handle\+\_\+content}!R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service@{R\+A\+I\+D5\+::block\+\_\+device\+::services\+::login\+\_\+service\+::\+Login\+Service}}
+\subsubsection{\texorpdfstring{handle\+\_\+content()}{handle\_content()}}
+{\footnotesize\ttfamily def R\+A\+I\+D5.\+block\+\_\+device.\+services.\+login\+\_\+service.\+Login\+Service.\+handle\+\_\+content (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{entry,  }\item[{}]{content }\end{DoxyParamCaption})}
+
+
+
+Handle the content that entry socket has recieved extract the password and volume\+\_\+\+U\+U\+ID from frontend request. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entry} & (pollable) the entry that the service is assigned to \\
+\hline
+{\em content} & (str) content recieved from the frontend \\
+\hline
+\end{DoxyParams}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}

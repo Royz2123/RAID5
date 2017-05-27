@@ -25,7 +25,7 @@ class SetDiskInfoService(
     # @param pollables (dict) All the pollables currently in the server
     # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        super(SetDiskInfoService, self).__init__(self, entry, pollables, args)
+        super(SetDiskInfoService, self).__init__(entry, pollables, args)
 
         ## the file name of the disk info (will be the final location)
         self._save_filename = entry.application_context["disk_info_name"]

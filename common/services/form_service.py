@@ -27,7 +27,7 @@ class FileFormService(base_service.BaseService):
     ) = range(4)
 
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, ["Content-Type"])
+        base_service.BaseService.__init__(["Content-Type"])
         # super(FileFormService, self).__init__(self, ["Content-Type"])
         self._content = ""
         self._boundary = None

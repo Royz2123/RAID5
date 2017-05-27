@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import contextlib
 import datetime
 import errno
@@ -48,12 +49,22 @@ def create_login_contexts(volume):
 
 
 def create_get_block_contexts(disks, request_info):
-    # request_info should be a dict { disk_UUID : block_num }
+    # request_info should be a dict
+    # {
+    #    disk_UUID : {
+    #        "block_num": block_num,
+    #        "password" : long_password
+    #    }
+    # }
     client_contexts = {}
-    for disk_UUID, block_num in request_info.items():
+    for disk_UUID, info in request_info.items():
         client_contexts[disk_UUID] = {
-            "headers": {},
-            "args": {"block_num": block_num},
+            "headers": {
+                "Authorization" : "Basic %s" % (
+                    base64.b64encode(info["password"])
+                )
+            },
+            "args": {"block_num": info["block_num"]},
             "disk_UUID": disk_UUID,
             "disk_address": disks[disk_UUID]["address"],
             "method": "GET",
@@ -87,33 +98,48 @@ def create_set_block_contexts(disks, request_info):
     # request_info should be a dict {
     #     disk_UUID : {
     #         "block_num" : block_num
+    #         "long_password" : password
     #         "content" : content
     #     }
     # }
     client_contexts = {}
-    for disk_UUID in request_info.keys():
+    for disk_UUID, info in request_info.items():
         client_contexts[disk_UUID] = {
-            "headers": {},
+            "headers": {
+                "Authorization" : "Basic %s" % (
+                    base64.b64encode(info["password"])
+                )
+            },
             "method": "GET",
-            "args": {"block_num": request_info[disk_UUID]["block_num"]},
+            "args": {"block_num": info["block_num"]},
             "disk_UUID": disk_UUID,
             "disk_address": disks[disk_UUID]["address"],
             "service": (
                 set_block_service.SetBlockService.get_name()
             ),
-            "content": request_info[disk_UUID]["content"],
+            "content":info["content"],
         }
     return client_contexts
 
 
 def create_update_level_contexts(disks, request_info):
-    # request_info should be a dict { disk_UUID : addition }
+    # request_info should be a dict
+    # {
+    #    disk_UUID : {
+    #        "password": long_password,
+    #        "addition" : addition
+    #    }
+    # }
     client_contexts = {}
-    for disk_UUID, addition in request_info.items():
+    for disk_UUID, info in request_info.items():
         client_contexts[disk_UUID] = {
-            "headers": {},
+            "headers": {
+                "Authorization" : "Basic %s" % (
+                    base64.b64encode(info["password"])
+                )
+            },
             "method": "GET",
-            "args": {"add": addition},
+            "args": {"add": info["addition"]},
             "disk_UUID": disk_UUID,
             "disk_address": disks[disk_UUID]["address"],
             "service": (

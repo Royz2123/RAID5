@@ -33,21 +33,41 @@ def generate_password():
     )
 
 # checks the Basic Authentication of an entry, returns if there has been a
-# successful_login
-def check_login(entry):
+# successful_login to the frontend by the user
+def check_user_login(entry):
     successful_login = False
+    auth_content = extract_basic_auth_content(entry)
+    if auth_content is not None:
+        username, password = decode_authorization(auth_content)
+        application_auth = entry.application_context["authentication"]
+        successful_login = (
+            username == application_auth["common_user"] and
+            password == application_auth["common_password"]
+        )
+    return successful_login
+
+# checks the Basic Authentication of an entry, returns if there has been a
+# successful_login to the block device bythe frontend using the long password
+# that has been provided
+def check_frontend_login(entry):
+    auth_content = extract_basic_auth_content(entry)
+    if auth_content is not None:
+        return (
+            base64.b64decode(auth_content)
+            == entry.application_context["authentication"]["long_password"]
+        )
+    return False
+
+#extracts the basic Authentication Authorization content
+def extract_basic_auth_content(entry):
     if "Authorization" in entry.request_context["headers"].keys():
+        print "HEYYY"
         auth_type, auth_content = entry.request_context["headers"][
             "Authorization"
         ].split(" ", 2)
         if auth_type == "Basic":
-            username, password = decode_authorization(auth_content)
-            application_auth = entry.application_context["authentication"]
-            successful_login = (
-                username == application_auth["common_user"] and
-                password == application_auth["common_password"]
-            )
-    return successful_login
+            return auth_content.strip(" ")
+    return None
 
 # decodes the convention of Basic Authentication using base64
 def decode_authorization(auth_content):

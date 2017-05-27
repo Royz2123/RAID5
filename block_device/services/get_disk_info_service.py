@@ -25,13 +25,10 @@ class GetDiskInfoService(
     # @param pollables (dict) All the pollables currently in the server
     # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        super(GetDiskInfoService, self).__init__(self, [])
-
-        ## specify the disk_info file name
-        self._filename = entry.application_context["disk_info_name"]
-
-        ## set the initial file descriptor to None
-        self._fd = None
+        super(GetDiskInfoService, self).__init__(
+            [],
+            entry.application_context["disk_info_name"]
+        )
 
     ## Name of the service
     # needed for Frontend purposes, creating clients
