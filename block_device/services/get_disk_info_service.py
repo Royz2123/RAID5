@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.block_device.services.get_disk_info_service
+# Module that implements the Block Device GetDiskInfoService
+#
+
 import contextlib
 import datetime
 import errno

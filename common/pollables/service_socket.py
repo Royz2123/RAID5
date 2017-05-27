@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.common.pollables.service_socket
+# Module that defines the ServiceSocket pollable + callable
+#
+
 import errno
 import logging
 import os

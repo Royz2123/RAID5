@@ -1,3 +1,8 @@
+#!/usr/bin/python
+## @package RAID5.common.services.base_service
+# Module that defines the BaseService interface class
+#
+
 ## Base class for all HTTP services
 ## It is important that every service that is created will inherit from this
 ## this class, because when a server chooses a service it looks at the
@@ -53,55 +58,95 @@ class BaseService(object):
 
     # Getters and Setters
 
-
+    ## Args property
+    ## @returns args (dict)
     @property
     def args(self):
         return self._args
 
+    ## wanted_headers property
+    ## @returns wanted_headers (list)
     @property
     def wanted_headers(self):
         return self._wanted_headers
 
+    ## response_status property
+    ## @returns response_status (str)
     @property
     def response_status(self):
         return self._response_status
 
+    ## response_status property setter
+    ## @param response_status (str)
     @response_status.setter
     def response_status(self, r_s):
         self._response_status = r_s
 
+    ## response_headers property
+    ## @returns response_headers (lst)
     @property
     def response_headers(self):
         return self._response_headers
 
+    ## response_headers property setter
+    ## @param response_headers (str)
     @response_headers.setter
     def response_headers(self, r_h):
         self._response_headers = r_h
 
+    ## response_content property
+    ## @returns response_content (string)
     @property
     def response_content(self):
         return self._response_content
 
+    ## response_content property setter
+    ## @param response_content (string)
     @response_content.setter
     def response_content(self, r_c):
         self._response_content = r_c
 
     # Service Functions
 
+    ## Before pollable recieves content service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_content(self, entry):
         return True
 
+    ## Before pollable sends response status service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_status(self, entry):
         return True
 
+    ## Before pollable sends response headers service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_headers(self, entry):
         return True
 
+    ## Before pollable sends response content service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_content(self, entry):
         return True
 
+    ## Before pollable terminates service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_terminate(self, entry):
         return True
 
+    ## Handling content service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @param content (string) content to handle from entry
+    ## @returns finished (bool) returns true if finished
     def handle_content(self, entry, content):
         return True

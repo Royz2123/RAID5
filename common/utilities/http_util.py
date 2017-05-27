@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.common.utilities.http_util
+# Module with all the HTTP state functions
+#
+
 import argparse
 import contextlib
 import errno
@@ -31,6 +35,10 @@ STATUS_CODES = {
     500: "Internal Error",
 }
 
+## State function that recvs and updates the status of a http response.
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current Pollable Socket we're dealing with
+## @returns next_state (bool) if finished recving first line
 def get_status_state(entry):
     index = entry.recvd_data.find(constants.CRLF_BIN)
     if index == -1:
@@ -44,7 +52,10 @@ def get_status_state(entry):
     entry.recvd_data = rest
     return True
 
-
+## State function that recvs and handles the first line of a http status.
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current pollable Socket we're dealing with
+## @returns next_state (bool) if finished recving first line
 def get_request_state(entry):
     index = entry.recvd_data.find(constants.CRLF_BIN)
     if index == -1:
@@ -58,7 +69,11 @@ def get_request_state(entry):
     entry.recvd_data = rest  # save the rest for next time
     return True
 
-
+## State function that recvs and handles the headers of a http request.
+## Saves the headers that the chosen service requires.
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current pollable Socket we're dealing with
+## @returns next_state (bool) if finished recving headers (got \\r\\n\\r\\n)
 def get_headers_state(entry):
     lines = entry.recvd_data.split(constants.CRLF_BIN)
     if "" not in lines:
@@ -85,7 +100,11 @@ def get_headers_state(entry):
     entry.service.before_content(entry)
     return True
 
-
+## State function that recvs and handles the content of a http request.
+## transfers
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current pollable Socket we're dealing with
+## @returns next_state (bool) if finished recving headers (got \r\n\r\n)
 def get_content_state(entry):
     if "Content-Length" not in entry.request_context["headers"].keys():
         return True

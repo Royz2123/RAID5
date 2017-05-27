@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.block_device.services.login_service
+# Main module that runs the Block Device Server
+#
+
 import argparse
 import ConfigParser
 import logging
@@ -21,7 +25,7 @@ POLL_TYPE = {
     "select": poller.Select
 }
 
-
+## Parse Arguments for running the Block Device Server
 def parse_args():
     """Parse program argument."""
 
@@ -72,7 +76,7 @@ def parse_args():
     args.base = os.path.normpath(os.path.realpath(args.base))
     return args
 
-
+## Main Function that creates the AsyncServer and lets the server run
 def main():
     args = parse_args()
 

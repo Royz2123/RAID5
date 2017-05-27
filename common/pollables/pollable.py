@@ -1,3 +1,8 @@
+#!/usr/bin/python
+## @package RAID5.common.pollables.pollable
+# Module that defines the Pollable interface class
+#
+
 ## A Pollable base interface class.
 ## Base class for pollable objects, that are polled asynchronusly eiher with
 ## Poll or Select. All pollables must inherit from this class

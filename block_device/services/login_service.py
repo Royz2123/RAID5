@@ -1,3 +1,8 @@
+#!/usr/bin/python
+## @package RAID5.block_device.services.login_service
+# Module that implements the Block Device LoginService
+#
+
 import errno
 import logging
 import os

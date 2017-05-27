@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.common.pollables.listener_socket
+# Module that defines the ListenerSocket pollable
+#
+
 import errno
 import logging
 import os

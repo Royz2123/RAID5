@@ -1,3 +1,8 @@
+#!/usr/bin/python
+## @package RAID5.block_device.services.set_block_service
+# Module that implements the Block Device SetBlockService
+#
+
 import errno
 import logging
 import os

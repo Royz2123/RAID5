@@ -1,3 +1,8 @@
+#!/usr/bin/python
+## @package RAID5.common.pollables.callable
+# Module that defines the Callable interface class
+#
+
 ## A Callable base interface class.
 ## The class's only method is the on_finish method, which when called,
 ## wakes up the callable from sleep mode

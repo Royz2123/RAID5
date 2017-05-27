@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.common.services.get_file_service
+# Module that implements the GetFileService service
+#
+
 import contextlib
 import datetime
 import errno
@@ -13,17 +17,35 @@ from common.utilities import constants
 from common.utilities import util
 from frontend.pollables import bds_client_socket
 
-
+## GetFileService is a HTTP Service class that sends back to the requester a
+## file that has been requested
 class GetFileService(base_service.BaseService):
+
+    ## Constructor for GetFileService
+    # @param entry (pollable) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param filename (string) file requested by user
     def __init__(self, entry, filename):
         super(GetFileService, self).__init__([])
+
+        ## Filename requested
         self._filename = filename
+
+        ## File descriptor of that filename
         self._fd = None
 
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/get_file"
 
+    ## Before pollable sends response status service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_status(self, entry):
         try:
             self._fd = os.open(self._filename, os.O_RDONLY, 0o666)
@@ -47,6 +69,10 @@ class GetFileService(base_service.BaseService):
 
         return True
 
+    ## Before pollable sends response content service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_content(
         self,
         entry,

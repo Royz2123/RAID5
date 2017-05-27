@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.block_device.pollables.declarer_socket
+# Module that defines the Block Device DeclarerSocket
+#
+
 import errno
 import importlib
 import logging
