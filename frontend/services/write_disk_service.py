@@ -32,7 +32,7 @@ class WriteToDiskService(
     ) = range(2)
 
     def __init__(self, entry, pollables, args):
-        form_service.FileFormService.__init__(self, entry, pollables, args)
+        super(WriteToDiskService, self).__init__(entry, pollables, args)
         # update Authorization
         self._wanted_headers.append("Authorization")
 
@@ -98,7 +98,7 @@ class WriteToDiskService(
                 ))
 
             # if got volume_UUID well, save volume
-            self._volume = entry.application_context["volumes"][
+            self._volume = self._entry.application_context["volumes"][
                 self._volume_UUID
             ]
             self._disks = self._volume["disks"]

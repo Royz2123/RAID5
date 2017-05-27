@@ -32,8 +32,7 @@ class ReadFromDiskService(base_service.BaseService):
     ) = range(2)
 
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(
-            self,
+        super(ReadFromDiskService, self).__init__(
             ["Content-Type", "Authorization"],
             ["volume_UUID", "disk_UUID", "firstblock", "blocks"],
             args

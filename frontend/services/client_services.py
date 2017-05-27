@@ -10,7 +10,7 @@ from common.services import base_service
 
 class ClientService(base_service.BaseService):
     def __init__(self, entry):
-        base_service.BaseService.__init__(self, [])
+        super(ClientService, self).__init__([])
 
     @staticmethod
     def get_name():

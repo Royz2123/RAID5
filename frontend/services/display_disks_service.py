@@ -16,7 +16,7 @@ from common.utilities import util
 
 class DisplayDisksService(base_service.BaseService):
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, ["Authorization"])
+        super(DisplayDisksService, self).__init__(["Authorization"])
 
     @staticmethod
     def get_name():

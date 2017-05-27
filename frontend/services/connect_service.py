@@ -29,8 +29,7 @@ from common.utilities.state_util import state_machine
 
 class ConnectService(base_service.BaseService):
     def __init__(self, entry, socket_data, args):
-        base_service.BaseService.__init__(
-            self,
+        super(ConnectService, self).__init__(
             [],
             ["disk_UUID", "volume_UUID"],
             args

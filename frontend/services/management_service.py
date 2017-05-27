@@ -16,7 +16,7 @@ from common.utilities import util
 
 class ManagementService(base_service.BaseService):
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, [])
+        super(ManagementService, self).__init__([])
 
     @staticmethod
     def get_name():

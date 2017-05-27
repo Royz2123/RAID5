@@ -16,8 +16,7 @@ from frontend.pollables import bds_client_socket
 
 class MulService(base_service.BaseService):
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self, [], ["a", "b"], args)
-        #super(MulService, self).__init__(self, [], ["a", "b"], args)
+        super(MulService, self).__init__([], ["a", "b"], args)
 
     @staticmethod
     def get_name():

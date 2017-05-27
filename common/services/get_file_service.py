@@ -16,7 +16,7 @@ from frontend.pollables import bds_client_socket
 
 class GetFileService(base_service.BaseService):
     def __init__(self, entry, filename):
-        base_service.BaseService.__init__(self, [])
+        super(GetFileService, self).__init__([])
         self._filename = filename
         self._fd = None
 

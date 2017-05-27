@@ -40,7 +40,7 @@ class InitService(base_service.BaseService):
     ) = range(5)
 
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(self)
+        super(InitService, self).__init__([])
         self._args = args  # args will be checked independently
         self._pollables = pollables
 

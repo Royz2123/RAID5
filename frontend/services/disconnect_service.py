@@ -30,8 +30,7 @@ class DisconnectService(base_service.BaseService):
     ) = range(2)
 
     def __init__(self, entry, pollables, args):
-        base_service.BaseService.__init__(
-            self,
+        super(DisconnectService, self).__init__(
             [],
             ["disk_UUID"],
             args
