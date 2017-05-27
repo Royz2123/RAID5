@@ -2,6 +2,7 @@
 import argparse
 import contextlib
 import errno
+import importlib
 import logging
 import os
 import select
@@ -9,9 +10,9 @@ import socket
 import time
 import traceback
 
-import html_util
-
+from common.services import base_service
 from common.utilities import constants
+from common.utilities import html_util
 from common.utilities import util
 
 # python-3 woodo
@@ -29,7 +30,6 @@ STATUS_CODES = {
     404: "File Not Found",
     500: "Internal Error",
 }
-
 
 def get_status_state(entry):
     index = entry.recvd_data.find(constants.CRLF_BIN)
@@ -54,7 +54,7 @@ def get_request_state(entry):
         entry.recvd_data[:index].decode('utf-8'),
         entry.recvd_data[index + len(constants.CRLF_BIN):]
     )
-    entry.handle_request(req)
+    handle_request(entry, req)
     entry.recvd_data = rest  # save the rest for next time
     return True
 
@@ -215,3 +215,57 @@ def add_status(entry, code, extra):
             )
         )
     )
+
+def handle_request(entry, request):
+    req_comps = request.split(' ', 2)
+
+    # check validity
+    if req_comps[2] != constants.HTTP_SIGNATURE:
+        raise RuntimeError('Not HTTP protocol')
+    if len(req_comps) != 3:
+        raise RuntimeError('Incomplete HTTP protocol')
+
+    method, uri, signature = req_comps
+    if method not in ("GET", "POST"):
+        raise RuntimeError(
+            "HTTP unsupported method '%s'" % method
+        )
+
+    if not uri or uri[0] != '/' or '\\' in uri:
+        raise RuntimeError("Invalid URI")
+
+    # update request
+    entry.request_context["method"] = method
+    entry.request_context["uri"] = uri
+
+    # choose service
+    parse = urlparse.urlparse(entry.request_context["uri"])
+    entry.request_context["args"] = urlparse.parse_qs(parse.query)
+
+    # import only the services permitted to this server
+    for service in constants.MODULE_DICT[
+        entry.application_context["server_type"]
+    ]:
+        importlib.import_module(service)
+
+    services = {}
+    for service_class in base_service.BaseService.__subclasses__():
+        services[service_class.get_name()] = service_class
+
+    if parse.path in services.keys():
+        entry.service = services[parse.path](
+            entry,
+            entry.pollables,
+            entry.request_context["args"]
+        )
+
+    else:
+        file_name = os.path.normpath(
+            '%s%s' % (
+                entry.application_context["base"],
+                entry.request_context["uri"],
+            )
+        )
+        # if file_name[:len(base)+1] != base + '\\':
+        #    raise RuntimeError("Malicious URI %s" % self._request[1])
+        entry.service = services["/get_file"](entry, file_name)

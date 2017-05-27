@@ -51,7 +51,6 @@ class AsyncServer(object):
         sock.listen(10)
         self._pollables[sock.fileno()] = listener_socket.ListenerSocket(
             sock,
-            constants.LISTEN_STATE,
             self._application_context,
             self._pollables
         )

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import errno
-import importlib
 import logging
 import os
 import select
@@ -10,102 +9,167 @@ import traceback
 
 from common.pollables import callable
 from common.pollables import pollable
+from common.services import base_service
 from common.utilities import constants
 from common.utilities import http_util
 from common.utilities import util
-from common.services import base_service
-
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
 
 
+## ServiceSocket class that handles requests for services from the server
+## Very important class, all of the requests from users and from the Frontend
+## are handled by ServiceSockets, which extract the important information
+## from the request and call the relevant services
+## Inheritance from both the Pollable and Callable classes since the
+## ServiceSocket is both a callable and a pollable:
+## @ref common.pollables.callable.Callable
+## and  @ref common.pollables.pollable.Pollable
 class ServiceSocket(pollable.Pollable, callable.Callable):
-    def __init__(self, socket, state, application_context, pollables):
-        self._application_context = application_context
-        self._socket = socket
-        self._fd = socket.fileno()
-        self._recvd_data = ""
-        self._data_to_send = ""
 
-        self._state = state
+    ## Constructor for ServiceSocket
+    # @param socket (socket) async socket we work with
+    # @param state (int) the first state the ServiceSocket will be in
+    # @param application_context (dict) the application_context for the
+    # server
+    # @param pollables (dict) all of the pollables in the server. Many
+    # service need this pointer in order to create clients to block devices
+    def __init__(self, socket, state, application_context, pollables):
+        ## Application_context
+        self._application_context = application_context
+
+        ## Request context - important info from request
         self._request_context = {
             "headers": {},
+            "args" : [],
             "method": "uknown",
-            "uri": "uknown"
-        }  # important stuff from request
+            "uri": "uknown",
+        }
+
+        ## Socket to work with
+        self._socket = socket
+
+        ## File descriptor of socket
+        self._fd = socket.fileno()
+
+        ## Data that the socket has recieved
+        self._recvd_data = ""
+
+        ## Data that the socket wishes to send
+        self._data_to_send = ""
+
+        ## Current state of the ServiceSocket. Initialized to the first state
+        self._state = state
+
+        ## Service that has been chosen to handle the request, based on uri
         self._service = base_service.BaseService()
+
+        ## Dict of all the pollables in the server
         self._pollables = pollables
 
+    ## State getter
+    # @returns State (int)
     @property
     def state(self):
         return self._state
 
+    ## State setter
+    # @param s (int) new state for the socket
     @state.setter
     def state(self, s):
         self._state = s
 
+    ## pollables getter
+    # @returns pollables (dict)
+    @property
+    def pollables(self):
+        return self._pollables
+
+    ## Service getter
+    # @returns Service (@ref common.services.base_service.BaseService)
     @property
     def service(self):
         return self._service
 
+    ## Service setter
+    # @param Service (@ref common.services.base_service.BaseService)
     @service.setter
     def service(self, s):
         self._service = s
 
+    ## Request context getter
+    # @returns request_context (dict)
     @property
     def request_context(self):
         return self._request_context
 
+    ## Request context setter
+    # @param request_context (dict)
     @request_context.setter
     def request_context(self, r):
         self._request_context = r
 
+    ## Application context getter
+    # @returns application_context (dict)
     @property
     def application_context(self):
         return self._application_context
 
+    ## Application context setter
+    # @param application_context (dict)
     @application_context.setter
     def application_context(self, a):
         self._application_context = a
 
+    ## recvd_data getter
+    # @returns recvd_data (str)
     @property
     def recvd_data(self):
         return self._recvd_data
 
+    ## recvd_data getter
+    # @param recvd_data (str)
     @recvd_data.setter
     def recvd_data(self, r):
         self._recvd_data = r
 
+    ## data_to_send setter
+    # @returns data_to_send (str)
     @property
     def data_to_send(self):
         return self._data_to_send
 
+    ## data_to_send getter
+    # @param data_to_send (str)
     @data_to_send.setter
     def data_to_send(self, d):
         self._data_to_send = d
 
+    ## Socket property
     @property
     def socket(self):
         return self._socket
 
+    ## File descriptor property
     @property
     def fd(self):
         return self._fd
 
+    ## What ServiceSocket does on error.
+    ## Sets state to closing state, and adds an error status
+    ## see @ref common.pollables.pollable.Pollable
     def on_error(self, e):
         http_util.add_status(self, 500, e)
         self._state = constants.CLOSING_STATE
 
+    ## What ServiceSocket does on close.
+    ## Calls the before_terminate service function then closes the socket
+    ## required by @ref common.pollables.pollable.Pollable
     def on_close(self):
         self._service.before_terminate(self)
         self._socket.close()
 
+    ## When ListenerSocket is terminating.
+    ## Only if socket is closing and we have nothing left to send
+    ## required by @ref common.pollables.pollable.Pollable
     def is_terminating(self):
         # check if ready to terminate
         return (
@@ -113,7 +177,9 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             and self._data_to_send == ""
         )
 
-    states = {
+    ## States for the request state machine. Not implemented with the
+    ## StateMachine model since inputs are different, and this case is simpler
+    STATES = {
         constants.GET_REQUEST_STATE: {
             "function": http_util.get_request_state,
             "next": constants.GET_HEADERS_STATE
@@ -139,21 +205,25 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             "next": constants.CLOSING_STATE,
         },
         constants.CLOSING_STATE: {
-            "function": on_error,  # should change to more appropriate name
+            "function": on_error,
             "next": constants.CLOSING_STATE,
         }
     }
 
+    ## What ServiceSocket does on read.
+    ## first read from socket, then let state machine and service handle
+    ## content
+    ## func required by @ref common.pollables.pollable.Pollable
     def on_read(self):
         try:
             http_util.get_buf(self)
             while (self._state < constants.SEND_STATUS_STATE and (
-                ServiceSocket.states[self._state]["function"](self)
+                ServiceSocket.STATES[self._state]["function"](self)
             )):
                 if self._state == constants.SLEEPING_STATE:
                     return
 
-                self._state = ServiceSocket.states[self._state]["next"]
+                self._state = ServiceSocket.STATES[self._state]["next"]
                 logging.debug(
                     "%s :\t Reading, current state: %s"
                     % (
@@ -167,18 +237,24 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             logging.error("%s :\t Closing socket, got : %s " % (self, e))
             self.on_error(e)
 
+    ## The on_finish method, lets the socket wake up after being in sleep mode
+    ## see @ref common.pollables.callable.Callable
     def on_finish(self):
         self._service.on_finish(self)
 
+    ## What ServiceSocket does on write.
+    ## First let state machine and service update any content they may have,
+    ## then send it.
+    ## func required by @ref common.pollables.pollable.Pollable
     def on_write(self):
         try:
             while (self._state <= constants.SEND_CONTENT_STATE and (
-                ServiceSocket.states[self._state]["function"](self)
+                ServiceSocket.STATES[self._state]["function"](self)
             )):
                 if self._state == constants.SLEEPING_STATE:
                     return
 
-                self._state = ServiceSocket.states[self._state]["next"]
+                self._state = ServiceSocket.STATES[self._state]["next"]
                 logging.debug(
                     "%s :\t Writing, current state: %s"
                     % (
@@ -193,6 +269,10 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             logging.error("%s :\t Closing socket, got : %s " % (self, e))
             self.on_error(e)
 
+    ## Specifies what events the ServiceSocket listens to.
+    ## Decide based on state and data in buffer.
+    ## see @ref common.pollables.pollable.Pollable
+    # @returns event (event_mask)
     def get_events(self):
         event = constants.POLLERR
         if (
@@ -210,6 +290,8 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             event |= constants.POLLOUT
         return event
 
+    ## Returns a representatin of ServiceSocket Object
+    # @returns representation (str)
     def __repr__(self):
         if self._service is None:
             return "ServiceSocket Object: %s" % self._fd
@@ -219,59 +301,3 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             self._fd,
             self._service.__class__.__name__,
         )
-
-    def handle_request(self, request):
-        req_comps = request.split(' ', 2)
-
-        # check validity
-        if req_comps[2] != constants.HTTP_SIGNATURE:
-            raise RuntimeError('Not HTTP protocol')
-        if len(req_comps) != 3:
-            raise RuntimeError('Incomplete HTTP protocol')
-
-        method, uri, signature = req_comps
-        if method not in ("GET", "POST"):
-            raise RuntimeError(
-                "HTTP unsupported method '%s'" % method
-            )
-
-        if not uri or uri[0] != '/' or '\\' in uri:
-            raise RuntimeError("Invalid URI")
-
-        # update request
-        self._request_context["method"] = method
-        self._request_context["uri"] = uri
-
-        # choose service
-        parse = urlparse.urlparse(self._request_context["uri"])
-        self._request_context["args"] = urlparse.parse_qs(parse.query)
-
-        for service in constants.MODULE_DICT[
-            self._application_context["server_type"]
-        ]:
-            importlib.import_module(service)
-
-        services = {}
-        for service_class in base_service.BaseService.__subclasses__():
-            services[service_class.get_name()] = service_class
-
-        if parse.path in services.keys():
-            self._service = services[parse.path](
-                self,
-                self._pollables,
-                self._request_context["args"]
-            )
-
-        else:
-            file_name = os.path.normpath(
-                '%s%s' % (
-                    self._application_context["base"],
-                    self._request_context["uri"],
-                )
-            )
-            # if file_name[:len(base)+1] != base + '\\':
-            #    raise RuntimeError("Malicious URI %s" % self._request[1])
-            self._service = services["/get_file"](self, file_name)
-
-
-# vim: expandtab tabstop=4 shiftwidth=4

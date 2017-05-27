@@ -18,10 +18,10 @@ from common.utilities import util
 #
 class DeclarerSocket(pollable.Pollable):
 
-    ## Constructor for DeclareSocket
+    ## Constructor for DeclarerSocket
     # @param socket (socket) async socket we work with
-    # @param application_context (dict) the application_context for the block device
-    #
+    # @param application_context (dict) the application_context for
+    # the block device
     def __init__(self, socket, application_context):
         ## Application_context
         self._application_context = application_context
@@ -39,7 +39,7 @@ class DeclarerSocket(pollable.Pollable):
         )
 
     ## Function that specifies what socket is to do when system is on_idle
-    # declares itself using multicast
+    ## declares itself using multicast
     def on_idle(self):
         self._socket.sendto(
             self.create_content(),
@@ -59,20 +59,21 @@ class DeclarerSocket(pollable.Pollable):
             )
         )
 
-    ## Specifies what events the socket listens to
-    # required by @ref common.pollables.pollable.Pollable
+    ## Specifies what events the DeclarerSocket listens to.
+    ## required by @ref common.pollables.pollable.Pollable
+    # @returns event (event_mask)
     def get_events(self):
         return constants.POLLERR
 
-    ## When DeclarerSocket is terminating
-    # required by @ref common.pollables.pollable.Pollable
-    # will not terminate as long as server is running
+    ## When DeclarerSocket is terminating.
+    ## required by @ref common.pollables.pollable.Pollable
+    ## will not terminate as long as server is running
     def is_terminating(self):
         return False
 
-    ## What DeclarerSocket does on close
-    # required from @ref common.pollables.pollable
-    # will not close as long as server is running
+    ## What DeclarerSocket does on close.
+    ## required by @ref common.pollables.pollable.Pollable
+    ## will not close as long as server is running
     def on_close(self):
         self._socket.close()
 
