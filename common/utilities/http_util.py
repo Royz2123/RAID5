@@ -101,7 +101,6 @@ def get_headers_state(entry):
     return True
 
 ## State function that recvs and handles the content of a http request.
-## transfers
 ## @param entry (@ref common.pollables.pollable.Pollable)
 ## The current pollable Socket we're dealing with
 ## @returns next_state (bool) if finished recving headers (got \r\n\r\n)
@@ -123,7 +122,10 @@ def get_content_state(entry):
         return False
     return True
 
-
+## State function that sends the status of a http response.
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current pollable Socket we're dealing with
+## @returns next_state (bool) if finished updating the data_to_send.
 def send_status_state(entry):
     entry.service.before_response_status(entry)
     entry.data_to_send += (
@@ -137,7 +139,10 @@ def send_status_state(entry):
     )
     return True
 
-
+## State function that sends the headers of a http response.
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current pollable Socket we're dealing with
+## @returns next_state (bool) if finished updating the data_to_send.
 def send_headers_state(entry):
     entry.service.before_response_headers(entry)
     headers = entry.service.response_headers
@@ -153,14 +158,20 @@ def send_headers_state(entry):
     entry.data_to_send += "\r\n"
     return True
 
-
+## State function that sends the content of a http response.
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current pollable Socket we're dealing with
+## @returns next_state (bool) if finished updating the data_to_send.
 def send_content_state(entry):
     finished_content = entry.service.before_response_content(entry)
     entry.data_to_send += entry.service.response_content
     entry.service.response_content = ""
     return finished_content
 
-
+## State function that sends the first line of a http request.
+## @param entry (@ref common.pollables.pollable.Pollable)
+## The current pollable Socket we're dealing with
+## @returns next_state (bool) if finished updating the data_to_send.
 def send_request_state(entry):
     entry.data_to_send += "%s %s" % (
         entry.request_context["method"],
@@ -184,6 +195,9 @@ def send_request_state(entry):
 
 
 # OTHER UTIL
+
+## function that sends whatever the socket has in data_to_send
+## @param entry (@ref common.pollables.pollable.Pollable)
 def send_buf(entry):
     try:
         while entry.data_to_send != "":
@@ -195,7 +209,9 @@ def send_buf(entry):
             raise
         logging.debug("%s :\t Haven't finished reading yet" % entry)
 
-
+## function that recieves whatever the socket can recieve and updates
+## the recvd_data buffer
+## @param entry (@ref common.pollables.pollable.Pollable)
 def get_buf(entry):
     try:
         t = entry.socket.recv(entry.application_context["max_buffer"])
@@ -211,7 +227,11 @@ def get_buf(entry):
             raise
         logging.debug("%s :\t Haven't finished writing yet" % entry)
 
-
+## Adds an error response_status to the data_to_send buffer
+## @param entry (@ref common.pollables.pollable.Pollable) socket we're
+## handling currently.
+## @param code (int) the (error) code which we got from service
+## @param extra (string) extra info reagrading the error
 def add_status(entry, code, extra):
     entry.data_to_send += (
         (
@@ -235,6 +255,11 @@ def add_status(entry, code, extra):
         )
     )
 
+## Handles a request from a server, and extracts the relevant info. Also
+## chooses the correct service
+## @param entry (@ref common.pollables.pollable.Pollable) socket we're
+## dealing with.
+## @param request (string) the first line of the http request
 def handle_request(entry, request):
     req_comps = request.split(' ', 2)
 

@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.common.utilities.constants
+# Module that defines all of the systems constants
+#
+
 import os
 import select
 

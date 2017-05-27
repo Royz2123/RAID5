@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.common.utilities.async_server
+# Module with the AsyncServer class for Asynchronous polling IO
+#
+
 import contextlib
 import datetime
 import errno
@@ -19,22 +23,26 @@ from common.utilities import poller
 from common.utilities import util
 from frontend.pollables import identifier_socket
 
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
-
-
+## AsyncServer class. Polls the objects it has and let's them handle
+## their IO calls.
 class AsyncServer(object):
+
+    ## Constructor for AsyncServer
+    ## @param application_context (dict) dict that specifies all of the
+    ## parameters for this server.
     def __init__(self, application_context):
+        ## Application_context
         self._application_context = application_context
+
+        ## Pollables (start with none).
+        ## Key: file descriptor
+        ## Value: Pollable object
         self._pollables = {}
+
+        ## Callables (start with none)
         self._callables = []
 
+    ## Add a ListenerSocket to the pollables dict
     def add_listener(self):
         sock = socket.socket(
             family=socket.AF_INET,
@@ -55,6 +63,7 @@ class AsyncServer(object):
             self._pollables
         )
 
+    ## Adds a DeclarerSocket to the pollables dict
     def add_declarer(self):
         sock = socket.socket(
             socket.AF_INET,
@@ -73,6 +82,7 @@ class AsyncServer(object):
             self._application_context,
         )
 
+    ## Adds an IdentifierSocket to the pollables dict
     def add_identifier(self):
         sock = socket.socket(
             socket.AF_INET,
@@ -108,6 +118,7 @@ class AsyncServer(object):
             self._application_context,
         )
 
+    ## Specifies what server should do when starting up
     def on_start(self):
         # Add a listener, for service requests that the server offers
         self.add_listener()
@@ -126,6 +137,8 @@ class AsyncServer(object):
             # need to constantly identify new connections
             self.add_identifier()
 
+    ## Handle events from poller for all file descriptors specified.
+    ## @param events (dict) dictionary specifying all of the polled events.
     def handle_events(self, events):
         for curr_fd, event in events:
             entry = self._pollables[curr_fd]
@@ -150,6 +163,8 @@ class AsyncServer(object):
                 logging.error("%s:\tSocket disconnected, closing...", entry)
                 entry.on_close()
 
+    ## Handles the file descriptors when on timeout. Calls the on_idle
+    ## function they have implemented
     def timeout_event(self):
         # if poll went off on timeout, call for an "update" on system status
         for fd, entry in self._pollables.items():
@@ -166,6 +181,7 @@ class AsyncServer(object):
                     )
                 )
 
+    ## Function that runs the server
     def run(self):
         logging.debug("STARTED RUNNING..\n")
         self.on_start()
@@ -192,6 +208,9 @@ class AsyncServer(object):
                 self.close_all()
         logging.debug("SERVER TERMINATING")
 
+    ## Creates a new poller based on the poll type specified in the
+    ## application_context
+    ## @returns poll_obj (poller object) returns a poller object
     def create_poller(self):
         poll_obj = self._application_context["poll_type"]()
 
@@ -202,14 +221,22 @@ class AsyncServer(object):
             )
         return poll_obj
 
+    ## Pollables property
+    ## @returns pollables (dict)
     @property
     def pollables(self):
         return self._pollables
 
+    ## Pollables property setter
+    ## @param pollables (dict)
     @pollables.setter
-    def pollables(self, s):
-        self._pollables = s
+    def pollables(self, p):
+        self._pollables = p
 
+    ## Function that gracefully closes and terminates the sockets that need
+    ## terminating.
+    ## If a pollable doesn't want to close after on_close it must be a
+    ## callable so add to the callables list.
     def close_needed(self):
         for fd, entry in self._pollables.items()[:]:
             if entry.is_terminating():
@@ -224,6 +251,7 @@ class AsyncServer(object):
             if entry.is_terminating():
                 del closed_socket
 
+    ## Forcefully close all sockets
     def close_all(self):
         for fd, entry in self._pollables.items()[:]:
             entry.on_close()

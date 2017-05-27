@@ -1,14 +1,18 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.common.utilities.config_util
+# Module that defines many configuration file utilities
+#
+
 import uuid
 import ConfigParser
 
 from common.utilities import constants
 from common.utilities import util
 
-# creates a config file in filename specified, same for both frontend
-# and block_device for now
-
-
+## function creates a block device configuration file in filename specified
+## @param filename (string) filename of config_file
+## @param index (int) block device numbering (for different disk and info
+## files)
 def create_bds_config(filename, index):
     with open(filename, 'w') as config_file:
         parser = ConfigParser.ConfigParser()
@@ -26,14 +30,18 @@ def create_bds_config(filename, index):
         ))
         parser.write(config_file)
 
-
+## function creates a frontend configuration file in filename specified
+## @param filename (string) filename of config_file
 def create_frontend_config(filename):
     with open(filename, 'w') as config_file:
         parser = ConfigParser.ConfigParser()
         common_config(parser)
         parser.write(config_file)
 
-
+## function that writes a section of a configuration file
+## @param filename (string) filename of config_file
+## @param new_section (string) name of the new_section
+## @param new_fields (dict) dict of new fields for the new section
 def write_section_config(filename, new_section, new_fields):
     parser = ConfigParser.ConfigParser()
     parser.read(filename)
@@ -46,7 +54,11 @@ def write_section_config(filename, new_section, new_fields):
     with open(filename, 'wb') as config_file:
         parser.write(config_file)
 
-
+## function that writes a field of an existing section in a configuration file
+## @param filename (string) filename of config_file
+## @param section (string) name of the existing section
+## @param fieldname (string) name of the new field name
+## @param value (string) name of the new field value
 def write_field_config(filename, section, fieldname, value):
     parser = ConfigParser.ConfigParser()
     parser.read(filename)
@@ -54,7 +66,8 @@ def write_field_config(filename, section, fieldname, value):
     with open(filename, 'wb') as config_file:
         parser.write(config_file)
 
-
+## function adds common sections and field between Frontend and Block Device
+## @param parser (ConfigParser) parser of an existing config_file
 def common_config(parser):
     parser.add_section("MulticastGroup")
     parser.set("MulticastGroup", "address", "239.192.0.100")
@@ -64,7 +77,10 @@ def common_config(parser):
     parser.set("Authentication", "common_user", "Roy")
     parser.set("Authentication", "common_password", "12345")
 
-
+## function that parses a config_file
+## @param config_file (string) filename of config_file
+## @returns sections (dict) returns a dict of all the sections in the
+## configuration file
 def parse_config(config_file):
     # Config-file handling
     Config = ConfigParser.ConfigParser()
@@ -79,7 +95,10 @@ def parse_config(config_file):
         )
     return sections
 
-
+## function creates a single dict section from parser
+## @param parser (ConfigParser) parser of an existing config_file
+## @param section (string) name of the existing section
+## @returns dict1 (dict) returns dict with the config fields
 def create_dict_section(parser, section):
     dict1 = {}
     options = parser.options(section)
@@ -92,5 +111,3 @@ def create_dict_section(parser, section):
             print("exception on %s!" % option)
             dict1[option] = None
     return dict1
-
-# vim: expandtab tabstop=4 shiftwidth=4
