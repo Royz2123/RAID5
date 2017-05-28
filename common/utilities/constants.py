@@ -96,6 +96,7 @@ HTML_DISPLAY_HEADER = "Available disks"
 ## HTML Menu bar code
 HTML_TOP_BAR_CODE = (
     '<ul>' +
+    '<li><img src="/logo.png" class="logo"></li>' +
     '<li><a class="active" href="/homepage.html">Home</a></li>' +
     '<li><a href="/menu.html">Menu</a></li>' +
     '<li><a href="/about.html">About</a></li>' +
