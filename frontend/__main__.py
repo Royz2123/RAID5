@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.frontend.__main__
+# Main module that runs the Frontend Server
+#
+
 import argparse
 import ConfigParser
 import logging
@@ -10,16 +14,18 @@ from common.utilities import config_util
 from common.utilities import poller
 from common.utilities import constants
 
-# files
+## Files
 NEW_FILE = os.devnull
 NEW_WORKING_DIRECTORY = "/"
 LOG_FILE = "log"
 
+## Poll types
 POLL_TYPE = {
     "poll": poller.Poller,
     "select": poller.Select
 }
 
+## Parse Arguments for running the Frontend Server
 def parse_args():
     """Parse program argument."""
 
@@ -80,7 +86,8 @@ def parse_args():
     args.base = os.path.normpath(os.path.realpath(args.base))
     return args
 
-
+## Main Function that creates the AsyncServer and lets the server run. creates
+## also the volumes that are saved in the configuration file.
 def main():
     # parse args
     args = parse_args()

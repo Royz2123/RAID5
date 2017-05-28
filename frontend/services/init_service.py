@@ -1,13 +1,15 @@
-# -*- coding: utf-8 -*-
-import contextlib
-import datetime
+#!/usr/bin/python
+## @package RAID5.frontend.services.init_service
+## Module that defines the InitService service class.
+## The service recieves brings a logical volume online
+#
+
 import errno
 import logging
 import os
 import socket
 import time
 import traceback
-import uuid
 
 from common.services import base_service
 from common.services import form_service
@@ -24,13 +26,17 @@ from frontend.utilities import cache
 from frontend.utilities import disk_util
 from frontend.utilities import service_util
 
-
+## Frontend InitService. This service initializes a volume array of disks. It
+## recognizes in which state the disks of the volume are already in, and
+## initializes accordingly (SCRATCH_MODE or EXISTING_MODE)
 class InitService(base_service.BaseService):
+    ## Initialization modes
     (
         EXISTING_MODE,
         SCRATCH_MODE,
     ) = range(2)
 
+    ## Initialization satates
     (
         SETUP_STATE,
         LOGIN_STATE,
@@ -39,22 +45,46 @@ class InitService(base_service.BaseService):
         FINAL_STATE,
     ) = range(5)
 
+    ## Constructor for InitService
+    # @param entry (pollable) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param pollables (dict) All the pollables currently in the server
+    # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
-        super(InitService, self).__init__([])
+        super(InitService, self).__init__()
+
+        ## Http arguments
         self._args = args  # args will be checked independently
+
+        ## Pollables of the Frontend server
         self._pollables = pollables
 
+        ## Volume we're dealing with
         self._volume = None  # still not sure what volume we're dealing with
+
+        ## Initialization mode
         self._mode = None
 
-        self._disk_manager = None
+        ## StateMachine object
         self._state_machine = None
 
+        ## Disk Manager that manages all the clients
+        self._disk_manager = None
+
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/init"
 
     # STATE FUNCTIONS
+
+    ## Before setup function. check what volume is required.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_setup(self, entry):
         # create a list of available_disks
         new_disks = []
@@ -168,7 +198,10 @@ class InitService(base_service.BaseService):
         # this is an epsilon path, just setting up
         return True
 
-    # login state to new block devices
+    # Before login to the block devices in the new volume (set password)
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_login(self, entry):
         if self._mode == InitService.EXISTING_MODE:
             # no need to login, already updated
@@ -186,6 +219,11 @@ class InitService(base_service.BaseService):
         entry.state = constants.SLEEPING_STATE
         return False  # will always need input, not an epsilon_path
 
+    ## After login to each of the Block Devices
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_login(self, entry):
         if not self._disk_manager.check_if_finished():
             return None
@@ -200,6 +238,10 @@ class InitService(base_service.BaseService):
             # must be in SCRATCH_MODE. return next state
             return InitService.SCRATCH_MOUNT_STATE
 
+    ## Before we mount an existing volume
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_existing_mount(self, entry):
         self._disk_manager = disk_manager.DiskManager(
             self._volume["disks"],
@@ -213,6 +255,11 @@ class InitService(base_service.BaseService):
         entry.state = constants.SLEEPING_STATE
         return False  # will always need input, not an epsilon_path
 
+    ## After we mount an existing volume
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_existing_mount(self, entry):
         # check if got a response from ALL of the
         # block devices:
@@ -289,6 +336,11 @@ class InitService(base_service.BaseService):
         entry.state = constants.SEND_CONTENT_STATE
         return InitService.FINAL_STATE
 
+
+    ## Before we mount a new volume from scratch
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_scratch_mount(self, entry):
         peers = self._volume["disks"].keys()  # for order create var
         request_info = {}
@@ -322,6 +374,11 @@ class InitService(base_service.BaseService):
         entry.state = constants.SLEEPING_STATE
         return False  # need input, not an epsilon_path
 
+    ## After we mount a new volume from scratch
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_scratch_mount(self, entry):
         # check if got a response from ALL of the
         # block devices:
@@ -337,14 +394,7 @@ class InitService(base_service.BaseService):
         entry.state = constants.SEND_CONTENT_STATE
         return InitService.FINAL_STATE
 
-    # STATE_MACHINE:
-
-    #           SETUP_STATE
-    #           /         \
-    #    EXST_MOUNT      SCRATCH_MOUNT
-    #          \          /
-    #           FINAL_STATE
-
+    ## Initilization states for StateMachine
     STATES = [
         state.State(
             SETUP_STATE,
@@ -375,6 +425,10 @@ class InitService(base_service.BaseService):
         )
     ]
 
+    ## Before pollable sends response status service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_status(self, entry):
         # create initilization state machine
         self._state_machine = state_machine.StateMachine(
@@ -384,10 +438,18 @@ class InitService(base_service.BaseService):
         )
         return True
 
+    ## Before pollable sends response headers service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_headers(self, entry):
         # pass args to the machine, will use *args to pass them on
         return self._state_machine.run_machine((self, entry))
 
+    ## Before pollable sends response content service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_content(self, entry):
         # Re-send the management part
         self._response_content = html_util.create_html_page(
@@ -401,10 +463,19 @@ class InitService(base_service.BaseService):
         }
         return True
 
+    ## Called when BDSClientSocket invoke the on_finsh method to wake up
+    ## the ServiceSocket. Let StateMachine handle the wake up call.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
     def on_finish(self, entry):
         # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
+    ## Create the dictionary that can be made into POST method content
+    ## multipart form-data
+    ## @param boundary (string) boundary we're using
+    ## @param disk_uuid (string) current UUID of disk we're initializing
+    ## @param disks_uuids (list) list of all the uuids of the disks peers
     def create_disk_info_content(
         self,
         boundary,

@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.frontend.pollables.identfier_socket
+# Module that defines the Frontend IdentifierSocket
+#
+
 import errno
 import importlib
 import logging
@@ -14,27 +18,41 @@ from common.utilities import http_util
 from common.utilities import util
 from common.services import base_service
 
-# python-3 woodo
-try:
-    # try python-2 module name
-    import urlparse
-except ImportError:
-    # try python-3 module name
-    import urllib.parse
-    urlparse = urllib.parse
-
-
+## A Frontend Socket that listens to a UDP Multicast group address and
+## tries to recognize Block Device Servers. The IdentifierSocket also handles
+## the available_disks database.
+## See also @ref block_device.pollables.declarer_socket.DeclarerSocket
+#
 class IdentifierSocket(pollable.Pollable):
+
+    ## Constructor for IdentifierSocket
+    # @param socket (socket) async socket we work with
+    # @param application_context (dict) the application_context for
+    # the Frontend server
     def __init__(self, socket, application_context):
+        ## Application_context
         self._application_context = application_context
+
+        ## Socket to work with
         self._socket = socket
+
+        ## File descriptor of socket
         self._fd = socket.fileno()
+
+        ## Data the IdentfierSocket has recieved
         self._recvd_data = ""
+
+        ## Data the IdentifierSocket has to send
         self._data_to_send = ""
 
+    ## Function that specifies what socket is to do when system is on_idle
+    ## declares itself using multicast
     def on_idle(self):
         self.update_disconnected()
 
+    ## What IdentifierSocket does on read.
+    ## First read from socket, to see what Block Devices we discovered.
+    ## Func required by @ref common.pollables.pollable.Pollable
     def on_read(self):
         try:
             buf, address = self._socket.recvfrom(constants.BLOCK_SIZE)
@@ -42,14 +60,21 @@ class IdentifierSocket(pollable.Pollable):
         except BaseException:
             pass
 
+    ## Updates the disconnected Block Devices from the available_disks
+    ## database. Checks if last update was after DISCONNECT_TIME or
+    ## TERMINATE_TIME, and handles accordingly.
     def update_disconnected(self):
-        for disk_UUID, disk in self._application_context["available_disks"].items(
-        ):
+        for disk_UUID, disk in self._application_context[
+            "available_disks"
+        ].items():
             if (time.time() - disk["timestamp"]) > constants.DISCONNECT_TIME:
                 disk["state"] = constants.OFFLINE
             if (time.time() - disk["timestamp"]) > constants.TERMINATE_TIME:
                 del self._application_context["available_disks"][disk_UUID]
 
+    ## Updates a disk that has been recognized by the IdentifierSocket
+    ## @param buf (string) buffer needed for parsing from the socket
+    ## @param address (tuple) address from which the packet was recvd
     def update_disk(self, buf, address):
         if buf.find(constants.CRLF_BIN) == -1:
             raise RuntimeError(
@@ -68,49 +93,32 @@ class IdentifierSocket(pollable.Pollable):
             "volume_UUID": content[2]
         }
 
+    ## Specifies what events the IdentifierSocket listens to.
+    ## required by @ref common.pollables.pollable.Pollable
+    # @returns event (event_mask)
     def get_events(self):
         return constants.POLLERR | constants.POLLIN
 
+    ## When IdentifierSocket is terminating.
+    ## required by @ref common.pollables.pollable.Pollable
+    ## will not terminate as long as server is running
+    ## @returns is_terminating (bool)
     def is_terminating(self):
         return False
 
-    @property
-    def application_context(self):
-        return self._application_context
-
-    @application_context.setter
-    def application_context(self, a):
-        self._application_context = a
-
-    @property
-    def recvd_data(self):
-        return self._recvd_data
-
-    @recvd_data.setter
-    def recvd_data(self, r):
-        self._recvd_data = r
-
-    @property
-    def data_to_send(self):
-        return self._data_to_send
-
-    @data_to_send.setter
-    def data_to_send(self, d):
-        self._data_to_send = d
-
-    @property
-    def socket(self):
-        return self._socket
-
+    ## File descriptor property
+    ## @returns file descriptor (int) of the socket
     @property
     def fd(self):
         return self._fd
 
-    def on_error(self, e):
-        self._state = constants.CLOSING_STATE
-
+    ## What IdentifierSocket does on close.
+    ## required by @ref common.pollables.pollable.Pollable
+    ## will not close as long as server is running
     def on_close(self):
         self._socket.close()
 
+    ## representation of IdentifierSocket Object
+    # @returns (str) representation
     def __repr__(self):
         return ("IdentifierSocket Object: %s\t\t\t" % self._fd)

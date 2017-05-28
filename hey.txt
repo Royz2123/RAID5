@@ -17,56 +17,14 @@ DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 9, BaseService
-DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
-DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
-DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
-DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 10, BaseService
-DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
-DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
-DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
-DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
-DEBUG:root:HttpListen Object: 4			:	Entry has read
-DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
-DEBUG:root:HttpListen Object: 4			:	Entry has read
-DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 11, BaseService
-DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
-DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
-DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
-DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
-DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
-DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
-DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
-DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
-DEBUG:root:ServiceSocket Object: 9, BaseService:	Entry has read
-DEBUG:root:ServiceSocket Object: 9, GetFileService :	 Reading, current state: 2
-DEBUG:root:ServiceSocket Object: 9, GetFileService :	 Reading, current state: 3
-DEBUG:root:ServiceSocket Object: 9, GetFileService :	 Reading, current state: 4
-DEBUG:root:ServiceSocket Object: 9, GetFileService:	Entry has write
-DEBUG:root:ServiceSocket Object: 9, GetFileService :	 Writing, current state: 6
-DEBUG:root:ServiceSocket Object: 9, GetFileService :	 Writing, current state: 7
-DEBUG:root:ServiceSocket Object: 9, GetFileService :	 Writing, current state: 10
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:ServiceSocket Object: 10, BaseService:	Entry has read
-DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Reading, current state: 2
-DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Reading, current state: 3
-DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Reading, current state: 4
-DEBUG:root:ServiceSocket Object: 10, GetFileService:	Entry has write
-DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Writing, current state: 6
-DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Writing, current state: 7
-DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Writing, current state: 10
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
@@ -77,34 +35,102 @@ DEBUG:root:ServiceSocket Object: 6, InitService :	 Reading, current state: 3
 DEBUG:root:ServiceSocket Object: 6, InitService :	 Reading, current state: 4
 DEBUG:root:ServiceSocket Object: 6, InitService:	Entry has write
 DEBUG:root:ServiceSocket Object: 6, InitService :	 Writing, current state: 6
-DEBUG:root:ServiceSocket Object: 6, InitService :	 Added a new BDS client, BDSClientSocket Object: 8, ClientService
-DEBUG:root:ServiceSocket Object: 6, InitService :	 Added a new BDS client, BDSClientSocket Object: 9, ClientService
+DEBUG:root:ServiceSocket Object: 6, InitService :	 Added a new BDS client, BDSClientSocket Object: 11, ClientService
+DEBUG:root:ServiceSocket Object: 6, InitService :	 Added a new BDS client, BDSClientSocket Object: 12, ClientService
+DEBUG:root:BDSClientSocket Object: 11, ClientService:	Entry has write
+DEBUG:root:BDSClientSocket Object: 11, ClientService :	 Writing, current state: 6
+DEBUG:root:BDSClientSocket Object: 11, ClientService :	 Writing, current state: 7
+DEBUG:root:BDSClientSocket Object: 11, ClientService :	 Writing, current state: 0
+DEBUG:root:BDSClientSocket Object: 12, ClientService:	Entry has write
+DEBUG:root:BDSClientSocket Object: 12, ClientService :	 Writing, current state: 6
+DEBUG:root:BDSClientSocket Object: 12, ClientService :	 Writing, current state: 7
+DEBUG:root:BDSClientSocket Object: 12, ClientService :	 Writing, current state: 0
+DEBUG:root:BDSClientSocket Object: 11, ClientService:	Entry has read
+DEBUG:root:BDSClientSocket Object: 11, ClientService :	 Reading, current state: 2
+DEBUG:root:BDSClientSocket Object: 11, ClientService :	 Reading, current state: 3
+DEBUG:root:BDSClientSocket Object: 11, ClientService :	 Reading, current state: 10
+DEBUG:root:BDSClientSocket Object: 12, ClientService:	Entry has read
+DEBUG:root:BDSClientSocket Object: 12, ClientService :	 Reading, current state: 2
+DEBUG:root:BDSClientSocket Object: 12, ClientService :	 Reading, current state: 3
+DEBUG:root:BDSClientSocket Object: 12, ClientService :	 Reading, current state: 10
+DEBUG:root:ServiceSocket Object: 6, InitService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, InitService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 9, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 9, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 9, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 9, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 9, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 9, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 9, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 9, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 10, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 10, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 10, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisconnectService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisconnectService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisconnectService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisconnectService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisconnectService :	 Added a new BDS client, BDSClientSocket Object: 8, ClientService
 DEBUG:root:BDSClientSocket Object: 8, ClientService:	Entry has write
 DEBUG:root:BDSClientSocket Object: 8, ClientService :	 Writing, current state: 6
 DEBUG:root:BDSClientSocket Object: 8, ClientService :	 Writing, current state: 7
 DEBUG:root:BDSClientSocket Object: 8, ClientService :	 Writing, current state: 0
-DEBUG:root:BDSClientSocket Object: 9, ClientService:	Entry has write
-DEBUG:root:BDSClientSocket Object: 9, ClientService :	 Writing, current state: 6
-DEBUG:root:BDSClientSocket Object: 9, ClientService :	 Writing, current state: 7
-DEBUG:root:BDSClientSocket Object: 9, ClientService :	 Writing, current state: 0
 DEBUG:root:BDSClientSocket Object: 8, ClientService:	Entry has read
 DEBUG:root:BDSClientSocket Object: 8, ClientService :	 Reading, current state: 2
 DEBUG:root:BDSClientSocket Object: 8, ClientService :	 Reading, current state: 3
 DEBUG:root:BDSClientSocket Object: 8, ClientService :	 Reading, current state: 10
-DEBUG:root:BDSClientSocket Object: 9, ClientService:	Entry has read
-DEBUG:root:BDSClientSocket Object: 9, ClientService :	 Reading, current state: 2
-DEBUG:root:BDSClientSocket Object: 9, ClientService :	 Reading, current state: 3
-DEBUG:root:BDSClientSocket Object: 9, ClientService :	 Reading, current state: 10
-DEBUG:root:ServiceSocket Object: 6, InitService:	Entry has write
-DEBUG:root:ServiceSocket Object: 6, InitService :	 Writing, current state: 10
-DEBUG:root:ServiceSocket Object: 11, BaseService:	Entry has read
-DEBUG:root:ServiceSocket Object: 11, GetFileService :	 Reading, current state: 2
-DEBUG:root:ServiceSocket Object: 11, GetFileService :	 Reading, current state: 3
-DEBUG:root:ServiceSocket Object: 11, GetFileService :	 Reading, current state: 4
-DEBUG:root:ServiceSocket Object: 11, GetFileService:	Entry has write
-DEBUG:root:ServiceSocket Object: 11, GetFileService :	 Writing, current state: 6
-DEBUG:root:ServiceSocket Object: 11, GetFileService :	 Writing, current state: 7
-DEBUG:root:ServiceSocket Object: 11, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 6, DisconnectService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisconnectService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisconnectService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
 DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
@@ -145,12 +171,10 @@ DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
 DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
@@ -161,6 +185,24 @@ DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, ConnectService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, ConnectService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, ConnectService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, ConnectService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, ConnectService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, ConnectService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, ConnectService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, ConnectService :	 Added a new BDS client, BDSClientSocket Object: 6, ClientService
+DEBUG:root:BDSClientSocket Object: 6, ClientService:	Entry has write
+DEBUG:root:BDSClientSocket Object: 6, ClientService :	 Writing, current state: 6
+DEBUG:root:BDSClientSocket Object: 6, ClientService :	 Writing, current state: 7
+DEBUG:root:BDSClientSocket Object: 6, ClientService :	 Writing, current state: 0
+DEBUG:root:BDSClientSocket Object: 6, ClientService:	Entry has read
+DEBUG:root:BDSClientSocket Object: 6, ClientService :	 Reading, current state: 2
+DEBUG:root:BDSClientSocket Object: 6, ClientService :	 Reading, current state: 3
+DEBUG:root:BDSClientSocket Object: 6, ClientService :	 Reading, current state: 10
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
 DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
@@ -174,17 +216,15 @@ DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
 DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
-DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
-DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
-DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
-DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
-DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
-DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
-DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
-DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
@@ -194,7 +234,55 @@ DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
 DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
 DEBUG:root:HttpListen Object: 4			:	Entry has read
 DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
 DEBUG:root:HttpListen Object: 4			:	Entry has read
@@ -221,3 +309,1319 @@ DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
 DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:IdentifierSocket Object: 5			:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, DisplayDisksService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 6, BaseService
+DEBUG:root:HttpListen Object: 4			:	Entry has read
+DEBUG:root:HttpListen Object: 4			 :	 Added a new HttpSocket, ServiceSocket Object: 8, BaseService
+DEBUG:root:ServiceSocket Object: 6, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 8, BaseService:	Entry has read
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 2
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 3
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Reading, current state: 4
+DEBUG:root:ServiceSocket Object: 6, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 6, GetFileService :	 Writing, current state: 10
+DEBUG:root:ServiceSocket Object: 8, GetFileService:	Entry has write
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 6
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 7
+DEBUG:root:ServiceSocket Object: 8, GetFileService :	 Writing, current state: 10

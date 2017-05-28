@@ -1,6 +1,9 @@
-# -*- coding: utf-8 -*-
-import contextlib
-import datetime
+#!/usr/bin/python
+## @package RAID5.frontend.services.read_disk_service
+## Module that implements the ReadFromDiskService class. Service reads a
+## certain amount of blocks from a specific disk.
+#
+
 import errno
 import logging
 import os
@@ -19,41 +22,78 @@ from common.utilities.state_util import state
 from common.utilities.state_util import state_machine
 
 
+## Frontend HTTP service that knwos how to process a request to read from a
+## logical disk and return the content from the actual physical disk. This
+## service also know how handle when the wanted disk is disconnected, and
+## can still access it's content based on the RAID5 protocol.
 class ReadFromDiskService(base_service.BaseService):
+    ## Reading States
     (
         READ_STATE,
         FINAL_STATE
     ) = range(2)
 
-    # read mode
+    ## Reading Modes
     (
         REGULAR,
         RECONSTRUCT
     ) = range(2)
 
+    ## Constructor for ReadFromDiskService
+    # @param entry (pollable) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param pollables (dict) All the pollables currently in the server
+    # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
         super(ReadFromDiskService, self).__init__(
             ["Content-Type", "Authorization"],
             ["volume_UUID", "disk_UUID", "firstblock", "blocks"],
             args
         )
-        self._pollables = pollables
-
+        ## Reading mode
         self._block_mode = ReadFromDiskService.REGULAR
+
+        ## Current block_num we're reading
         self._current_block = None
+
+        ## physical UUID of the disk we're reading from
         self._current_phy_UUID = None
+
+        ## UUID of disk we're reading from
         self._disk_UUID = None
+
+        ## UUID of volume we're dealing with
         self._volume_UUID = None
+
+        ## Volume we're dealing with
         self._volume = None
+
+        ## Disks we're dealing with
         self._disks = None
 
-        self._disk_manager = None
+        ## StateMachine object
         self._state_machine = None
 
+        ## pollables of the Frontend server
+        self._pollables = pollables
+
+        ## Disk Manager that manages all the clients
+        self._disk_manager = None
+
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/disk_read"
 
+    ## Before reading a block from the Block Devices.
+    ## First try reading the block regularly. If got DiskRefused, Then read
+    ## that block from all the other disks and compute the missing block.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_read(self, entry):
         self._current_phy_UUID = disk_util.get_physical_disk_UUID(
             self._disks,
@@ -123,6 +163,11 @@ class ReadFromDiskService(base_service.BaseService):
         entry.state = constants.SLEEPING_STATE
         return False  # always need input, not an epsilon path
 
+    ## After reading from relevant block devices.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_read(self, entry):
         if not self._disk_manager.check_if_finished():
             return None
@@ -148,7 +193,7 @@ class ReadFromDiskService(base_service.BaseService):
             return ReadFromDiskService.FINAL_STATE
         return ReadFromDiskService.READ_STATE
 
-    # woke up from sleeping mode, checking if got required blocks
+    ## Function that updates the response content with the computed block.
     def update_block(self):
         client_responses = self._disk_manager.get_responses()
         # regular block update
@@ -169,6 +214,7 @@ class ReadFromDiskService(base_service.BaseService):
             self._response_content += disk_util.compute_missing_block(
                 blocks).ljust(constants.BLOCK_SIZE, chr(0))
 
+    ## Reading states for StateMachine
     STATES = [
         state.State(
             READ_STATE,
@@ -182,6 +228,10 @@ class ReadFromDiskService(base_service.BaseService):
         )
     ]
 
+    # Before pollable sends response status service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_status(self, entry):
         # first check login
         if not util.check_user_login(entry):
@@ -214,6 +264,10 @@ class ReadFromDiskService(base_service.BaseService):
         # now check validity of disk_UUID
         if self._disk_UUID not in self._disks.keys():
             raise RuntimeError("%s:\t Disk not part of volume" % (
+                entry,
+            ))
+        elif self._disks[self._disk_UUID]["disk_num"] == (len(self._disks)-1):
+            raise RuntimeError("%s:\t Cannot write directly to last disk" % (
                 entry,
             ))
 
@@ -261,6 +315,10 @@ class ReadFromDiskService(base_service.BaseService):
         )
         return True
 
+    ## Before pollable sends response content service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_content(self, entry):
         # first check if we have an error and we don't want to read
         if self._response_status != 200:
@@ -270,6 +328,10 @@ class ReadFromDiskService(base_service.BaseService):
         # if the machine returns True, we know we can move on
         return self._state_machine.run_machine((self, entry))
 
+    ## Called when BDSClientSocket invoke the on_finish method to wake up
+    ## the ServiceSocket. Let StateMachine handle the wake up call.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
     def on_finish(self, entry):
         # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))

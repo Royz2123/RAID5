@@ -1,5 +1,5 @@
 #!/usr/bin/python
-## @package RAID5.block_device.services.login_service
+## @package RAID5.block_device.__main__
 # Main module that runs the Block Device Server
 #
 
@@ -15,11 +15,12 @@ from common.utilities import constants
 from common.utilities import poller
 from common.utilities import util
 
-# files
+## Files
 NEW_FILE = os.devnull
 NEW_WORKING_DIRECTORY = "/"
 LOG_FILE = "log"
 
+## Poll types
 POLL_TYPE = {
     "poll": poller.Poller,
     "select": poller.Select

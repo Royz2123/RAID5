@@ -294,8 +294,8 @@ def create_disk_info(disk):
         ) % (
             disk["disk_UUID"],
             time.time() - disk["timestamp"],
-            printable_address(disk["UDP_address"]),
-            printable_address(disk["TCP_address"])
+            util.printable_address(disk["UDP_address"]),
+            util.printable_address(disk["TCP_address"])
         )
     )
 
@@ -316,16 +316,6 @@ def create_volume_disk_info(disk, disk_num):
             disk["disk_UUID"],
             disk_num,
             disk["level"],
-            printable_address(disk["address"])
+            util.printable_address(disk["address"])
         )
-    )
-
-## Makes a tuple address printable
-## @param address (tuple) address as (address, port)
-## @returns printable_address (string) returns "address:port"
-def printable_address(address):
-    return "%s%s%s" % (
-        address[0],
-        constants.ADDRESS_SEPERATOR,
-        address[1],
     )

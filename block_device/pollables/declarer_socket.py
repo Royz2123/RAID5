@@ -4,10 +4,8 @@
 #
 
 import errno
-import importlib
 import logging
 import os
-import select
 import socket
 import time
 import traceback
@@ -18,7 +16,8 @@ from common.utilities import util
 
 
 ## A Block Device Socket that declares the server using UDP Multicast to other
-## Frontend Servers to recognize
+## Frontend Servers to recognize.
+## See also @ref frontend.pollables.identfier_socket.IdentifierSocket
 #
 class DeclarerSocket(pollable.Pollable):
 
@@ -53,13 +52,14 @@ class DeclarerSocket(pollable.Pollable):
     ## Creates the decleration content
     def create_content(self):
         return (
-            "%s%s%s%s%s%s" % (
+            "%s%s%s%s%s%s%s" % (
                 self._application_context["server_info"]["disk_uuid"],
                 constants.CRLF_BIN,
                 self._application_context["bind_port"],
                 constants.CRLF_BIN,
                 self._application_context["server_info"]["volume_uuid"],
-                constants.CRLF_BIN
+                constants.CRLF_BIN,
+                constants.CRLF_BIN,
             )
         )
 
@@ -72,6 +72,7 @@ class DeclarerSocket(pollable.Pollable):
     ## When DeclarerSocket is terminating.
     ## required by @ref common.pollables.pollable.Pollable
     ## will not terminate as long as server is running
+    ## @returns is_terminating (bool)
     def is_terminating(self):
         return False
 
@@ -91,7 +92,7 @@ class DeclarerSocket(pollable.Pollable):
     def fd(self):
         return self._fd
 
-    ## representatin of DeclarerSocket Object
+    ## representation of DeclarerSocket Object
     # @returns (str) representation
     def __repr__(self):
         return ("DeclarerSocket Object: %s\t\t\t" % self._fd)

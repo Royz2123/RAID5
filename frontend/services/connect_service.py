@@ -1,6 +1,9 @@
-# -*- coding: utf-8 -*-
-import contextlib
-import datetime
+#!/usr/bin/python
+## @package RAID5.frontend.services.connect_service
+## Module that implements the ConnectService class. Service brings a disk
+## back online to a volume.
+#
+
 import errno
 import logging
 import os
@@ -22,37 +25,65 @@ from frontend.utilities import service_util
 from common.utilities.state_util import state
 from common.utilities.state_util import state_machine
 
-# This service adds the wanted disk back to the disk array,
-# Rebuilding of the disk is done after terminate, since it has to be done in the
-# background
-
-
+## Frontend ConnectService. This service adds the wanted disk back to the disk
+## array. Rebuilding of the disk is done after terminate, since it has to be
+## done in the background after socket has been closed, as a callable
 class ConnectService(base_service.BaseService):
-    def __init__(self, entry, socket_data, args):
+
+    ## Constructor for ConnectService
+    # @param entry (pollable) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param pollables (dict) All the pollables currently in the server
+    # @param args (dict) Arguments for this service
+    def __init__(self, entry, pollables, args):
         super(ConnectService, self).__init__(
             [],
             ["disk_UUID", "volume_UUID"],
             args
         )
+
+        ## Volume we're dealing with
         self._volume = None
+
+        ## Disks we're dealing with
         self._disks = None
+
+        ## Disk UUID of connected disk
         self._disk_UUID = None
+
+        ## Mode of adding a new disk
         self._new_disk_mode = False
 
+        ## Disk already built boolean
         self._disk_built = False
+
+        ## StateMachine object
         self._state_machine = None
 
+        ## Current block num (for rebuilding)
         self._current_block_num = ""
-        self._current_data = ""
-        self._socket_data = socket_data
 
+        ## Current data (for rebuilding)
+        self._current_data = ""
+
+        ## pollables of the Frontend server
+        self._pollables = pollables
+
+        ## Disk Manager that manages all the clients
         self._disk_manager = None
 
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/connect"
 
-    # checks if and how the disk needs to be rebuilt, returns False if not
+    ## Checks if and how the disk needs to be rebuilt.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns need_rebuild (bool) if needs to be rebuilt
     def initial_setup(self, entry):
         self._disk_UUID = self._args["disk_UUID"][0]
         self._volume_UUID = self._args["volume_UUID"][0]
@@ -93,6 +124,10 @@ class ConnectService(base_service.BaseService):
 
         self._disks[self._disk_UUID]["state"] = constants.REBUILD
 
+    ## Before pollable sends response status service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_status(self, entry):
         # initial_setup, also check if we need to add thid disk out of no-where
         self.initial_setup(entry)
@@ -110,6 +145,8 @@ class ConnectService(base_service.BaseService):
         return True
 
     # REBULD PART, DONE BEFORE TERMINATE (AFTER CLOSE)
+
+    ## Rebuilding States
     (
         GET_DATA_STATE,
         SET_DATA_STATE,
@@ -119,6 +156,10 @@ class ConnectService(base_service.BaseService):
 
     # STATE FUNCTIONS:
 
+    ## Before we get the rebulding data
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_get_data(self, entry):
         self._current_block_num, self._current_data = (
             self._disks[self._disk_UUID]["cache"].next_block()
@@ -140,7 +181,7 @@ class ConnectService(base_service.BaseService):
 
             self._disk_manager = disk_manager.DiskManager(
                 self._disks,
-                self._socket_data,
+                self._pollables,
                 entry,
                 service_util.create_get_block_contexts(
                     self._disks,
@@ -150,6 +191,11 @@ class ConnectService(base_service.BaseService):
             entry.state = constants.SLEEPING_STATE
             return False  # need input, not an epsilon path
 
+    ## After we get the rebulding data
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_get_data(self, entry):
         # first check if the data has come from the cache
         if self._current_data is not None:
@@ -189,10 +235,14 @@ class ConnectService(base_service.BaseService):
             )
             return ConnectService.SET_DATA_STATE
 
+    ## Before we set the rebulding data
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_set_data(self, entry):
         self._disk_manager = disk_manager.DiskManager(
             self._disks,
-            self._socket_data,
+            self._pollables,
             entry,
             service_util.create_set_block_contexts(
                 self._disks,
@@ -208,6 +258,12 @@ class ConnectService(base_service.BaseService):
         entry.state = constants.SLEEPING_STATE
         return False  # need input, not an epsilon path
 
+
+    ## After we set the rebulding data
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_set_data(self, entry):
         if not self._disk_manager.check_if_finished():
             return None
@@ -220,10 +276,14 @@ class ConnectService(base_service.BaseService):
             return ConnectService.UPDATE_LEVEL_STATE
         return ConnectService.GET_DATA_STATE
 
+    ## Before we update the level of the updated disk
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_update_level(self, entry):
         self._disk_manager = disk_manager.DiskManager(
             self._disks,
-            self._socket_data,
+            self._pollables,
             entry,
             service_util.create_update_level_contexts(
                 self._disks,
@@ -238,6 +298,11 @@ class ConnectService(base_service.BaseService):
         entry.state = constants.SLEEPING_STATE
         return False  # need input, not an epsilon path
 
+    ## Before we have updated the level of the updated disk
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_update_level(self, entry):
         if not self._disk_manager.check_if_finished():
             return None
@@ -251,6 +316,7 @@ class ConnectService(base_service.BaseService):
         entry.state = constants.CLOSING_STATE
         return ConnectService.FINAL_STATE
 
+    ## Rebuilding states for StateMachine
     STATES = [
         state.State(
             GET_DATA_STATE,
@@ -276,6 +342,10 @@ class ConnectService(base_service.BaseService):
         ),
     ]
 
+    ## Before pollable terminates service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_terminate(self, entry):
         # create the state machine for rebuilding disk
         first_state_index = ConnectService.GET_DATA_STATE
@@ -293,11 +363,16 @@ class ConnectService(base_service.BaseService):
         # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
+    ## Called when BDSClientSocket invoke the on_finsh method to wake up
+    ## the ServiceSocket. Let StateMachine handle the wake up call.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
     def on_finish(self, entry):
         # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
-    # checks if self._disk_UUID is built
+    ## Checks if self._disk_UUID is built
+    ## @returns built (bool) if disk needs to be rebuilt
     def check_if_built(self):
         # check if already connected, no need to rebuild, or cache is empty
         if (

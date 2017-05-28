@@ -1,6 +1,9 @@
-# -*- coding: utf-8 -*-
-import contextlib
-import datetime
+#!/usr/bin/python
+## @package RAID5.frontend.services.disconnect_service
+## Module that defines the DisonnectService class. The service sets a disk in a
+## volume to offline. Demonstrates an unresponsive Block Device Server.
+#
+
 import errno
 import logging
 import os
@@ -22,33 +25,59 @@ from frontend.utilities import service_util
 from common.utilities.state_util import state
 from common.utilities.state_util import state_machine
 
-
+## Frontend DisonnectService. This service removes the wanted disk from a
+## specific volume.
 class DisconnectService(base_service.BaseService):
+    ## Disconnect States
     (
         DISCONNECT_STATE,
         FINAL_STATE,
     ) = range(2)
 
+    ## Constructor for DisonnectService
+    # @param entry (pollable) the entry (probably @ref
+    # common.pollables.service_socket) using the service
+    # @param pollables (dict) All the pollables currently in the server
+    # @param args (dict) Arguments for this service
     def __init__(self, entry, pollables, args):
         super(DisconnectService, self).__init__(
             [],
             ["disk_UUID"],
             args
         )
-        self._disk_UUID = None
-        self._volume_UUID = None
-        self._disks = None
+        ## Volume we're dealing with
         self._volume = None
 
-        self._pollables = pollables
+        ## Disks we're dealing with
+        self._disks = None
 
-        self._disk_manager = None
+        ## Disk UUID of connected disk
+        self._disk_UUID = None
+
+        ## Volume UUID of relevant volume
+        self._volume_UUID = None
+
+        ## StateMachine object
         self._state_machine = None
 
+        ## pollables of the Frontend server
+        self._pollables = pollables
+
+        ## Disk Manager that manages all the clients
+        self._disk_manager = None
+
+    ## Name of the service
+    # needed for Frontend purposes, creating clients
+    # required by common.services.base_service.BaseService
+    # @returns (str) service name
     @staticmethod
     def get_name():
         return "/disconnect"
 
+    ## Before disconnecting the disk function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns epsilon_path (bool) if there is no need for input
     def before_disconnect(self, entry):
         self._disk_UUID = self._args["disk_UUID"][0]
         self._volume_UUID = self._args["volume_UUID"][0]
@@ -59,7 +88,7 @@ class DisconnectService(base_service.BaseService):
 
         # check if disk is already disconnected
         if self._disks[self._disk_UUID]["state"] != constants.ONLINE:
-            return
+            return True
 
         # check that all other disks are online (RAID5 requirements)
         for disk_UUID, disk in self._disks.items():
@@ -95,6 +124,12 @@ class DisconnectService(base_service.BaseService):
         )
         return False  # will always need input, not an epsilon_path
 
+
+    ## After disconnecting the disk function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns next_state (int) next state of StateMachine. None if not
+    ## ready to move on to next state.
     def after_disconnect(self, entry):
         if not self._disk_manager.check_if_finished():
             return None
@@ -114,6 +149,7 @@ class DisconnectService(base_service.BaseService):
         entry.state = constants.SEND_HEADERS_STATE
         return DisconnectService.FINAL_STATE
 
+    ## State Machine states
     STATES = [
         state.State(
             DISCONNECT_STATE,
@@ -127,6 +163,10 @@ class DisconnectService(base_service.BaseService):
         )
     ]
 
+    ## Before pollable sends response status service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_status(self, entry):
         self._state_machine = state_machine.StateMachine(
             DisconnectService.STATES,
@@ -136,10 +176,18 @@ class DisconnectService(base_service.BaseService):
         # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
+    ## Called when BDSClientSocket invoke the on_finsh method to wake up
+    ## the ServiceSocket. Let StateMachine handle the wake up call.
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
     def on_finish(self, entry):
         # pass args to the machine, will use *args to pass them on
         self._state_machine.run_machine((self, entry))
 
+    ## Before pollable sends response headers service function
+    ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
+    ## to
+    ## @returns finished (bool) returns true if finished
     def before_response_headers(self, entry):
         # Re-send the management part. No refresh so user can enter new disk
         self._response_content = html_util.create_html_page(

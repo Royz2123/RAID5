@@ -294,7 +294,7 @@ class ServiceSocket(pollable.Pollable, callable.Callable):
             event |= constants.POLLOUT
         return event
 
-    ## Returns a representatin of ServiceSocket Object
+    ## Returns a representation of ServiceSocket Object
     # @returns representation (str)
     def __repr__(self):
         if self._service is None:

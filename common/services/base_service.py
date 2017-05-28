@@ -147,6 +147,5 @@ class BaseService(object):
     ## @param entry (@ref common.pollables.pollable.Pollable) entry we belong
     ## to
     ## @param content (string) content to handle from entry
-    ## @returns finished (bool) returns true if finished
     def handle_content(self, entry, content):
-        return True
+        pass

@@ -1,7 +1,11 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+## @package RAID5.frontend.utilities.disk_util
+## Module that defines many service utilities functions. Helpful functions for
+## many frontend services, that make requests from block devices much easier to
+## handle
+#
+
 import base64
-import contextlib
-import datetime
 import errno
 import logging
 import os
@@ -21,9 +25,10 @@ from common.utilities import constants
 from common.utilities import util
 
 
-# helpful functions for many frontend services, that make requests from block
-# devices much easier to handle
-
+## Creates login service request_contexts
+## @param volume (dict) current volume we're handling
+## @returns request_contexts (dict) returns built request contexts for this
+## service
 def create_login_contexts(volume):
     # send a login request to all the disks in the volume
     client_contexts = {}
@@ -47,15 +52,18 @@ def create_login_contexts(volume):
         }
     return client_contexts
 
-
+## Creates get_block service request_contexts
+## @param disks (dict) current disks we're handling
+## @request_info (dict) specific request info for this context,
+## {
+##    disk_UUID : {
+##        "block_num": block_num,
+##        "password" : long_password
+##    }
+## }
+## @returns request_contexts (dict) returns built request contexts for this
+## service
 def create_get_block_contexts(disks, request_info):
-    # request_info should be a dict
-    # {
-    #    disk_UUID : {
-    #        "block_num": block_num,
-    #        "password" : long_password
-    #    }
-    # }
     client_contexts = {}
     for disk_UUID, info in request_info.items():
         client_contexts[disk_UUID] = {
@@ -75,9 +83,13 @@ def create_get_block_contexts(disks, request_info):
         }
     return client_contexts
 
-
+## Creates get_disk_info service request_contexts
+## @param disks (dict) current disks we're handling
+## @request_info (list) specific request info for this context,
+## request_info should just be a list of disk_UUIDs that we want their infos
+## @returns request_contexts (dict) returns built request contexts for this
+## service
 def create_get_disk_info_contexts(disks, request_info):
-    # request_info should just be a list of disk_UUIDs that we want their infos
     client_contexts = {}
     for disk_UUID in request_info:
         client_contexts[disk_UUID] = {
@@ -93,15 +105,19 @@ def create_get_disk_info_contexts(disks, request_info):
         }
     return client_contexts
 
-
+## Creates set_block service request_contexts
+## @param disks (dict) current disks we're handling
+## @request_info (dict) specific request info for this context,
+## {
+##     disk_UUID : {
+##         "block_num" : block_num
+##         "long_password" : password
+##         "content" : content
+##     }
+## }
+## @returns request_contexts (dict) returns built request contexts for this
+## service
 def create_set_block_contexts(disks, request_info):
-    # request_info should be a dict {
-    #     disk_UUID : {
-    #         "block_num" : block_num
-    #         "long_password" : password
-    #         "content" : content
-    #     }
-    # }
     client_contexts = {}
     for disk_UUID, info in request_info.items():
         client_contexts[disk_UUID] = {
@@ -121,15 +137,18 @@ def create_set_block_contexts(disks, request_info):
         }
     return client_contexts
 
-
+## Creates update_level service request_contexts
+## @param disks (dict) current disks we're handling
+## @request_info (dict) specific request info for this context,
+## {
+##    disk_UUID : {
+##        "password": long_password,
+##        "addition" : addition
+##    }
+## }
+## @returns request_contexts (dict) returns built request contexts for this
+## service
 def create_update_level_contexts(disks, request_info):
-    # request_info should be a dict
-    # {
-    #    disk_UUID : {
-    #        "password": long_password,
-    #        "addition" : addition
-    #    }
-    # }
     client_contexts = {}
     for disk_UUID, info in request_info.items():
         client_contexts[disk_UUID] = {
@@ -149,41 +168,18 @@ def create_update_level_contexts(disks, request_info):
         }
     return client_contexts
 
-
-def create_file_upload_contexts(disks, request_info):
-    # request_info should be a dict {
-    #   disk_UUID : {
-    #       "boundary" : boundary,
-    #       "content" : content
-    #   }
-    # }
-    client_contexts = {}
-    for disk_UUID in request_info.keys():
-        client_contexts[disk_UUID] = {
-            "headers": {
-                "Content-Type": "multipart/form-data; boundary=%s" % (
-                    request_info[disk_UUID]["boundary"]
-                )
-            },
-            "method": "POST",
-            "args": {},
-            "disk_UUID": disk_UUID,
-            "disk_address": disks[disk_UUID]["address"],
-            "service": (
-                form_service.FileFormService.get_name()
-            ),
-            "content": request_info[disk_UUID]["content"],
-        }
-    return client_contexts
-
-
+## Creates set_disk_info service request_contexts
+## @param disks (dict) current disks we're handling
+## @request_info (dict) specific request info for this context,
+## {
+##   disk_UUID : {
+##       "boundary" : boundary,
+##       "content" : content
+##   }
+## }
+## @returns request_contexts (dict) returns built request contexts for this
+## service
 def create_set_disk_info_contexts(disks, request_info):
-    # request_info should be a dict {
-    #   disk_UUID : {
-    #       "boundary" : boundary,
-    #       "content" : content
-    #   }
-    # }
     client_contexts = {}
     for disk_UUID in request_info.keys():
         client_contexts[disk_UUID] = {

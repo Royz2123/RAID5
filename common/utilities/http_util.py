@@ -145,8 +145,7 @@ def send_status_state(entry):
 ## @returns next_state (bool) if finished updating the data_to_send.
 def send_headers_state(entry):
     entry.service.before_response_headers(entry)
-    headers = entry.service.response_headers
-    for header, content in headers.items():
+    for header, content in entry.service.response_headers.items():
         entry.data_to_send += (
             (
                 "%s : %s\r\n"
