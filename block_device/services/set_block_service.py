@@ -36,7 +36,7 @@ class SetBlockService(base_service.BaseService):
             ## File descriptor os disk file
             self._fd = os.open(
                 entry.application_context["disk_name"],
-                os.O_RDWR,
+                os.O_RDWR | os.O_BINARY,
                 0o666
             )
         except OSError as e:

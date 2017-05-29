@@ -215,7 +215,7 @@ def create_disks_list(available_disks, volumes):
         # add scratch mode and help box
         disk_list += (
             '<br><input type="checkbox" name="scratch" value="True" autocomplete="on" unchecked>' +
-            '&nbsp&nbspFrom scratch&nbsp&nbsp' +
+            '&nbsp;&nbsp;From scratch&nbsp;&nbsp;' +
             '<div class="tooltip"><img src="/help_box.jpg" class="help-box">' +
             '<span class="tooltiptext">' +
             'To restart the system, and override existing settings' +

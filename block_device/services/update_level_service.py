@@ -38,7 +38,7 @@ class UpdateLevelService(base_service.BaseService):
             # File desciptore of the disk_info file
             self._fd = os.open(
                 entry.application_context["disk_info_name"],
-                os.O_RDWR,
+                os.O_RDWR | os.O_BINARY,
                 0o666
             )
         except IOError as e:

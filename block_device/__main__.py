@@ -97,7 +97,7 @@ def main():
     try:
         disk_fd = os.open(
             config_sections["Server"]["disk_name"],
-            os.O_RDONLY | os.O_CREAT,
+            os.O_RDONLY | os.O_CREAT | os.O_BINARY,
             0o666
         )
         os.close(disk_fd)
@@ -139,7 +139,7 @@ def daemonize():
 
     # redirect standards
     try:
-        new_fd = os.open(NEW_FILE, os.O_RDWR)
+        new_fd = os.open(NEW_FILE, os.O_RDWR | os.O_BINARY)
         for standard_fd in range(NUMBER_OF_STANDARD_FILES + 1):
             os.dup2(new_fd, standard_fd)
     finally:

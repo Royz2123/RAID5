@@ -124,7 +124,7 @@ class FileFormService(base_service.BaseService):
                 self._filename = info
                 self._fd = os.open(
                     self._tmp_filename,
-                    os.O_RDWR | os.O_CREAT,
+                    os.O_RDWR | os.O_CREAT | os.O_BINARY,
                     0o666
                 )
             elif name == "name":

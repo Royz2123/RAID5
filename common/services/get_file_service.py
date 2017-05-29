@@ -48,7 +48,11 @@ class GetFileService(base_service.BaseService):
     ## @returns finished (bool) returns true if finished
     def before_response_status(self, entry):
         try:
-            self._fd = os.open(self._filename, os.O_RDONLY, 0o666)
+            self._fd = os.open(
+                self._filename,
+                os.O_RDONLY | os.O_BINARY,
+                0o666
+            )
             self._response_headers = {
                 "Content-Length": os.fstat(self._fd).st_size,
                 "Content-Type": constants.MIME_MAPPING.get(
@@ -58,6 +62,7 @@ class GetFileService(base_service.BaseService):
                     'txt/html',
                 )
             }
+            print os.fstat(self._fd).st_size
         except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
@@ -78,29 +83,18 @@ class GetFileService(base_service.BaseService):
         entry,
         max_buffer=constants.BLOCK_SIZE
     ):
+        # exit if not reading from file
         if self._response_status != 200:
             return True
 
-        buf = ""
-        try:
-            while len(entry.data_to_send) < max_buffer:
-                buf = os.read(self._fd, max_buffer)
-                if not buf:
-                    break
-                self._response_content += buf
+        # read buf from file
+        buf = util.read(self._fd, max_buffer)
 
-            if buf:
-                return False
+        # if finished reading file, exit
+        if len(buf) == 0:
             os.close(self._fd)
+            return True
 
-        except Exception as e:
-            if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
-                raise
-            logging.debug(
-                "%s :\t Still reading, current response size: %s "
-                % (
-                    entry,
-                    len(self._response_content)
-                )
-            )
-        return True
+        # update read content and notify that there might be more content
+        self._response_content += buf
+        return False

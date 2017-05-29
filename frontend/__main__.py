@@ -151,7 +151,7 @@ def daemonize():
 
     # redirect standards
     try:
-        new_fd = os.open(NEW_FILE, os.O_RDWR)
+        new_fd = os.open(NEW_FILE, os.O_RDWR | os.O_BINARY)
         for standard_fd in range(NUMBER_OF_STANDARD_FILES + 1):
             os.dup2(new_fd, standard_fd)
     finally:
