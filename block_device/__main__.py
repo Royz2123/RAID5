@@ -15,6 +15,9 @@ from common.utilities import constants
 from common.utilities import poller
 from common.utilities import util
 
+if not hasattr(os, 'O_BINARY'):
+    os.O_BINARY = 0
+
 ## Files
 NEW_FILE = os.devnull
 NEW_WORKING_DIRECTORY = "/"

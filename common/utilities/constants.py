@@ -105,7 +105,7 @@ HTML_TOP_BAR_CODE = (
 
 ## Default time until page refreshes. Once refreshed, the frontend server
 ## checks for terminated connections of disks
-DEFAULT_REFRESH_TIME = 20
+DEFAULT_REFRESH_TIME = 6
 
 ## Default style sheet (css)
 DEFAULT_STYLE_SHEET = "mystyle.css"
