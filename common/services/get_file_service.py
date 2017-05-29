@@ -62,7 +62,6 @@ class GetFileService(base_service.BaseService):
                     'txt/html',
                 )
             }
-            print os.fstat(self._fd).st_size
         except OSError as e:
             if e.errno != errno.ENOENT:
                 raise

@@ -165,7 +165,6 @@ def send_content_state(entry):
     finished_content = entry.service.before_response_content(entry)
     entry.data_to_send += entry.service.response_content
     entry.service.response_content = ""
-    print finished_content
     return finished_content
 
 ## State function that sends the first line of a http request.

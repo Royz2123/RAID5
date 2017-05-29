@@ -112,7 +112,9 @@ class InitService(base_service.BaseService):
         # either an empty string or something else. (Unless from scratch)
         common_UUID = ""
         if "scratch" not in self._args.keys():
-            common_UUID = entry.application_context["available_disks"][new_disks[0]]["volume_UUID"]
+            common_UUID = entry.application_context["available_disks"][
+                new_disks[0]
+            ]["volume_UUID"]
             for disk_UUID in new_disks:
                 if (entry.application_context["available_disks"]
                         [disk_UUID]["volume_UUID"] != common_UUID):
@@ -150,8 +152,12 @@ class InitService(base_service.BaseService):
             self._mode = InitService.EXISTING_MODE
 
             # use existing volume uuid and long password
-            volume_UUID = entry.application_context["available_disks"][new_disks[0]]["volume_UUID"]
-            long_password = entry.application_context["volumes"][volume_UUID]["long_password"]
+            volume_UUID = entry.application_context["available_disks"][
+                new_disks[0]
+            ]["volume_UUID"]
+            long_password = entry.application_context["volumes"][volume_UUID][
+                "long_password"
+            ]
 
             # check if UUID is in config file sections
             if volume_UUID not in entry.application_context["volumes"].keys():
@@ -160,8 +166,9 @@ class InitService(base_service.BaseService):
                 )
 
             # update volume state
-            entry.application_context["volumes"][volume_UUID]["volume_state"] = (
-                constants.INITIALIZED)
+            entry.application_context["volumes"][volume_UUID][
+                "volume_state"
+            ] = constants.INITIALIZED
 
         # update the initialized volume index
         entry.application_context["volumes"][volume_UUID]["volume_num"] = (
