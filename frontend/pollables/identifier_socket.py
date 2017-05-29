@@ -39,11 +39,9 @@ class IdentifierSocket(pollable.Pollable):
         ## File descriptor of socket
         self._fd = socket.fileno()
 
-        ## Data the IdentfierSocket has recieved
-        self._recvd_data = ""
+        ## Data the IdentfierSocket has recieved.
+        self._recvd_data = {}
 
-        ## Data the IdentifierSocket has to send
-        self._data_to_send = ""
 
     ## Function that specifies what socket is to do when system is on_idle
     ## declares itself using multicast
@@ -76,22 +74,36 @@ class IdentifierSocket(pollable.Pollable):
     ## @param buf (string) buffer needed for parsing from the socket
     ## @param address (tuple) address from which the packet was recvd
     def update_disk(self, buf, address):
-        if buf.find(constants.CRLF_BIN) == -1:
-            raise RuntimeError(
-                "Invalid Decleration from Block Device: %s" % buf
-            )
-        # split the content so we can address it
-        content = buf.split(constants.CRLF_BIN)
+        # update the recd data from this address
+        if address not in self._recvd_data.keys():
+            self._recvd_data[address] = ""
+        self._recvd_data[address] += buf
 
-        # update the disk in available_disks
-        self._application_context["available_disks"][content[0]] = {
-            "disk_UUID": content[0],
-            "state": constants.ONLINE,
-            "UDP_address": address,
-            "TCP_address": (address[0], int(content[1])),
-            "timestamp": time.time(),
-            "volume_UUID": content[2]
-        }
+        # split recvd content
+        content = self._recvd_data[address].split(constants.CRLF_BIN)
+
+        # check if got entire decleration
+        if "" not in content:
+            return
+
+        # clear recvd data from this address so we can wait for new
+        # declerations
+        self._recvd_data[address] = ""
+
+        # Check if volume_UUID is in volumes
+        if (
+            content[2] == ""
+            or content[2] in self._application_context["volumes"].keys()
+        ):
+            # update the disk in available_disks
+            self._application_context["available_disks"][content[0]] = {
+                "disk_UUID": content[0],
+                "state": constants.ONLINE,
+                "UDP_address": address,
+                "TCP_address": (address[0], int(content[1])),
+                "timestamp": time.time(),
+                "volume_UUID": content[2]
+            }
 
     ## Specifies what events the IdentifierSocket listens to.
     ## required by @ref common.pollables.pollable.Pollable

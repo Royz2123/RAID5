@@ -21,7 +21,7 @@ ALIGNMENTS = {
 
 ## Images of disks from frontend files
 IMAGES = {
-    constants.OFFLINE: "offline_disk1.png",
+    constants.OFFLINE: "offline_disk.png",
     constants.ONLINE: "online_disk.png",
     constants.REBUILD: "rebuild_disk.gif",
 }
