@@ -35,6 +35,9 @@ DEFAULT_HTTP_ADDRESS = "0.0.0.0"
 # constant thoughout entire system
 BLOCK_SIZE = 4096
 
+## My Seperator
+MY_SEPERATOR = '$'
+
 ## CRLF new line
 CRLF = '\r\n'
 CRLF_BIN = CRLF.encode('utf-8')

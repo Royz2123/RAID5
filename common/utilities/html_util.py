@@ -212,14 +212,6 @@ def create_disks_list(available_disks, volumes):
         index += 1
 
     if len(online_disks) > 1:
-        # add scratch mode and help box
-        disk_list += (
-            '<br><input type="checkbox" name="scratch" value="True" autocomplete="on" unchecked>' +
-            '&nbsp;&nbsp;From scratch&nbsp;&nbsp;' +
-            '<div class="tooltip"><img src="/help_box.jpg" class="help-box">' +
-            '<span class="tooltiptext">' +
-            'To restart the system, and override existing settings' +
-            '</span></div>')
         # submit form for init
         disk_list += (
             "<br><button type='submit' form='init_form' value='Submit'>" +

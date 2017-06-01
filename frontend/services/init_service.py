@@ -89,10 +89,7 @@ class InitService(base_service.BaseService):
         # create a list of available_disks
         new_disks = []
         for arg_name, arg_info in self._args.items():
-            if "scratch" == arg_name:
-                pass
-            else:
-                new_disks.append(arg_info[0])
+            new_disks.append(arg_info[0])
 
         # first check the number of disks requested to create a volume
         if len(new_disks) < 2:
@@ -109,21 +106,19 @@ class InitService(base_service.BaseService):
                 )
 
         # check all the disks have the same volume_UUID,
-        # either an empty string or something else. (Unless from scratch)
-        common_UUID = ""
-        if "scratch" not in self._args.keys():
-            common_UUID = entry.application_context["available_disks"][
-                new_disks[0]
-            ]["volume_UUID"]
-            for disk_UUID in new_disks:
-                if (entry.application_context["available_disks"]
-                        [disk_UUID]["volume_UUID"] != common_UUID):
-                    raise RuntimeError(
-                        "%s:\t Got two different volumes" % entry
-                    )
+        # either an empty string or something else.
+        common_UUID = entry.application_context["available_disks"][
+            new_disks[0]
+        ]["volume_UUID"]
+        for disk_UUID in new_disks:
+            if (entry.application_context["available_disks"]
+                    [disk_UUID]["volume_UUID"] != common_UUID):
+                raise RuntimeError(
+                    "%s:\t Got two different volumes" % entry
+                )
 
         # check if volume_UUID is in the system (if not "")
-        if common_UUID == "" or "scratch" in self._args.keys():
+        if common_UUID == "":
             self._mode == InitService.SCRATCH_MODE
 
             # create a new volume_UUID and write in config_file
@@ -285,7 +280,7 @@ class InitService(base_service.BaseService):
         for disk_UUID in self._volume["disks"].keys():
             disks_data.append(
                 client_responses[disk_UUID]["content"].split(
-                    constants.CRLF_BIN
+                    constants.MY_SEPERATOR
                 )
             )
 
@@ -506,12 +501,12 @@ class InitService(base_service.BaseService):
                         "%s" * 7
                     ) % (
                         0,
-                        constants.CRLF_BIN,
+                        constants.MY_SEPERATOR,
                         self._volume["volume_UUID"],
-                        constants.CRLF_BIN,
+                        constants.MY_SEPERATOR,
                         disk_uuid,
-                        constants.CRLF_BIN,
-                        constants.CRLF_BIN.join(disks_uuids)
+                        constants.MY_SEPERATOR,
+                        constants.MY_SEPERATOR.join(disks_uuids)
                     )
                 )
             }

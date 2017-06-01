@@ -44,10 +44,10 @@ def create_login_contexts(volume):
             ),
             "content": "%s%s%s%s%s" % (
                 volume["volume_UUID"],
-                constants.CRLF_BIN,
+                constants.MY_SEPERATOR,
                 volume["long_password"],
-                constants.CRLF_BIN,
-                constants.CRLF_BIN
+                constants.MY_SEPERATOR,
+                constants.MY_SEPERATOR
             ),
         }
     return client_contexts

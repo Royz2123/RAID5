@@ -54,12 +54,12 @@ class DeclarerSocket(pollable.Pollable):
         return (
             "%s%s%s%s%s%s%s" % (
                 self._application_context["server_info"]["disk_uuid"],
-                constants.CRLF_BIN,
+                constants.MY_SEPERATOR,
                 self._application_context["bind_port"],
-                constants.CRLF_BIN,
+                constants.MY_SEPERATOR,
                 self._application_context["server_info"]["volume_uuid"],
-                constants.CRLF_BIN,
-                constants.CRLF_BIN,
+                constants.MY_SEPERATOR,
+                constants.MY_SEPERATOR,
             )
         )
 

@@ -76,6 +76,11 @@ def parse_args():
         type=str,
         default=None
     )
+    parser.add_argument(
+        '--daemon',
+        type=bool,
+        default=False,
+    )
     args = parser.parse_args()
     args.base = os.path.normpath(os.path.realpath(args.base))
     return args
@@ -108,8 +113,10 @@ def main():
         logging.critical("BLOCK DEVICE STARTUP UNSUCCESSFUL:\t %s" % e)
         return
 
-    # if args.daemon:
-    #    daemonize()
+    # handle daemon state
+    if args.daemon:
+        daemonize()
+
     application_context = {
         "server_type": constants.BLOCK_DEVICE_SERVER,
         "bind_address": constants.DEFAULT_HTTP_ADDRESS,

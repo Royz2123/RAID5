@@ -60,6 +60,7 @@ class SetDiskInfoService(
 
         #if finished, rename to final name
         if next_state:
+            print self._save_filename
             os.rename(
                 os.path.normpath(self._tmp_filename),
                 os.path.normpath(self._save_filename)

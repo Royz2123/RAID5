@@ -71,7 +71,7 @@ class UpdateLevelService(base_service.BaseService):
         # Authorization was successful
         # read entire disk info
         disk_info = util.read(self._fd, constants.MAX_INFO_SIZE).split(
-            constants.CRLF_BIN
+            constants.MY_SEPERATOR
         )
         disk_info[0] = str(
             int(disk_info[0]) +
@@ -92,7 +92,7 @@ class UpdateLevelService(base_service.BaseService):
         # write new disk info with incremented level
         util.write(
             self._fd,
-            constants.CRLF_BIN.join(disk_info)
+            constants.MY_SEPERATOR.join(disk_info)
         )
 
     ## What the service needs to do before terminating

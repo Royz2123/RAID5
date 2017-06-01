@@ -1,7 +1,7 @@
 import os
 
 fd = os.open(
-    "C:\Users\Royz\Documents\_test_file.txt",
+    "test_file.txt",
     os.O_CREAT | os.O_RDWR | os.O_BINARY,
     0o666
 )

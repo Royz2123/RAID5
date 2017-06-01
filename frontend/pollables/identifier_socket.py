@@ -80,7 +80,7 @@ class IdentifierSocket(pollable.Pollable):
         self._recvd_data[address] += buf
 
         # split recvd content
-        content = self._recvd_data[address].split(constants.CRLF_BIN)
+        content = self._recvd_data[address].split(constants.MY_SEPERATOR)
 
         # check if got entire decleration
         if "" not in content:

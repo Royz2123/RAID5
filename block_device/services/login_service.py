@@ -47,7 +47,7 @@ class LoginService(base_service.BaseService):
         self._password_content += content
 
         # parser all the content
-        parsed_content = self._password_content.split(constants.CRLF_BIN)
+        parsed_content = self._password_content.split(constants.MY_SEPERATOR)
 
         # check if finished getting data
         if "" not in parsed_content:
