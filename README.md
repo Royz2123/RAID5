@@ -14,6 +14,7 @@ Here are the things you will need to download in order to get this system up and
 1) Download and install Python2.7
 2) Download this repository on your machine (Windows coming soon)
 3) Download and install any modern browser
+4) Download and instal Cygwin64 (for Windows users)
 ```
 
 #### Browser Issues
@@ -26,9 +27,7 @@ Firefox currently disables basic authentication so could be problematical and wi
 
 ### Execution
 
-Running the servers can be done as follows:
-
-WINDOWS & LINUX ALIKE:
+Running the servers can be done as follows:For Linux:
 
 Reach parent directory (RAID5)
 ```
