@@ -267,7 +267,7 @@ class ReadFromDiskService(base_service.BaseService):
                 entry,
             ))
         elif self._disks[self._disk_UUID]["disk_num"] == (len(self._disks)-1):
-            raise RuntimeError("%s:\t Cannot write directly to last disk" % (
+            raise RuntimeError("%s:\t Cannot read directly from last disk" % (
                 entry,
             ))
 
