@@ -5,8 +5,11 @@
 
 import argparse
 import ConfigParser
+import errno
 import logging
 import os
+import resource
+import signal
 import traceback
 
 from common.utilities import async_server
@@ -141,29 +144,31 @@ def main():
 
 
 def daemonize():
-    child = os.fork()
+    if os.name == "nt":
+        raise RuntimeError("Daemon not available on Windows...")
 
+    child = os.fork()
     if child != 0:
         os._exit(0)
 
-    # first close all of parents fds
-    os.closerange(
-        NUMBER_OF_STANDARD_FILES,
-        resource.getrlimit(resource.RLIMIT_NOFILE)[1]
-    )
+    import resource
 
-    # redirect standards
-    try:
-        new_fd = os.open(NEW_FILE, os.O_RDWR | os.O_BINARY)
-        for standard_fd in range(NUMBER_OF_STANDARD_FILES + 1):
-            os.dup2(new_fd, standard_fd)
-    finally:
-        os.close(new_fd)
+    for i in range(3, resource.getrlimit(resource.RLIMIT_NOFILE)[1]):
+        try:
+            os.close(i)
+        except OSError as e:
+            if e.errno != errno.EBADF:
+                raise
 
-    os.chdir(NEW_WORKING_DIRECTORY)
-
-    signal.signal(signal.SIGINT | signal.SIGTERM, exit)
     signal.signal(signal.SIGHUP, signal.SIG_IGN)
+
+    fd = os.open(os.devnull, os.O_RDWR, 0o666)
+    for i in range(3):
+        os.dup2(i, fd)
+    os.close(fd)
+    child = os.fork()
+    if child != 0:
+        os._exit(0)
 
 
 if __name__ == '__main__':
