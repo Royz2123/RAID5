@@ -299,15 +299,13 @@ class InitService(base_service.BaseService):
             # next lets check the generation level
             # By RAID5, we can only rebuild one disk at a time
             if disks_data[disk_num][0] != disks_data[0][0]:
-                if rebuild_disk is not None:
-                    raise RuntimeError(
-                        "Already rebuilding disk: %s, can't rebuild 2: %s" % (
-                            disks_data[disk_num][0],
-                            disks_data[0][0]
-                        )
+                raise RuntimeError(
+                    "initialize only a consistent set (level mixup): %s != %s"
+                    % (
+                        disks_data[disk_num][0],
+                        disks_data[0][0]
                     )
-                else:
-                    rebuild_disk = disks_data[disk_num][2]
+                )
 
             # Lets now check the disk UUID:
             if disks_data[disk_num][3:].count(disks_data[disk_num][2]) != 1:
@@ -327,13 +325,8 @@ class InitService(base_service.BaseService):
             self._volume["disks"][disk_UUID]["level"] = int(
                 disks_data[disk_num][0])
             self._volume["disks"][disk_UUID]["peers"] = disks_data[disk_num][3:]
+            self._volume["disks"][disk_UUID]["state"] = constants.ONLINE
 
-            if disk_UUID == rebuild_disk:
-                self._volume["disks"][disk_UUID]["state"] = constants.ONLINE
-                # TODO: NEED TO ADD ACTUAL REBUILD TO STATE_MACHINE
-                # return InitService.REBUILD_STATE
-            else:
-                self._volume["disks"][disk_UUID]["state"] = constants.ONLINE
 
         entry.state = constants.SEND_CONTENT_STATE
         return InitService.FINAL_STATE

@@ -2,6 +2,7 @@
 <HTML>
     <head>
         <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Hind+Madurai">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" type="text/css" href="mystyle.css">
         <title>RAID5 - Disk Write</title>
@@ -21,16 +22,32 @@
 
         <form action="/disk_write" enctype="multipart/form-data" method="POST">
             <br>
-            Volume UUID:    <input type="text" name="volume_UUID">
+            <b>Volume UUID:</b><br>
+            <i>This is the VOLUME ID to which we want to write</i><br>
+            <input type="text" name="volume_UUID">
             <br><br>
-            Disk UUID:    <input type="text" name="disk_UUID">
+            <br>
+            <b>Logical Disk Number:</b><br>
+            <i>This is the number of the logical disk we want to write to.</i><br>
+            <input type="text" name="disk_num">
             <br><br>
-            First Block:    <input type="text" name="firstblock">
+            <br>
+            <b>First block:</b><br>
+            <i>This is the first block from where we want to start writing. </i><br>
+            <input type="text" name="firstblock">
             <br><br>
-            File:           <input type="file" name="file">
+            <br>
+            <b>File:</b><br>
+            <i>This is the file we want to write.</i><br>
+            <input type="file" name="file">
             <br><br>
             <input type="submit" value="Submit">
         </form>
+      </div>
+
+      <div class="footer">
+          <i class="fa fa-copyright"></i>
+         	RAID5 - Project by Roy Zohar
       </div>
 
     </body>

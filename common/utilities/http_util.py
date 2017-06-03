@@ -303,6 +303,10 @@ def handle_request(entry, request):
         )
 
     else:
+        # Set homepage if necessary, default page
+        if entry.request_context["uri"] == "/":
+            entry.request_context["uri"] = "/homepage.html"
+
         file_name = os.path.normpath(
             '%s%s' % (
                 entry.application_context["base"],

@@ -113,12 +113,16 @@ def create_html_page(
 
     return (
         (
-            "<HTML><HEAD>%s%s%s<TITLE>%s</TITLE></HEAD>" +
+            "<HTML><HEAD>%s%s%s%s<TITLE>%s</TITLE></HEAD>" +
             "<BODY>%s<div class='%s'>%s</div></BODY></HTML>"
         ) % (
             create_style_link(),
             create_style_link(
                 "http://fonts.googleapis.com/css?family=Hind+Madurai"
+            ),
+            create_style_link(
+                "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/"
+                + "4.7.0/css/font-awesome.min.css"
             ),
             refresh_header,
             header,
@@ -162,15 +166,20 @@ def create_disks_list(available_disks, volumes):
         # update the disk_list
         disk_list += (
             (
-                "<h2>Volume%s</h2>" +
-                "<h3>Volume UUID: %s</h3>" +
-                "<h3>Disks Online: %s/%s, Volume State: %s</h3> "
+                "<h2>Volume%s</h2>"
+                + "<h4>Volume UUID: %s</h4>"
+                + "<h4>Disks Online: %s/%s, Volume State: %s</h4> "
+                + "<h3>Logical Disks:</h3>"
+                + "<h4> Range: [0 - %s], Count: %s Disks total </h4>"
+                + "<h3>Physical Disks:</h3>"
             ) % (
                 volume["volume_num"],
                 volume_UUID,
                 online_volume_disks,
                 total_disks,
                 VOLUME_STATE[min(2, bad_disks)],
+                (len(volume["disks"]) - 2),
+                (len(volume["disks"]) - 1)
             )
         )
 
@@ -226,7 +235,12 @@ def create_disks_list(available_disks, volumes):
             create_disk_info(disk)
         )
     disk_list += "</div>"
-
+    disk_list += (
+        '<div class="footer">'
+        + '<i class="fa fa-copyright"></i>'
+        + 'RAID5 - Project by Roy Zohar'
+        + '</div>'
+    )
     return disk_list
 
 ## Creates a disk as part of the html volume

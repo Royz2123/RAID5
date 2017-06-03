@@ -1,10 +1,9 @@
 <HTML>
     <head>
         <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Hind+Madurai">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="mystyle.css">
         <title>RAID5 - Disk Read</title>
-
     </head>
 
     <body>
@@ -21,17 +20,33 @@
 
         <form action="/disk_read" enctype="multipart/form-data" method="GET">
             <br>
-            Volume UUID:    <input type="text" name="volume_UUID">
+            <b>Volume UUID:</b><br>
+            <i>This is the VOLUME ID from which we want to read</i><br>
+            <input type="text" name="volume_UUID">
             <br><br>
-            Disk UUID:    <input type="text" name="disk_UUID">
+            <br>
+            <b>Logical Disk Number:</b><br>
+            <i>This is the number of the logical disk we want to read from.</i><br>
+            <input type="text" name="disk_num">
             <br><br>
-            First Block:    <input type="text" name="firstblock">
+            <br>
+            <b>First block:</b><br>
+            <i>This is the first block from which we want to read. </i><br>
+            <input type="text" name="firstblock">
             <br><br>
-            Blocks:         <input type="text" name="blocks">
+            <br>
+            <b>Blocks:</b><br>
+            <i>This is the number of blocks we want to read. </i><br>
+            <input type="text" name="blocks">
             <br><br>
             <input type="submit" value="Submit">
         </form>
-       </div<
+      </div>
+
+      <div class="footer">
+          <i class="fa fa-copyright"></i>
+         	RAID5 - Project by Roy Zohar
+      </div>
 
     </body>
 </HTML>

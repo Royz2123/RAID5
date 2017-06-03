@@ -47,7 +47,7 @@ class ReadFromDiskService(base_service.BaseService):
     def __init__(self, entry, pollables, args):
         super(ReadFromDiskService, self).__init__(
             ["Content-Type", "Authorization"],
-            ["volume_UUID", "disk_UUID", "firstblock", "blocks"],
+            ["volume_UUID", "disk_num", "firstblock", "blocks"],
             args
         )
         ## Reading mode
@@ -59,8 +59,8 @@ class ReadFromDiskService(base_service.BaseService):
         ## physical UUID of the disk we're reading from
         self._current_phy_UUID = None
 
-        ## UUID of disk we're reading from
-        self._disk_UUID = None
+        ## Logical disk num of disk we're reading from
+        self._disk_num = None
 
         ## UUID of volume we're dealing with
         self._volume_UUID = None
@@ -97,10 +97,12 @@ class ReadFromDiskService(base_service.BaseService):
     def before_read(self, entry):
         self._current_phy_UUID = disk_util.get_physical_disk_UUID(
             self._disks,
-            self._disk_UUID,
+            self._disk_num,
             self._current_block
         )
         try:
+            #TODO: Check availablity without disk refused
+
             self._block_mode = ReadFromDiskService.REGULAR
             self._disk_manager = disk_manager.DiskManager(
                 self._disks,
@@ -241,7 +243,7 @@ class ReadFromDiskService(base_service.BaseService):
             return True
 
         # login went smoothly, moving on to disk read
-        self._disk_UUID = self._args["disk_UUID"][0]
+        self._disk_num = int(self._args["disk_num"][0])
         self._volume_UUID = self._args["volume_UUID"][0]
 
         # first check validity of volume_UUID
@@ -261,14 +263,11 @@ class ReadFromDiskService(base_service.BaseService):
         self._volume = entry.application_context["volumes"][self._volume_UUID]
         self._disks = self._volume["disks"]
 
-        # now check validity of disk_UUID
-        if self._disk_UUID not in self._disks.keys():
-            raise RuntimeError("%s:\t Disk not part of volume" % (
+        # now check validity of disk_num
+        if self._disk_num < 0 or self._disk_num >= len(self._disks) - 1:
+            raise RuntimeError("%s:\t Logical disk not part of volume %s " % (
                 entry,
-            ))
-        elif self._disks[self._disk_UUID]["disk_num"] == (len(self._disks)-1):
-            raise RuntimeError("%s:\t Cannot read directly from last disk" % (
-                entry,
+                self._disk_num,
             ))
 
         # also checek validity of blocks requested

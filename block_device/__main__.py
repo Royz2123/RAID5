@@ -8,7 +8,11 @@ import ConfigParser
 import errno
 import logging
 import os
-import resource
+
+# only posix has resource module (from supporable systems)
+if os.name == "posix":
+	import resource
+
 import signal
 import traceback
 

@@ -87,8 +87,8 @@ class WriteToDiskService(
         ## UUID of volume we're dealing with
         self._volume_UUID = None
 
-        ## UUID of disk we're writing to
-        self._disk_UUID = None
+        ## Logical disk num of disk we're writing to
+        self._disk_num = None
 
         ## UUID of the physical disk we're writing to
         self._current_phy_UUID = None
@@ -165,23 +165,15 @@ class WriteToDiskService(
             self._disks = self._volume["disks"]
 
         # check validity of disk_UUID (if finished getting)
-        if next_state and self._arg_name == "disk_UUID":
-            self._disk_UUID = self._args["disk_UUID"][0]
+        if next_state and self._arg_name == "disk_num":
+            self._disk_num = int(self._args["disk_num"][0])
             # check disk_UUID. already got volume_UUID and disks by order
-            if self._disk_UUID not in self._disks.keys():
+            if self._disk_num < 0 or self._disk_num >= (len(self._disks)-1):
                 self._response_status = 500
-                raise RuntimeError("%s:\t Disk not part of volume" % (
+                raise RuntimeError("%s:\t Disk not part of volume %s" % (
                     entry,
+                    self._disk_num
                 ))
-            elif (
-                self._disks[self._disk_UUID]["disk_num"]
-                == (len(self._disks)-1)
-            ):
-                raise RuntimeError("%s:\tCannot write directly to last disk" %
-                    (
-                        entry,
-                    )
-                )
 
         # check validity of firstblock requested (if finished getting)
         if next_state and self._arg_name == "firstblock":
@@ -261,7 +253,7 @@ class WriteToDiskService(
     def handle_block(self):
         self._current_phy_UUID = disk_util.get_physical_disk_UUID(
             self._disks,
-            self._disk_UUID,
+            self._disk_num,
             self._current_block
         )
         self._current_phy_parity_UUID = disk_util.get_parity_disk_UUID(
@@ -271,6 +263,8 @@ class WriteToDiskService(
 
         # first try writing the block regularly
         try:
+            #TODO: Check availability
+
             # step 1 - get current_block and parity block contents
             # step 2 - calculate new blocks to write
             if self._block_mode == WriteToDiskService.REGULAR:

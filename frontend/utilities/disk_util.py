@@ -54,9 +54,7 @@ def xor_blocks(block1, block2):
 ## @param logic_disk_UUID (string) logical disk UUID
 ## @param block_num (int) current block number
 ## @returns phy_UUID (string) physical UUID of the wanted disk
-def get_physical_disk_UUID(disks, logic_disk_UUID, block_num):
-    logic_disk_num = disks[logic_disk_UUID]["disk_num"]
-
+def get_physical_disk_UUID(disks, logic_disk_num, block_num):
     if get_parity_disk_num(disks, block_num) > logic_disk_num:
         phy_disk_num = logic_disk_num
     else:
@@ -90,5 +88,5 @@ def get_parity_disk_UUID(disks, block_num):
 ## @param disks (dict) dictionary of disks
 ## @param block_num (int) current block number
 ## @returns parity_disk_num (int) disk_num of parity block
-def get_parity_disk_num(disks, block_num): 
+def get_parity_disk_num(disks, block_num):
     return (len(disks) - block_num % len(disks) - 1)
