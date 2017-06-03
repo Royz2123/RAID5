@@ -39,15 +39,15 @@ def compute_missing_block(blocks):
 ## @param block2 (string) second block
 ## @returns xored_block (string) the XOR between the two blocks
 def xor_blocks(block1, block2):
-    for block in (block1, block2):
-        block = block.ljust(constants.BLOCK_SIZE, chr(0))
+    # add block size in case of uneven byte arrays
+    b1 = bytearray(block1) + bytearray(constants.BLOCK_SIZE)
+    b2 = bytearray(block2) + bytearray(constants.BLOCK_SIZE)
+    b = bytearray(constants.BLOCK_SIZE)
 
-    l1 = [ord(c) for c in list(block1)]
-    l2 = [ord(c) for c in list(block2)]
-    ans = []
-    for i in range(len(l1)):
-        ans.append(chr(l1[i] ^ l2[i]))
-    return "".join(ans)
+    for i in range(len(b)):
+        b[i] = b1[i] ^ b2[i]
+
+    return str(b)
 
 ## Extracts the disk_UUID of a physical disk given the logic disk_UUID
 ## @param disks (dict) dictionary of disks
