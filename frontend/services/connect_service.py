@@ -111,12 +111,12 @@ class ConnectService(base_service.BaseService):
                 entry,
             ))
 
-        # sanity check that this level is one less than all the others:
+        # sanity check that this level is no more than all the others:
         for disk_UUID, disk in self._disks.items():
             if (
                 disk_UUID != self._disk_UUID and
                 (
-                    disk["level"] <=
+                    disk["level"] <
                     self._disks[self._disk_UUID]["level"]
                 )
             ):

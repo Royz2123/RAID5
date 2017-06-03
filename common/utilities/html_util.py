@@ -187,18 +187,6 @@ def create_disks_list(available_disks, volumes):
         disk_list += "<div class='volume'>"
         alignment = True
         for disk_UUID, disk in volume["disks"].items():
-            # Extract state from both available_disks and volume state
-            if (
-                disk_UUID not in available_disks.keys()
-                or available_disks[disk_UUID]["state"] == constants.OFFLINE
-            ):
-                # Can't connect fallen disk
-                state = constants.OFFLINE
-                obj = "Disk physically disconnected, check server"
-            else:
-                state = disk["state"]
-                obj = HTML_OBJECTS[state](disk, volume_UUID)
-
             # insert the disk info in here
             disk_list += create_html_volume_disk(
                 ALIGNMENTS[alignment],
@@ -207,8 +195,8 @@ def create_disks_list(available_disks, volumes):
                     disk["level"],
                     disk["disk_num"],
                 ),
-                IMAGES[state],
-                obj,
+                IMAGES[disk["state"]],
+                HTML_OBJECTS[disk["state"]](disk, volume_UUID),
             )
             alignment = not alignment
 

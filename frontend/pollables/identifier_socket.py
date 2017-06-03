@@ -66,7 +66,16 @@ class IdentifierSocket(pollable.Pollable):
             "available_disks"
         ].items():
             if (time.time() - disk["timestamp"]) > constants.DISCONNECT_TIME:
+                # Set disk to unavailable
                 disk["state"] = constants.OFFLINE
+
+                # Set the volume disk to offline too
+                for volume_UUID, volume in self._application_context[
+                    "volumes"
+                ].items():
+                    if disk_UUID in volume["disks"].keys():
+                        print 'heyyy'
+                        volume["disks"][disk_UUID]["state"] = constants.OFFLINE
             if (time.time() - disk["timestamp"]) > constants.TERMINATE_TIME:
                 del self._application_context["available_disks"][disk_UUID]
 
