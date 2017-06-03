@@ -300,7 +300,7 @@ class InitService(base_service.BaseService):
             # By RAID5, we can only rebuild one disk at a time
             if disks_data[disk_num][0] != disks_data[0][0]:
                 raise RuntimeError(
-                    "initialize only a consistent set (level mixup): %s != %s"
+                    "Initialize only a consistent set (level mixup): %s != %s"
                     % (
                         disks_data[disk_num][0],
                         disks_data[0][0]

@@ -101,7 +101,11 @@ class ReadFromDiskService(base_service.BaseService):
             self._current_block
         )
         try:
-            #TODO: Check availablity without disk refused
+            # First check availablity
+            available_disks = entry.application_context["available_disks"]
+            online, offline = util.sort_disks(available_disks)
+            if self._current_phy_UUID not in online.keys():
+                raise util.DiskRefused(self._current_phy_UUID)
 
             self._block_mode = ReadFromDiskService.REGULAR
             self._disk_manager = disk_manager.DiskManager(
