@@ -92,9 +92,8 @@ TERMINATE_TIME = 20
 
 ## HTML headers
 HTML_DEFAULT_HEADER = "RAID5 - Message"
-HTML_ERROR_HEADER = "Disk Error"
-HTML_MANAGEMENT_HEADER = "Management"
-HTML_DISPLAY_HEADER = "Available disks"
+HTML_ERROR_HEADER = "RAID5 - Disk Error"
+HTML_DISPLAY_HEADER = "RAID5 - Management"
 
 ## HTML Menu bar code
 HTML_TOP_BAR_CODE = (
